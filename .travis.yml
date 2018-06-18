@@ -1,0 +1,10 @@
+language: clojure
+script: lein doo node "server-tests" once
+before_install:
+ - sudo add-apt-repository --yes ppa:ethereum/ethereum
+ - sudo apt-get -qq update
+before_script:
+  - sudo apt-get --yes install solc
+  - lein solc
+  - npm install -g ganache-cli
+  - ganache-cli -p 8549 > /dev/null &
