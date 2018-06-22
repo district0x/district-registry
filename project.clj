@@ -99,6 +99,15 @@
             "test" ["do" ["build-tests"] ["shell" "node" "server-tests/server-tests.js"]]
             "test-doo" ["doo" "node" "server-tests"]}
 
+  :clean-targets ^{:protect false} [[:solc :build-path]
+                                    ".cljs_node_repl"
+                                    "dev-server/"
+                                    "resources/public/css/"
+                                    "resources/public/js/"
+                                    "server-tests/"
+                                    "server/"
+                                    "target/"]
+
   :profiles {:dev {:dependencies [[org.clojure/clojure "1.9.0"]
                                   [binaryage/devtools "0.9.9"]
                                   [com.cemerick/piggieback "0.2.2"]
