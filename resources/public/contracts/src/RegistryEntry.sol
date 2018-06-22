@@ -12,7 +12,7 @@ import "math/SafeMath.sol";
  * @dev It contains all state and logic related to TCR challenging and voting
  * Full copy of this contract is NOT deployed with each submission in order to save gas. Only forwarder contracts
  * pointing into single intance of it.
- * This contract is meant to be extended by domain specific registry entry contracts (Meme, ParamChange)
+ * This contract is meant to be extended by domain specific registry entry contracts (District, ParamChange)
  */
 
 contract RegistryEntry is ApproveAndCallFallBack {
@@ -81,8 +81,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * Must NOT be callable multiple times
    * Transfers TCR entry token deposit from sender into this contract
 
-   * @param _creator Creator of a meme
-   * @param _version Version of Meme contract
+   * @param _creator Creator of a district
+   * @param _version Version of District contract
    */
   function construct(
     address _creator,

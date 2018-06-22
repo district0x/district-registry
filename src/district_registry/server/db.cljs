@@ -13,8 +13,8 @@
 (declare start)
 (declare stop)
 (defstate ^{:on-reload :noop} district-registry-db
-  :start (start (merge (:memefactory/db @config)
-                       (:memefactory/db (mount/args))))
+  :start (start (merge (:districtfactory/db @config)
+                       (:districtfactory/db (mount/args))))
   :stop (stop))
 
 (def ipfs-hash (sql/call :char (sql/inline 46)))
@@ -39,17 +39,17 @@
    [:challenge/claimed-reward-on :unsigned :integer default-nil]])
 
 
-(def memes-columns
+(def districts-columns
   [[:reg-entry/address address not-nil]
-   [:meme/title :varchar not-nil]
-   [:meme/number :unsigned :integer default-nil]
-   [:meme/image-hash ipfs-hash not-nil]
-   [:meme/meta-hash ipfs-hash not-nil]
-   [:meme/total-supply :unsigned :integer not-nil]
-   [:meme/total-minted :unsigned :integer not-nil]
-   [:meme/token-id-start :unsigned :integer not-nil]
-   [:meme/total-trade-volume :BIG :INT default-nil]
-   [:meme/first-mint-on :unsigned :integer default-nil]
+   [:district/title :varchar not-nil]
+   [:district/number :unsigned :integer default-nil]
+   [:district/image-hash ipfs-hash not-nil]
+   [:district/meta-hash ipfs-hash not-nil]
+   [:district/total-supply :unsigned :integer not-nil]
+   [:district/total-minted :unsigned :integer not-nil]
+   [:district/token-id-start :unsigned :integer not-nil]
+   [:district/total-trade-volume :BIG :INT default-nil]
+   [:district/first-mint-on :unsigned :integer default-nil]
    [(sql/call :foreign-key :reg-entry/address) (sql/call :references :reg-entries :reg-entry/address)]])
 
 
@@ -75,7 +75,7 @@
    [[(sql/call :foreign-key :reg-entry/address) (sql/call :references :reg-entries :reg-entry/address)]]])
 
 (def registry-entry-column-names (map first registry-entries-columns))
-(def memes-column-names (map first memes-columns))
+(def districts-column-names (map first districts-columns))
 (def param-change-column-names (filter keyword? (map first param-changes-columns)))
 (def votes-column-names (map first votes-columns))
 
@@ -88,7 +88,7 @@
             :with-columns [registry-entries-columns]})
 
   (db/run! {:create-table [:districts]
-            :with-columns [memes-columns]})
+            :with-columns [districts-columns]})
 
   (db/run! {:create-table [:param-changes]
             :with-columns [param-changes-columns]})
@@ -142,8 +142,8 @@
 (def update-registry-entry! (create-update-fn :reg-entries registry-entry-column-names :reg-entry/address))
 (def get-registry-entry (create-get-fn :reg-entries :reg-entry/address))
 
-(def insert-meme! (create-insert-fn :memes memes-column-names))
-(def update-meme! (create-update-fn :memes memes-column-names :reg-entry/address))
+(def insert-district! (create-insert-fn :districts districts-column-names))
+(def update-district! (create-update-fn :districts districts-column-names :reg-entry/address))
 
 (def insert-param-change! (create-insert-fn :param-changes param-change-column-names))
 (def update-param-change! (create-update-fn :param-changes param-change-column-names :reg-entry/address))

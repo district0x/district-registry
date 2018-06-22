@@ -1,20 +1,20 @@
 pragma solidity ^0.4.18;
-//ignore, for storing config variables in meme factory for governance
+//ignore, for storing config variables in district factory for governance
 
 import "auth/DSAuth.sol";
 
 contract DistrictConfig is DSAuth {
   address public depositCollector;
-  address public memeAuctionCutCollector;
-  uint public memeAuctionCut; // Values 0-10,000 map to 0%-100%
+  address public districtAuctionCutCollector;
+  uint public districtAuctionCut; // Values 0-10,000 map to 0%-100%
 
-  function DistrictConfig(address _depositCollector, address _memeAuctionCutCollector, uint _memeAuctionCut) {
+  function DistrictConfig(address _depositCollector, address _districtAuctionCutCollector, uint _districtAuctionCut) {
     require(_depositCollector != 0x0);
-    require(_memeAuctionCutCollector != 0x0);
-    require(_memeAuctionCut < 10000);
+    require(_districtAuctionCutCollector != 0x0);
+    require(_districtAuctionCut < 10000);
     depositCollector = _depositCollector;
-    memeAuctionCutCollector = _memeAuctionCutCollector;
-    memeAuctionCut = _memeAuctionCut;
+    districtAuctionCutCollector = _districtAuctionCutCollector;
+    districtAuctionCut = _districtAuctionCut;
   }
 
   function setDepositCollector(address _depositCollector) public auth {
@@ -22,18 +22,18 @@ contract DistrictConfig is DSAuth {
     depositCollector = _depositCollector;
   }
 
-  function setMemeAuctionCutCollector(address _memeAuctionCutCollector) public auth {
-    require(_memeAuctionCutCollector != 0x0);
-    memeAuctionCutCollector = _memeAuctionCutCollector;
+  function setDistrictAuctionCutCollector(address _districtAuctionCutCollector) public auth {
+    require(_districtAuctionCutCollector != 0x0);
+    districtAuctionCutCollector = _districtAuctionCutCollector;
   }
 
   function setCollectors(address _collector) public auth {
     setDepositCollector(_collector);
-    setMemeAuctionCutCollector(_collector);
+    setDistrictAuctionCutCollector(_collector);
   }
 
-  function setMemeAuctionCut(uint _memeAuctionCut) public auth {
-    require(_memeAuctionCut < 10000);
-    memeAuctionCut = _memeAuctionCut;
+  function setDistrictAuctionCut(uint _districtAuctionCut) public auth {
+    require(_districtAuctionCut < 10000);
+    districtAuctionCut = _districtAuctionCut;
   }
 }

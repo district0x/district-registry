@@ -1,22 +1,22 @@
 (ns district-registry.server.syncer
   (:require
-    [bignumber.core :as bn]
-    [camel-snake-kebab.core :as cs :include-macros true]
-    [cljs-web3.core :as web3]
-    [cljs-web3.eth :as web3-eth]
-    [district.server.config :refer [config]]
-    [district.server.smart-contracts :refer [replay-past-events]]
-    [district.server.web3 :refer [web3]]
-    [district.web3-utils :as web3-utils]
-    [district-registry.server.contract.meme :as meme]
-    [district-registry.server.contract.param-change :as param-change]
-    [district-registry.server.contract.registry :as registry]
-    [district-registry.server.contract.registry-entry :as registry-entry]
-    [district-registry.server.db :as db]
-    [district-registry.server.deployer]
-    [district-registry.server.generator]
-    [mount.core :as mount :refer [defstate]]
-    [taoensso.timbre :refer-macros [info warn error]]))
+   [bignumber.core :as bn]
+   [camel-snake-kebab.core :as cs :include-macros true]
+   [cljs-web3.core :as web3]
+   [cljs-web3.eth :as web3-eth]
+   [district.server.config :refer [config]]
+   [district.server.smart-contracts :refer [replay-past-events]]
+   [district.server.web3 :refer [web3]]
+   [district.web3-utils :as web3-utils]
+   [district-registry.server.contract.district :as district]
+   [district-registry.server.contract.param-change :as param-change]
+   [district-registry.server.contract.registry :as registry]
+   [district-registry.server.contract.registry-entry :as registry-entry]
+   [district-registry.server.db :as db]
+   [district-registry.server.deployer]
+   [district-registry.server.generator]
+   [mount.core :as mount :refer [defstate]]
+   [taoensso.timbre :refer-macros [info warn error]]))
 
 (declare start)
 (declare stop)
@@ -32,12 +32,12 @@
   (info info-text {:args args} ::on-constructed)
   (try
     (db/insert-registry-entry! (merge (registry-entry/load-registry-entry registry-entry)
-                                      (registry-entry/load-registry-entry-challenge registry-entry)
-                                      {:reg-entry/created-on timestamp}))
-    (if (= type :meme)
-      (db/insert-meme! (merge (meme/load-meme registry-entry)
-                              {:meme/image-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"
-                                   :meme/title "HapplyHarambe"}))
+                                 (registry-entry/load-registry-entry-challenge registry-entry)
+                                 {:reg-entry/created-on timestamp}))
+    (if (= type :district)
+      (db/insert-district! (merge (district/load-district registry-entry)
+                             {:district/image-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"
+                              :district/title "HapplyHarambe"}))
       (db/insert-param-change! (param-change/load-param-change registry-entry)))
     (catch :default e
       (error error-text {:args args :error (ex-message e)} ::on-constructed))))
@@ -119,8 +119,8 @@
 (defn start [opts]
   (when-not (web3/connected? @web3)
     (throw (js/Error. "Can't connect to Ethereum node")))
-  [(-> (registry/registry-entry-event [:meme-registry :meme-registry-fwd] {} {:from-block 0 :to-block "latest"})
-     (replay-past-events (partial dispatch-registry-entry-event :meme)))
+  [(-> (registry/registry-entry-event [:district-registry :district-registry-fwd] {} {:from-block 0 :to-block "latest"})
+     (replay-past-events (partial dispatch-registry-entry-event :district)))
    (-> (registry/registry-entry-event [:param-change-registry :param-change-registry-fwd] {} {:from-block 0 :to-block "latest"})
      (replay-past-events (partial dispatch-registry-entry-event :param-change)))])
 

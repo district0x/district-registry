@@ -8,8 +8,8 @@
             [district-registry.shared.graphql-schema :refer [graphql-schema]]
             [district-registry.tests.graphql-resolvers.graphql-resolvers-tests]
             [district-registry.tests.smart-contracts.deployment-tests]
-            [district-registry.tests.smart-contracts.meme-auction-tests]
-            [district-registry.tests.smart-contracts.meme-tests]
+            [district-registry.tests.smart-contracts.district-auction-tests]
+            [district-registry.tests.smart-contracts.district-tests]
             [district-registry.tests.smart-contracts.param-change-tests]
             [district-registry.tests.smart-contracts.registry-entry-tests]
             [district-registry.tests.smart-contracts.registry-tests]))

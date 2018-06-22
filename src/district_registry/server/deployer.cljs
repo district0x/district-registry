@@ -22,16 +22,16 @@
 (def dank-token-placeholder "deaddeaddeaddeaddeaddeaddeaddeaddeaddead")
 (def forwarder-target-placeholder "beefbeefbeefbeefbeefbeefbeefbeefbeefbeef")
 (def district-config-placeholder "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd")
-(def meme-token-placeholder "dabbdabbdabbdabbdabbdabbdabbdabbdabbdabb")
+(def district-token-placeholder "dabbdabbdabbdabbdabbdabbdabbdabbdabbdabb")
 
 (defn deploy-dank-token! [default-opts]
   (deploy-smart-contract! :DNT (merge default-opts {:gas 2200000
                                                      :arguments [(contract-address :minime-token-factory)
                                                                  (web3/to-wei 1000000000 :ether)]})))
 
-(defn deploy-meme-token! [default-opts]
-  (deploy-smart-contract! :meme-token (merge default-opts {:gas 2200000
-                                                           :arguments [(contract-address :meme-registry-fwd)]})))
+(defn deploy-district-token! [default-opts]
+  (deploy-smart-contract! :district-token (merge default-opts {:gas 2200000
+                                                           :arguments [(contract-address :district-registry-fwd)]})))
 
 (defn deploy-minime-token-factory! [default-opts]
   (deploy-smart-contract! :minime-token-factory (merge default-opts {:gas 2300000})))
@@ -39,29 +39,29 @@
 (defn deploy-ds-guard! [default-opts]
   (deploy-smart-contract! :ds-guard (merge default-opts {:gas 1000000})))
 
-(defn deploy-district-config! [{:keys [:deposit-collector :meme-auction-cut-collector :meme-auction-cut] :as default-opts}]
+(defn deploy-district-config! [{:keys [:deposit-collector :district-auction-cut-collector :district-auction-cut] :as default-opts}]
   (deploy-smart-contract! :district-config (merge default-opts {:gas 1000000
                                                                 :arguments [deposit-collector
-                                                                            meme-auction-cut-collector
-                                                                            meme-auction-cut]})))
+                                                                            district-auction-cut-collector
+                                                                            district-auction-cut]})))
 
-(defn deploy-meme-registry-db! [default-opts]
-  (deploy-smart-contract! :meme-registry-db (merge default-opts {:gas 1700000})))
+(defn deploy-district-registry-db! [default-opts]
+  (deploy-smart-contract! :district-registry-db (merge default-opts {:gas 1700000})))
 
 (defn deploy-param-change-registry-db! [default-opts]
   (deploy-smart-contract! :param-change-registry-db (merge default-opts {:gas 1700000})))
 
 
-(defn deploy-meme-registry! [default-opts]
-  (deploy-smart-contract! :meme-registry (merge default-opts {:gas 1000000})))
+(defn deploy-district-registry! [default-opts]
+  (deploy-smart-contract! :district-registry (merge default-opts {:gas 1000000})))
 
 (defn deploy-param-change-registry! [default-opts]
   (deploy-smart-contract! :param-change-registry (merge default-opts {:gas 1700000})))
 
-(defn deploy-meme-registry-fwd! [default-opts]
-  (deploy-smart-contract! :meme-registry-fwd (merge default-opts {:gas 500000
+(defn deploy-district-registry-fwd! [default-opts]
+  (deploy-smart-contract! :district-registry-fwd (merge default-opts {:gas 500000
                                                                   :placeholder-replacements
-                                                                  {forwarder-target-placeholder :meme-registry}})))
+                                                                  {forwarder-target-placeholder :district-registry}})))
 
 (defn deploy-param-change-registry-fwd! [default-opts]
   (deploy-smart-contract! :param-change-registry-fwd (merge default-opts
@@ -69,13 +69,13 @@
                                                              :placeholder-replacements
                                                              {forwarder-target-placeholder :param-change-registry}})))
 
-(defn deploy-meme! [default-opts]
-  (deploy-smart-contract! :meme (merge default-opts {:gas 4000000
+(defn deploy-district! [default-opts]
+  (deploy-smart-contract! :district (merge default-opts {:gas 4000000
                                                      :placeholder-replacements
                                                      {dank-token-placeholder :DNT
-                                                      registry-placeholder :meme-registry-fwd
+                                                      registry-placeholder :district-registry-fwd
                                                       district-config-placeholder :district-config
-                                                      meme-token-placeholder :meme-token}})))
+                                                      district-token-placeholder :district-token}})))
 
 (defn deploy-param-change! [default-opts]
   (deploy-smart-contract! :param-change (merge default-opts {:gas 3700000
@@ -84,13 +84,13 @@
                                                               registry-placeholder :param-change-registry-fwd}})))
 
 
-(defn deploy-meme-factory! [default-opts]
-  (deploy-smart-contract! :meme-factory (merge default-opts {:gas 1000000
-                                                             :arguments [(contract-address :meme-registry-fwd)
+(defn deploy-district-factory! [default-opts]
+  (deploy-smart-contract! :district-factory (merge default-opts {:gas 1000000
+                                                             :arguments [(contract-address :district-registry-fwd)
                                                                          (contract-address :DNT)
-                                                                         (contract-address :meme-token)]
+                                                                         (contract-address :district-token)]
                                                              :placeholder-replacements
-                                                             {forwarder-target-placeholder :meme}})))
+                                                             {forwarder-target-placeholder :district}})))
 
 (defn deploy-param-change-factory! [default-opts]
   (deploy-smart-contract! :param-change-factory (merge default-opts {:gas 1000000
@@ -106,8 +106,8 @@
         deploy-opts (merge {:from (last accounts)
                             ;; this keys are to make testing simpler
                             :deposit-collector (nth accounts (or use-n-account-as-deposit-collector 0))
-                            :meme-auction-cut-collector (nth accounts (or use-n-account-as-cut-collector 0))
-                            :meme-auction-cut 0}
+                            :district-auction-cut-collector (nth accounts (or use-n-account-as-cut-collector 0))
+                            :district-auction-cut 0}
                            deploy-opts)]
     (deploy-ds-guard! deploy-opts)
     ;; make deployed :ds-guard its own autority
@@ -118,18 +118,18 @@
     (deploy-district-config! deploy-opts)
     (ds-auth/set-authority :district-config (contract-address :ds-guard) deploy-opts)
 
-    (deploy-meme-registry-db! deploy-opts)
+    (deploy-district-registry-db! deploy-opts)
     (deploy-param-change-registry-db! deploy-opts)
 
-    (deploy-meme-registry! deploy-opts)
+    (deploy-district-registry! deploy-opts)
     (deploy-param-change-registry! deploy-opts)
 
-    (deploy-meme-registry-fwd! deploy-opts)
+    (deploy-district-registry-fwd! deploy-opts)
 
     (deploy-param-change-registry-fwd! deploy-opts)
 
-    (registry/construct [:meme-registry :meme-registry-fwd]
-                        {:db (contract-address :meme-registry-db)}
+    (registry/construct [:district-registry :district-registry-fwd]
+                        {:db (contract-address :district-registry-db)}
                         deploy-opts)
 
     (registry/construct [:param-change-registry :param-change-registry-fwd]
@@ -143,34 +143,34 @@
                      deploy-opts)
 
 
-    (deploy-meme-token! deploy-opts)
+    (deploy-district-token! deploy-opts)
 
-    (deploy-meme! deploy-opts)
+    (deploy-district! deploy-opts)
     (deploy-param-change! deploy-opts)
 
-    (deploy-meme-factory! deploy-opts)
+    (deploy-district-factory! deploy-opts)
 
     (deploy-param-change-factory! deploy-opts)
 
-    (eternal-db/set-uint-values :meme-registry-db (:meme-registry initial-registry-params) deploy-opts)
+    (eternal-db/set-uint-values :district-registry-db (:district-registry initial-registry-params) deploy-opts)
     (eternal-db/set-uint-values :param-change-registry-db (:param-change-registry initial-registry-params) deploy-opts)
 
-    ;; make :ds-guard authority of both :meme-registry-db and :param-change-registry-db
-    (ds-auth/set-authority :meme-registry-db (contract-address :ds-guard) deploy-opts)
+    ;; make :ds-guard authority of both :district-registry-db and :param-change-registry-db
+    (ds-auth/set-authority :district-registry-db (contract-address :ds-guard) deploy-opts)
     (ds-auth/set-authority :param-change-registry-db (contract-address :ds-guard) deploy-opts)
     ;; After authority is set, we can clean owner. Not really essential, but extra safety measure
-    (ds-auth/set-owner :meme-registry-db 0 deploy-opts)
+    (ds-auth/set-owner :district-registry-db 0 deploy-opts)
     (ds-auth/set-owner :param-change-registry-db 0 deploy-opts)
 
-    ;; Allow :meme-registry-fwd to make changes into :meme-registry-db
-    (ds-guard/permit {:src (contract-address :meme-registry-fwd)
-                      :dst (contract-address :meme-registry-db)
+    ;; Allow :district-registry-fwd to make changes into :district-registry-db
+    (ds-guard/permit {:src (contract-address :district-registry-fwd)
+                      :dst (contract-address :district-registry-db)
                       :sig ds-guard/ANY}
                      deploy-opts)
 
-    ;; Allow :param-change-registry-fwd to make changes into :meme-registry-db (to apply ParamChanges)
+    ;; Allow :param-change-registry-fwd to make changes into :district-registry-db (to apply ParamChanges)
     (ds-guard/permit {:src (contract-address :param-change-registry-fwd)
-                      :dst (contract-address :meme-registry-db)
+                      :dst (contract-address :district-registry-db)
                       :sig ds-guard/ANY}
                      deploy-opts)
 
@@ -180,8 +180,8 @@
                       :sig ds-guard/ANY}
                      deploy-opts)
 
-    (registry/set-factory [:meme-registry :meme-registry-fwd]
-                          {:factory (contract-address :meme-factory) :factory? true}
+    (registry/set-factory [:district-registry :district-registry-fwd]
+                          {:factory (contract-address :district-factory) :factory? true}
                           deploy-opts)
 
     (registry/set-factory [:param-change-registry :param-change-registry-fwd]

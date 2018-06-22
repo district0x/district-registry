@@ -27,7 +27,7 @@
 
 (def debug? ^boolean js/goog.DEBUG)
 
-(def skipped-contracts [:ds-guard :param-change-registry-db :meme-registry-db :minime-token-factory])
+(def skipped-contracts [:ds-guard :param-change-registry-db :district-registry-db :minime-token-factory])
 
 (defn ^:export init []
   (s/check-asserts debug?)

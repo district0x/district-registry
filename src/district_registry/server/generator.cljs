@@ -1,27 +1,27 @@
 (ns district-registry.server.generator
   (:require
-    [bignumber.core :as bn]
-    [cljs-web3.core :as web3]
-    [cljs-web3.eth :as web3-eth]
-    [cljs-web3.evm :as web3-evm]
-    [cljs-web3.utils :refer [js->cljkk camel-case]]
-    [district.cljs-utils :refer [rand-str]]
-    [district.server.config :refer [config]]
-    [district.server.smart-contracts :refer [contract-address contract-call instance]]
-    [district.server.web3 :refer [web3]]
-    [district-registry.server.contract.dnt :as dank-token]
-    [district-registry.server.contract.eternal-db :as eternal-db]
-    [district-registry.server.contract.meme :as meme]
-    [district-registry.server.contract.meme-factory :as meme-factory]
-    [district-registry.server.contract.meme-registry :as meme-registry]
-    [district-registry.server.contract.minime-token :as minime-token]
-    [district-registry.server.contract.param-change :as param-change]
-    [district-registry.server.contract.param-change-factory :as param-change-factory]
-    [district-registry.server.contract.param-change-registry :as param-change-registry]
-    [district-registry.server.contract.registry :as registry]
-    [district-registry.server.contract.registry-entry :as registry-entry]
-    [district-registry.server.deployer]
-    [mount.core :as mount :refer [defstate]]))
+   [bignumber.core :as bn]
+   [cljs-web3.core :as web3]
+   [cljs-web3.eth :as web3-eth]
+   [cljs-web3.evm :as web3-evm]
+   [cljs-web3.utils :refer [js->cljkk camel-case]]
+   [district.cljs-utils :refer [rand-str]]
+   [district.server.config :refer [config]]
+   [district.server.smart-contracts :refer [contract-address contract-call instance]]
+   [district.server.web3 :refer [web3]]
+   [district-registry.server.contract.dnt :as dank-token]
+   [district-registry.server.contract.eternal-db :as eternal-db]
+   [district-registry.server.contract.district :as district]
+   [district-registry.server.contract.district-factory :as district-factory]
+   [district-registry.server.contract.district-registry :as district-registry]
+   [district-registry.server.contract.minime-token :as minime-token]
+   [district-registry.server.contract.param-change :as param-change]
+   [district-registry.server.contract.param-change-factory :as param-change-factory]
+   [district-registry.server.contract.param-change-registry :as param-change-registry]
+   [district-registry.server.contract.registry :as registry]
+   [district-registry.server.contract.registry-entry :as registry-entry]
+   [district-registry.server.deployer]
+   [mount.core :as mount :refer [defstate]]))
 
 (declare start)
 (defstate ^{:on-reload :noop} generator :start (start (merge (:generator @config)
@@ -39,10 +39,10 @@
       (partition 2 (interleave accounts-repeated scenarios-repeated)))))
 
 
-(defn generate-memes [{:keys [:accounts :memes/use-accounts :memes/items-per-account :memes/scenarios]}]
+(defn generate-districts [{:keys [:accounts :districts/use-accounts :districts/items-per-account :districts/scenarios]}]
   (let [[max-total-supply max-auction-duration deposit commit-period-duration reveal-period-duration]
-        (->> (eternal-db/get-uint-values :meme-registry-db [:max-total-supply :max-auction-duration :deposit :commit-period-duration
-                                                            :reveal-period-duration])
+        (->> (eternal-db/get-uint-values :district-registry-db [:max-total-supply :max-auction-duration :deposit :commit-period-duration
+                                                                :reveal-period-duration])
           (map bn/number))]
     (doseq [[account {:keys [:scenario-type]}] (get-scenarios {:accounts accounts
                                                                :use-accounts use-accounts
@@ -52,38 +52,38 @@
             total-supply (inc (rand-int max-total-supply))
             auction-duration (+ 60 (rand-int (- max-auction-duration 60)))]
 
-        (let [tx-hash (meme-factory/approve-and-create-meme {:meta-hash meta-hash
-                                                             :total-supply total-supply
-                                                             :amount deposit}
-                                                            {:from account})]
+        (let [tx-hash (district-factory/approve-and-create-district {:meta-hash meta-hash
+                                                                     :total-supply total-supply
+                                                                     :amount deposit}
+                        {:from account})]
 
           (when-not (= :scenario/create scenario-type)
-            (let [{{:keys [:registry-entry]} :args} (meme-registry/registry-entry-event-in-tx tx-hash)]
+            (let [{{:keys [:registry-entry]} :args} (district-registry/registry-entry-event-in-tx tx-hash)]
               (when-not registry-entry
                 (throw (js/Error. "Registry Entry wasn't found")))
 
               (registry-entry/approve-and-create-challenge registry-entry
-                                                           {:meta-hash meta-hash
-                                                            :amount deposit}
-                                                           {:from account})
+                {:meta-hash meta-hash
+                 :amount deposit}
+                {:from account})
 
               (when-not (= :scenario/challenge scenario-type)
                 (let [{:keys [:reg-entry/creator]} (registry-entry/load-registry-entry registry-entry)
                       balance (dank-token/balance-of creator)]
 
                   (registry-entry/approve-and-commit-vote registry-entry
-                                                          {:amount balance
-                                                           :salt "abc"
-                                                           :vote-option :vote.option/vote-for}
-                                                          {:from creator})
+                    {:amount balance
+                     :salt "abc"
+                     :vote-option :vote.option/vote-for}
+                    {:from creator})
 
                   (when-not (= :scenario/commit-votde scenario-type)
                     (web3-evm/increase-time! @web3 [(inc commit-period-duration)])
 
                     (registry-entry/reveal-vote registry-entry
-                                                {:vote-option :vote.option/vote-for
-                                                 :salt "abc"}
-                                                {:from creator})
+                      {:vote-option :vote.option/vote-for
+                       :salt "abc"}
+                      {:from creator})
 
                     (when-not (= :scenario/reveal-vote scenario-type)
                       (web3-evm/increase-time! @web3 [(inc reveal-period-duration)])
@@ -105,7 +105,7 @@
                             :scenarios scenarios})]
 
       (let [tx-hash (param-change-factory/approve-and-create-param-change
-                      {:db (contract-address (or param-change-db :meme-registry-db))
+                      {:db (contract-address (or param-change-db :district-registry-db))
                        :key :deposit
                        :value (web3/to-wei 800 :ether)
                        :amount deposit}
@@ -122,6 +122,6 @@
 (defn start [opts]
   (let [opts (assoc opts :accounts (web3-eth/accounts @web3))]
     #_
-    (generate-memes opts)
+    (generate-districts opts)
     #_
     (generate-param-changes opts)))

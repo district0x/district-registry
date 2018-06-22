@@ -4,9 +4,9 @@ import "RegistryEntryFactory.sol";
 import "District.sol";
 
 /**
- * @title Factory contract for creating Meme contracts
+ * @title Factory contract for creating District contracts
  *
- * @dev Users submit new memes into this contract.
+ * @dev Users submit new districts into this contract.
  */
 
 contract DistrictFactory is RegistryEntryFactory {

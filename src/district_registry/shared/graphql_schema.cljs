@@ -5,16 +5,16 @@
   scalar Keyword
 
   type Query {
-    meme(regEntry_address: ID!): Meme
-    searchMemes(statuses: [RegEntryStatus],
-                orderBy: MemesOrderBy,
+    district(regEntry_address: ID!): District
+    searchDistricts(statuses: [RegEntryStatus],
+                orderBy: DistrictsOrderBy,
                 orderDir: OrderDir,
                 owner: String,
                 creator: String,
                 curator: String,
                 first: Int,
                 after: String
-    ): MemeList
+    ): DistrictList
 
     paramChange(regEntry_address: ID!): ParamChange
     searchParamChanges(
@@ -31,14 +31,14 @@
     desc
   }
 
-  enum MemesOrderBy {
-    memes_orderBy_revealPeriodEnd
-    memes_orderBy_commitPeriodEnd
-    memes_orderBy_challengePeriodEnd
-    memes_orderBy_totalTradeVolume
-    memes_orderBy_createdOn
-    memes_orderBy_number
-    memes_orderBy_totalMinted
+  enum DistrictsOrderBy {
+    districts_orderBy_revealPeriodEnd
+    districts_orderBy_commitPeriodEnd
+    districts_orderBy_challengePeriodEnd
+    districts_orderBy_totalTradeVolume
+    districts_orderBy_createdOn
+    districts_orderBy_number
+    districts_orderBy_totalMinted
   }
 
   enum RegEntryStatus {
@@ -86,7 +86,7 @@
     vote_reward: Int
   }
 
-  type Meme implements RegEntry {
+  type District implements RegEntry {
     regEntry_address: ID
     regEntry_version: Int
     regEntry_status: RegEntryStatus
@@ -110,20 +110,20 @@
     \"Balance of voting token of a voter. This is client-side only, server doesn't return this\"
     challenge_availableVoteAmount(voter: ID!): Int
 
-    meme_title: String
-    meme_number: Int
-    meme_metaHash: String
-    meme_imageHash: String
-    meme_totalSupply: Int
-    meme_totalMinted: Int
-    meme_tokenIdStart: Int
+    district_title: String
+    district_number: Int
+    district_metaHash: String
+    district_imageHash: String
+    district_totalSupply: Int
+    district_totalMinted: Int
+    district_tokenIdStart: Int
 
-    meme_totalTradeVolume: Int
-    meme_totalTradeVolumeRank: Int
+    district_totalTradeVolume: Int
+    district_totalTradeVolumeRank: Int
   }
 
-  type MemeList {
-    items: [Meme]
+  type DistrictList {
+    items: [District]
     totalCount: Int
     endCursor: String
     hasNextPage: Boolean

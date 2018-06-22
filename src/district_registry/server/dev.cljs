@@ -88,15 +88,15 @@
                                       :path "/graphql"
                                       :graphiql true}
                             :web3 {:port 8549}
-                            :generator {:memes/use-accounts 1
-                                        :memes/items-per-account 1
-                                        :memes/scenarios [:scenario/buy]
+                            :generator {:districts/use-accounts 1
+                                        :districts/items-per-account 1
+                                        :districts/scenarios [:scenario/buy]
                                         :param-changes/use-accounts 1
                                         :param-changes/items-per-account 1
                                         :param-changes/scenarios [:scenario/apply-param-change]}
                             :deployer {:transfer-dnt-to-accounts 1
                                        :initial-registry-params
-                                       {:meme-registry {:challenge-period-duration (t/in-seconds (t/minutes 10))
+                                       {:district-registry {:challenge-period-duration (t/in-seconds (t/minutes 10))
                                                         :commit-period-duration (t/in-seconds (t/minutes 2))
                                                         :reveal-period-duration (t/in-seconds (t/minutes 1))
                                                         :deposit (web3/to-wei 1000 :ether)
@@ -121,7 +121,7 @@
 (set! *main-cli-fn* -main)
 
 (defn select
-  "Usage: (select [:*] :from [:memes])"
+  "Usage: (select [:*] :from [:districts])"
   [& [select-fields & r]]
   (-> (db/all (->> (partition 2 r)
                    (map vec)

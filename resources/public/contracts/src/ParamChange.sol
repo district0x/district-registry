@@ -26,8 +26,8 @@ contract ParamChange is RegistryEntry {
    * Native constructor is not used, because users create only forwarders into single instance of this contract,
    * therefore constructor must be called explicitly.
 
-   * @param _creator Creator of a meme
-   * @param _version Version of Meme contract
+   * @param _creator Creator of a district
+   * @param _version Version of District contract
    * @param _db EternalDb change will be applied to
    * @param _key Key of a changed parameter
    * @param _value New value of a parameter

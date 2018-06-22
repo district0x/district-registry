@@ -12,27 +12,27 @@
                                                         parse-load-vote vote-option->num]]))
 
 (defn registry [contract-addr]
-  (contract-call [:meme contract-addr] :registry))
+  (contract-call [:district contract-addr] :registry))
 
 (defn status
   [contract-addr]
-  (parse-status (contract-call [:meme contract-addr] :status)))
+  (parse-status (contract-call [:district contract-addr] :status)))
 
 (defn load-registry-entry [contract-addr]
   (parse-load-registry-entry
     contract-addr
-    (contract-call (instance :meme contract-addr) :load-registry-entry)))
+    (contract-call (instance :district contract-addr) :load-registry-entry)))
 
 (defn load-registry-entry-challenge [contract-addr]
   (parse-load-registry-entry-challenge
     contract-addr
-    (contract-call (instance :meme contract-addr) :load-registry-entry-challenge)))
+    (contract-call (instance :district contract-addr) :load-registry-entry-challenge)))
 
 (defn create-challenge [contract-addr {:keys [:challenger :meta-hash]} & [opts]]
-  (contract-call (instance :meme contract-addr) :create-challenge challenger meta-hash (merge {:gas 1200000} opts)))
+  (contract-call (instance :district contract-addr) :create-challenge challenger meta-hash (merge {:gas 1200000} opts)))
 
 (defn create-challenge-data [{:keys [:challenger :meta-hash]}]
-  (web3-eth/contract-get-data (instance :meme) :create-challenge challenger meta-hash))
+  (web3-eth/contract-get-data (instance :district) :create-challenge challenger meta-hash))
 
 (defn approve-and-create-challenge [contract-addr {:keys [:amount] :as args} & [opts]]
   (dank-token/approve-and-call {:spender contract-addr
@@ -41,7 +41,7 @@
                                (merge {:gas 6000000} opts)))
 
 (defn commit-vote [contract-addr {:keys [:voter :amount :vote-option :salt]} & [opts]]
-  (contract-call (instance :meme contract-addr)
+  (contract-call (instance :district contract-addr)
                  :commit-vote
                  voter
                  (bn/number amount)
@@ -49,7 +49,7 @@
                  (merge {:gas 1200000} opts)))
 
 (defn commit-vote-data [{:keys [:voter :amount :vote-option :salt]}]
-  (web3-eth/contract-get-data (instance :meme) :commit-vote voter (bn/number amount) (solidity-sha3 (vote-option->num vote-option) salt)))
+  (web3-eth/contract-get-data (instance :district) :commit-vote voter (bn/number amount) (solidity-sha3 (vote-option->num vote-option) salt)))
 
 (defn approve-and-commit-vote [contract-addr {:keys [:amount] :as args} & [opts]]
   (dank-token/approve-and-call {:spender contract-addr
@@ -58,20 +58,20 @@
                                (merge opts {:gas 1200000})))
 
 (defn reveal-vote [contract-addr {:keys [:vote-option :salt]} & [opts]]
-  (contract-call (instance :meme contract-addr) :reveal-vote (vote-option->num vote-option) salt (merge {:gas 500000} opts)))
+  (contract-call (instance :district contract-addr) :reveal-vote (vote-option->num vote-option) salt (merge {:gas 500000} opts)))
 
 (defn claim-vote-reward [contract-addr & [opts]]
-  (contract-call (instance :meme contract-addr) :claim-vote-reward (:from opts) (merge {:gas 500000} opts)))
+  (contract-call (instance :district contract-addr) :claim-vote-reward (:from opts) (merge {:gas 500000} opts)))
 
 (defn load-vote [contract-addr voter-address]
   (parse-load-vote
     contract-addr
     voter-address
-    (contract-call (instance :meme contract-addr) :load-vote voter-address)))
+    (contract-call (instance :district contract-addr) :load-vote voter-address)))
 
 (defn vote-reward [contract-addr voter-address]
-  (contract-call (instance :meme contract-addr) :vote-reward voter-address))
+  (contract-call (instance :district contract-addr) :vote-reward voter-address))
 
 (defn claim-challenge-reward [contract-addr & [opts]]
-  (contract-call (instance :meme contract-addr) :claim-challenge-reward (merge {:gas 500000} opts)))
+  (contract-call (instance :district contract-addr) :claim-challenge-reward (merge {:gas 500000} opts)))
 

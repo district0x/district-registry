@@ -25,7 +25,7 @@
                  :deployer (merge
                              {:transfer-dnt-to-accounts 5
                               :initial-registry-params
-                              {:meme-registry {:challenge-period-duration (t/in-seconds (t/minutes 10))
+                              {:district-registry {:challenge-period-duration (t/in-seconds (t/minutes 10))
                                                :commit-period-duration (t/in-seconds (t/minutes 2))
                                                :reveal-period-duration (t/in-seconds (t/minutes 1))
                                                :deposit (web3/to-wei 1000 :ether)
@@ -33,7 +33,7 @@
                                                :vote-quorum 50
                                                :max-total-supply 10
                                                :max-auction-duration (t/in-seconds (t/minutes 10))
-                                               :meme-auction-cut 10}
+                                               :district-auction-cut 10}
                                :param-change-registry {:challenge-period-duration (t/in-seconds (t/minutes 10))
                                                        :commit-period-duration (t/in-seconds (t/minutes 2))
                                                        :reveal-period-duration (t/in-seconds (t/minutes 1))

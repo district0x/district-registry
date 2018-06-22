@@ -8,7 +8,7 @@
             [cljs-web3.core :as web3-core]
             [cljs-web3.eth :as web3-eth]
             [taoensso.timbre :as log]
-            [district-registry.server.db :as meme-db]
+            [district-registry.server.db :as district-db]
             [clojure.string :as str]))
 
 (def resolvers-map

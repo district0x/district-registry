@@ -16,7 +16,7 @@
  :param-change-registry-db
  {:name "EternalDb",
   :address "0x21d6b50b6d4f37333a57a3f0f8f8540e6847b0af"},
- :meme-registry-db
+ :district-registry-db
  {:name "EternalDb",
   :address "0x0490c31ddc3348b1d219e8b1f5157736814ad1e7"},
  :param-change
@@ -31,17 +31,17 @@
  :param-change-registry-fwd
  {:name "MutableForwarder",
   :address "0xc61966c01ebdeb8274c7f0473a9ea4ba1b534b51"},
- :meme-factory
- {:name "MemeFactory",
+ :district-factory
+ {:name "DistrictFactory",
   :address "0xdc23be415353a93e3ebc5ba85214b8d045429037"},
- :meme-token
- {:name "MemeToken",
+ :district-token
+ {:name "DistrictToken",
   :address "0xb1804ee895c6c99a9783f059dba5479896c996a8"},
- :meme-registry
+ :district-registry
  {:name "Registry",
   :address "0xa6e58c41a0555e4c0fa1d6599ec9ff5bfda9f413"},
- :meme
- {:name "Meme", :address "0xf8b7956d08b5bd188ba8603a086a7caf724592d1"},
- :meme-registry-fwd
+ :district
+ {:name "District", :address "0xf8b7956d08b5bd188ba8603a086a7caf724592d1"},
+ :district-registry-fwd
  {:name "MutableForwarder",
   :address "0x43a51b5dac414b6f7d5e2b6bbcf6cadc1a7b2931"}})

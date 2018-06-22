@@ -22,7 +22,7 @@ contract District is RegistryEntry, MintableToken, TokenReturningStakeBank {
 
   /* DistrictConfig public constant districtConfig = DistrictConfig(0xABCDabcdABcDabcDaBCDAbcdABcdAbCdABcDABCd); */
   /* bytes32 public constant maxTotalSupplyKey = sha3("maxTotalSupply"); */
-  /* MemeToken public constant memeToken = MemeToken(0xdaBBdABbDABbDabbDaBbDabbDaBbdaBbdaBbDAbB); */
+  /* DistrictToken public constant districtToken = DistrictToken(0xdaBBdABbDABbDabbDaBbDabbDaBbdaBbdaBbDAbB); */
   /* bytes public metaHash; */
   /* uint public tokenIdStart; */
   /* uint public totalSupply; */
@@ -79,10 +79,10 @@ contract District is RegistryEntry, MintableToken, TokenReturningStakeBank {
   /*     _amount = restSupply; */
   /*   } */
   /*   require(_amount > 0); */
-  /*   /\* tokenIdStart = memeToken.totalSupply().add(1); *\/ */
+  /*   /\* tokenIdStart = districtToken.totalSupply().add(1); *\/ */
   /*   uint tokenIdEnd = tokenIdStart.add(_amount); */
   /*   for (uint i = tokenIdStart; i < tokenIdEnd; i++) { */
-  /*     /\* memeToken.mint(creator, i); *\/ */
+  /*     /\* districtToken.mint(creator, i); *\/ */
   /*     totalMinted = totalMinted + 1; */
   /*   } */
   /*   var eventData = new uint[](3); */
