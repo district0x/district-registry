@@ -121,5 +121,7 @@
 
 (defn start [opts]
   (let [opts (assoc opts :accounts (web3-eth/accounts @web3))]
+    #_
     (generate-memes opts)
+    #_
     (generate-param-changes opts)))

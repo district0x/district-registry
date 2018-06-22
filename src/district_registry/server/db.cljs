@@ -102,16 +102,12 @@
 
 
 (defn stop []
-  (db/run! {:drop-table [:votes]})
-  (db/run! {:drop-table [:meme-auctions]})
-  (db/run! {:drop-table [:meme-tags]})
-  (db/run! {:drop-table [:tags]})
-  (db/run! {:drop-table [:meme-tokens]})
-  (db/run! {:drop-table [:meme-token-owners]})
-  (db/run! {:drop-table [:memes]})
-  (db/run! {:drop-table [:param-changes]})
-  (db/run! {:drop-table [:reg-entries]})
-  (db/run! {:drop-table [:users]}))
+  ;; (db/run! {:drop-table [:votes]})
+  ;; (db/run! {:drop-table [:param-changes]})
+  ;; (db/run! {:drop-table [:districts]})
+  ;; (db/run! {:drop-table [:tags]})
+
+  )
 
 (defn create-insert-fn [table-name column-names & [{:keys [:insert-or-replace?]}]]
   (fn [item]

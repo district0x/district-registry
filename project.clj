@@ -77,7 +77,8 @@
          :solc-err-only true
          :wc true
          :contracts ["District0xNetworkToken.sol"
-                     "MemeFactory.sol"
+                     "DistrictFactory.sol"
+                     "District.sol"
                      "ParamChangeFactory.sol"
                      "ParamChangeRegistry.sol"]}
 

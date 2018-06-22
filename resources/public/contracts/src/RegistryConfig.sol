@@ -1,4 +1,5 @@
 pragma solidity ^0.4.18;
+//ignore, for storing config variables in meme factory for governance
 
 import "auth/DSAuth.sol";
 
