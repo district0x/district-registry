@@ -119,6 +119,7 @@
 (defn start [opts]
   (when-not (web3/connected? @web3)
     (throw (js/Error. "Can't connect to Ethereum node")))
+  #_
   [(-> (registry/registry-entry-event [:district-registry :district-registry-fwd] {} {:from-block 0 :to-block "latest"})
      (replay-past-events (partial dispatch-registry-entry-event :district)))
    (-> (registry/registry-entry-event [:param-change-registry :param-change-registry-fwd] {} {:from-block 0 :to-block "latest"})
@@ -126,6 +127,7 @@
 
 
 (defn stop [syncer]
+  #_
   (doseq [filter (remove nil? @syncer)]
     (web3-eth/stop-watching! filter (fn [err]))))
 

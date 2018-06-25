@@ -21,9 +21,9 @@ contract StakeBank is StakeBankInterface {
     mapping (address => Checkpoint[]) public stakesFor;
 
     /// @param _token Token that can be staked.
-    function StakeBank(ERC20 _token) public {
+    function constructStakeBank(ERC20 _token) internal {
         require(address(_token) != 0x0);
-        token = _token;
+        token = _token;   
     }
 
     /// @notice Stakes a certain amount of tokens.

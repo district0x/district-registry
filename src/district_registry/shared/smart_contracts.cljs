@@ -1,47 +1,45 @@
 (ns district-registry.shared.smart-contracts) 
 
 (def smart-contracts 
-{:district-config
- {:name "DistrictConfig",
-  :address "0xc860ede0ff8a93bc23060f7cfbaf27211decaccb"},
+{:district-factory
+ {:name "DistrictFactory",
+  :address "0x291bf85c0ae03cc86210fd390a704448f5a0c1af"},
+ :trsb
+ {:name "TokenReturningStakeBank",
+  :address "0x4fdf1cf012d5370fb0f56c734c456f2d5da1306f"},
  :ds-guard
  {:name "DSGuard",
-  :address "0x95ec19064ff2683c93cf98c5b8dcf944df12477d"},
+  :address "0x0b84af1165eae22628e1b6488887d6b05ed9aae8"},
  :param-change-registry
  {:name "ParamChangeRegistry",
-  :address "0x51bfc3eb9b8f202320576d6e4f9a2ba077130da5"},
+  :address "0xfe3aa02f5e9cb12f35f11e43926a644afc68edb5"},
  :DNT
  {:name "District0xNetworkToken",
-  :address "0xf2940febc33ecd02cdb1b42f1f4d62a410bacca8"},
+  :address "0x3d44fdc0ca745ce1a6a3d02113b3774736d35c78"},
  :param-change-registry-db
  {:name "EternalDb",
-  :address "0x21d6b50b6d4f37333a57a3f0f8f8540e6847b0af"},
- :district-registry-db
- {:name "EternalDb",
-  :address "0x0490c31ddc3348b1d219e8b1f5157736814ad1e7"},
+  :address "0x7f5f16fc5427e715e5d285006ce09f3eed687cc7"},
  :param-change
  {:name "ParamChange",
-  :address "0x88cc661820b15ec7e68051e8d69d7be5a01fc234"},
+  :address "0xfed3980aea91a2ab6b17e03dca8e39be4ddf52dd"},
+ :district-registry
+ {:name "Registry",
+  :address "0x8a8a678f53111441ea6e54d68ce952abfad08f9e"},
  :minime-token-factory
  {:name "MiniMeTokenFactory",
   :address "0x277329e69a95d516ba060bbb87aaa6f677c6f1d9"},
  :param-change-factory
  {:name "ParamChangeFactory",
-  :address "0x7f02580c1dcdd09f4ac3f358b4dbd14ddb00efb2"},
+  :address "0x19e66d157191d6fe2fb306d3b80b04f8a591ead9"},
  :param-change-registry-fwd
  {:name "MutableForwarder",
-  :address "0xc61966c01ebdeb8274c7f0473a9ea4ba1b534b51"},
- :district-factory
- {:name "DistrictFactory",
-  :address "0xdc23be415353a93e3ebc5ba85214b8d045429037"},
- :district-token
- {:name "DistrictToken",
-  :address "0xb1804ee895c6c99a9783f059dba5479896c996a8"},
- :district-registry
- {:name "Registry",
-  :address "0xa6e58c41a0555e4c0fa1d6599ec9ff5bfda9f413"},
- :district
- {:name "District", :address "0xf8b7956d08b5bd188ba8603a086a7caf724592d1"},
+  :address "0xccbe6b9a384d48967a9546c463062d04d2faf698"},
+ :district-registry-db
+ {:name "EternalDb",
+  :address "0xcd7967731d8e99a396d392a226e6c16a456fbf5a"},
  :district-registry-fwd
  {:name "MutableForwarder",
-  :address "0x43a51b5dac414b6f7d5e2b6bbcf6cadc1a7b2931"}})
+  :address "0xbc4377d4e4c74013bab12fdcd0348b594eca3421"},
+ :district
+ {:name "District",
+  :address "0x0f75c88e635fcbffe85f041e17dfc4419be1ccf9"}})

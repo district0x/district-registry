@@ -1,8 +1,9 @@
 pragma solidity ^0.4.18;
 
-import "RegistryEntry.sol";
-import "proxy/Forwarder.sol";
+import "RegistryEntry.sol"; 
+/* import "proxy/Forwarder.sol"; */
 import "token/erc20/MintableToken.sol";
+/* import "./District0xNetworkToken.sol"; */
 import "token/erc900/TokenReturningStakeBank.sol";
 /* import "./DistrictConfig.sol"; */
 
@@ -14,10 +15,20 @@ import "token/erc900/TokenReturningStakeBank.sol";
  * pointing into single intance of it.
  */
 
-contract District is RegistryEntry, MintableToken, TokenReturningStakeBank {
-  string public constant name = "District Token";
-  string public constant symbol = "DT";
-  uint8 public constant decimals = 18;
+/* RegistryEntry */
+
+contract District is MintableToken, RegistryEntry, TokenReturningStakeBank 
+{
+
+  // constructor(ERC20 _token) TokenReturningStakeBank(_token, this, 1) public {
+
+  // }
+
+
+
+  /* string public constant name = "District Token"; */
+  /* string public constant symbol = "DT"; */
+  /* uint8 public constant decimals = 18; */
   bytes public infoHash; // state variable for storing IPFS hash of file that contains all data from form fields
 
   /* DistrictConfig public constant districtConfig = DistrictConfig(0xABCDabcdABcDabcDaBCDAbcdABcdAbCdABcDABCd); */
@@ -46,6 +57,8 @@ contract District is RegistryEntry, MintableToken, TokenReturningStakeBank {
   public
   {
     super.construct(_creator, _version);
+    super.constructStakeBank(registryToken,this,1);
+
     infoHash = _infoHash;
   }
 

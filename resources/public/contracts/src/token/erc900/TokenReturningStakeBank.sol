@@ -11,7 +11,8 @@ contract TokenReturningStakeBank is StakeBank {
     /// @param _token Token that can be staked.
     /// @param _returnToken Token that is given to user once he stakes.
     /// @param _rate Rate of return tokens per token.
-    function TokenReturningStakeBank(ERC20 _token, ERC20 _returnToken, uint256 _rate) StakeBank(_token) public {
+    function constructStakeBank(ERC20 _token, ERC20 _returnToken, uint256 _rate) internal {
+        super.constructStakeBank(_token);
         require(address(_returnToken) != 0x0);
         require(_token != _returnToken);
         require(_rate > 0);

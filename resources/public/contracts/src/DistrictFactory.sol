@@ -11,12 +11,11 @@ import "District.sol";
 
 contract DistrictFactory is RegistryEntryFactory {
   uint public constant version = 1;
-  District public districtToken;
 
-  function DistrictFactory(Registry _registry, MiniMeToken _registryToken, District _districtToken)
+  function DistrictFactory(Registry _registry, MiniMeToken _registryToken)
   RegistryEntryFactory(_registry, _registryToken)
   {
-    districtToken = _districtToken;
+    
   }
 
   /**

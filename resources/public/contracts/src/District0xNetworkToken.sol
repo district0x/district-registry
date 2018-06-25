@@ -1,6 +1,7 @@
 pragma solidity ^0.4.18;
 
 import "./token/minime/MiniMeToken.sol";
+import "./token/erc20/StandardToken.sol";
 
 /**
  * @title Token used for curation of District Registry TCR
@@ -8,15 +9,15 @@ import "./token/minime/MiniMeToken.sol";
  * @dev Standard MiniMe Token with pre-minted supply and with dead controller.
  */
 
-contract District0xNetworkToken is MiniMeToken {
+contract District0xNetworkToken is StandardToken, MiniMeToken {
   function District0xNetworkToken(address _tokenFactory, uint _mintedAmount)
   MiniMeToken(
     _tokenFactory,
     0x0,
     0,
-    "Dank Token",
+    "district0x Network Token",
     18,
-    "DANK",
+    "DNT",
     true
   )
   {
