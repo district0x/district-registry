@@ -88,7 +88,7 @@
 
   :figwheel {:server-port 4177
              :css-dirs ["resources/public/css"]
-             :repl-eval-timeout 30000}
+             :repl-eval-timeout 60000}
 
 
   :aliases {"clean-prod-server" ["shell" "rm" "-rf" "server"]

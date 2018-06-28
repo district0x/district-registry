@@ -61,7 +61,9 @@
   (-> (mount/with-args
         (merge
           (mount/args)
-          {:deployer {:write? true}}))
+          {:deployer {:write? true
+                      ;; :transfer-dnt-to-accounts 1
+                      }}))
     (mount/start)
     pprint/pprint))
 
@@ -81,9 +83,9 @@
                             :graphql {:port 6300
                                       :middlewares [logging-middlewares]
                                       :schema (utils/build-schema graphql-schema
-                                                                  resolvers-map
-                                                                  {:kw->gql-name graphql-utils/kw->gql-name
-                                                                   :gql-name->kw graphql-utils/gql-name->kw})
+                                                resolvers-map
+                                                {:kw->gql-name graphql-utils/kw->gql-name
+                                                 :gql-name->kw graphql-utils/gql-name->kw})
                                       :field-resolver (utils/build-default-field-resolver graphql-utils/gql-name->kw)
                                       :path "/graphql"
                                       :graphiql true}
@@ -97,13 +99,13 @@
                             :deployer {:transfer-dnt-to-accounts 1
                                        :initial-registry-params
                                        {:district-registry {:challenge-period-duration (t/in-seconds (t/minutes 10))
-                                                        :commit-period-duration (t/in-seconds (t/minutes 2))
-                                                        :reveal-period-duration (t/in-seconds (t/minutes 1))
-                                                        :deposit (web3/to-wei 1000 :ether)
-                                                        :challenge-dispensation 50
-                                                        :vote-quorum 50
-                                                        :max-total-supply 10
-                                                        :max-auction-duration (t/in-seconds (t/weeks 20))}
+                                                            :commit-period-duration (t/in-seconds (t/minutes 2))
+                                                            :reveal-period-duration (t/in-seconds (t/minutes 1))
+                                                            :deposit (web3/to-wei 10 :ether)
+                                                            :challenge-dispensation 50
+                                                            :vote-quorum 50
+                                                            :max-total-supply 10
+                                                            :max-auction-duration (t/in-seconds (t/weeks 20))}
                                         :param-change-registry {:challenge-period-duration (t/in-seconds (t/minutes 10))
                                                                 :commit-period-duration (t/in-seconds (t/minutes 2))
                                                                 :reveal-period-duration (t/in-seconds (t/minutes 1))
@@ -132,7 +134,7 @@
   "Prints all db tables to the repl"
   []
   (let [all-tables (->> (db/all {:select [:name] :from [:sqlite-master] :where [:= :type "table"]})
-                        (map :name))]
+                     (map :name))]
     (doseq [t all-tables]
       (println "#######" (str/upper-case t) "#######")
       (select [:*] :from [(keyword t)])

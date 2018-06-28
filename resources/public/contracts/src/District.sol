@@ -1,9 +1,9 @@
 pragma solidity ^0.4.18;
 
-import "RegistryEntry.sol"; 
-/* import "proxy/Forwarder.sol"; */
+import "./RegistryEntry.sol"; 
+// import "proxy/Forwarder.sol"; 
 import "token/erc20/MintableToken.sol";
-/* import "./District0xNetworkToken.sol"; */
+import "./District0xNetworkToken.sol";
 import "token/erc900/TokenReturningStakeBank.sol";
 /* import "./DistrictConfig.sol"; */
 
@@ -15,14 +15,9 @@ import "token/erc900/TokenReturningStakeBank.sol";
  * pointing into single intance of it.
  */
 
-/* RegistryEntry */
-
-contract District is MintableToken, RegistryEntry, TokenReturningStakeBank 
+contract District is RegistryEntry, MintableToken, TokenReturningStakeBank 
 {
 
-  // constructor(ERC20 _token) TokenReturningStakeBank(_token, this, 1) public {
-
-  // }
 
 
 
@@ -30,14 +25,6 @@ contract District is MintableToken, RegistryEntry, TokenReturningStakeBank
   /* string public constant symbol = "DT"; */
   /* uint8 public constant decimals = 18; */
   bytes public infoHash; // state variable for storing IPFS hash of file that contains all data from form fields
-
-  /* DistrictConfig public constant districtConfig = DistrictConfig(0xABCDabcdABcDabcDaBCDAbcdABcdAbCdABcDABCd); */
-  /* bytes32 public constant maxTotalSupplyKey = sha3("maxTotalSupply"); */
-  /* DistrictToken public constant districtToken = DistrictToken(0xdaBBdABbDABbDabbDaBbDabbDaBbdaBbdaBbDAbB); */
-  /* bytes public metaHash; */
-  /* uint public tokenIdStart; */
-  /* uint public totalSupply; */
-  /* uint public totalMinted; */
 
 
   /**
@@ -62,59 +49,10 @@ contract District is MintableToken, RegistryEntry, TokenReturningStakeBank
     infoHash = _infoHash;
   }
 
-  function setInfoHash(bytes _infoHash) public
-  {
-    require(msg.sender == creator);
-    infoHash = _infoHash;
-  }
-
-  /**
-   * @dev Transfers deposit to deposit collector
-   * Must be callable only for whitelisted unchallenged registry entries
-   */
-  /* function transferDeposit() */
-  /* public */
-  /* notEmergency */
-  /* onlyWhitelisted */
-  /* { */
-  /*   require(!wasChallenged()); */
-  /*   /\* require(registryToken.transfer(districtConfig.depositCollector(), deposit)); *\/ */
-  /*   registry.fireRegistryEntryEvent("depositTransferred", version); */
-  /* } */
-
-  /* function mint(uint _amount) */
-  /* public */
-  /* notEmergency */
-  /* onlyWhitelisted */
-  /* { */
-  /*   uint restSupply = totalSupply.sub(totalMinted); */
-  /*   if (_amount == 0 || _amount > restSupply) { */
-  /*     _amount = restSupply; */
-  /*   } */
-  /*   require(_amount > 0); */
-  /*   /\* tokenIdStart = districtToken.totalSupply().add(1); *\/ */
-  /*   uint tokenIdEnd = tokenIdStart.add(_amount); */
-  /*   for (uint i = tokenIdStart; i < tokenIdEnd; i++) { */
-  /*     /\* districtToken.mint(creator, i); *\/ */
-  /*     totalMinted = totalMinted + 1; */
-  /*   } */
-  /*   var eventData = new uint[](3); */
-  /*   eventData[0] = uint(creator); */
-  /*   eventData[1] = tokenIdStart; */
-  /*   eventData[2] = tokenIdEnd - 1; */
-  /*   registry.fireRegistryEntryEvent("minted", version, eventData); */
-  /* } */
-
-  /**
-   * @dev Returns all state related to this contract for simpler offchain access
-   */
-  /* function loadDistrict() public constant returns (bytes, uint, uint, uint) { */
-  /*   return ( */
-  /*   metaHash, */
-  /*   totalSupply, */
-  /*   totalMinted, */
-  /*   tokenIdStart */
-  /*   ); */
-  /* } */
+  // function setInfoHash(bytes _infoHash) public
+  // {
+  //   require(msg.sender == creator);
+  //   infoHash = _infoHash;
+  // }
 
 }

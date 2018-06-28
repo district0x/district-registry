@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 // DistrictFactory
-import "RegistryEntryFactory.sol";
-import "District.sol";
+import "./RegistryEntryFactory.sol";
+import "./District.sol"; 
 
 /**
  * @title Factory contract for creating District contracts
@@ -29,13 +29,11 @@ contract DistrictFactory is RegistryEntryFactory {
   public
   {
     District district = District(createRegistryEntry(_creator));
-
     district.construct(
       _creator,
       version,
       _infoHash
     );
-  }
-  
+  }  
 }
 

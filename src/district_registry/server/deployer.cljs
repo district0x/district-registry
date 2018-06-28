@@ -11,7 +11,10 @@
    [district-registry.server.contract.ds-guard :as ds-guard]
    [district-registry.server.contract.eternal-db :as eternal-db]
    [district-registry.server.contract.registry :as registry]
-   [mount.core :as mount :refer [defstate]]))
+   [mount.core :as mount :refer [defstate]]
+   [district-registry.server.contract.district-factory :as district-factory]
+   [district-registry.server.contract.district-registry :as district-registry]
+   ))
 
 (declare deploy)
 (defstate ^{:on-reload :noop} deployer
@@ -25,9 +28,9 @@
 (def district-token-placeholder "dabbdabbdabbdabbdabbdabbdabbdabbdabbdabb")
 
 (defn deploy-dnt! [default-opts]
-  (deploy-smart-contract! :DNT (merge default-opts {:gas 22000000
+  (deploy-smart-contract! :DNT (merge default-opts {:gas 5200000
                                                     :arguments [(contract-address :minime-token-factory)
-                                                                (web3/to-wei 1000000000 :ether)]})))
+                                                                (web3/to-wei 1000000 :ether)]})))
 
 (defn deploy-district-token! [default-opts]
   (deploy-smart-contract! :district-token (merge default-opts {:gas 2200000
@@ -70,7 +73,7 @@
                                                              {forwarder-target-placeholder :param-change-registry}})))
 
 (defn deploy-district! [default-opts]
-  (deploy-smart-contract! :district (merge default-opts {:gas 10000000000
+  (deploy-smart-contract! :district (merge default-opts {:gas 6000000
                                                          :arguments
                                                          [(contract-address :DNT)]
                                                          :placeholder-replacements
@@ -80,7 +83,7 @@
                                                           ;; district-config-placeholder :district-config
                                                           ;; district-token-placeholder :district-token
                                                           }})))
-
+#_
 (defn deploy-tsrb! [default-opts]
   (deploy-smart-contract! :tsrb (merge default-opts {:gas 10000000000
                                                      #_
@@ -102,11 +105,10 @@
 
 (defn deploy-district-factory! [default-opts]
   (deploy-smart-contract! :district-factory (merge default-opts {:gas 1000000
-                                                             :arguments [(contract-address :district-registry-fwd)
-                                                                         (contract-address :DNT)
-                                                                         (contract-address :district-token)]
-                                                             :placeholder-replacements
-                                                             {forwarder-target-placeholder :district}})))
+                                                                 :arguments [(contract-address :district-registry-fwd)
+                                                                             (contract-address :DNT)]
+                                                                 :placeholder-replacements
+                                                                 {forwarder-target-placeholder :district}})))
 
 (defn deploy-param-change-factory! [default-opts]
   (deploy-smart-contract! :param-change-factory (merge default-opts {:gas 1000000
@@ -132,7 +134,7 @@
     ;; make deployed :ds-guard its own autority
     (ds-auth/set-authority :ds-guard (contract-address :ds-guard) deploy-opts)
 
-    ;; (deploy-minime-token-factory! deploy-opts)
+    (deploy-minime-token-factory! deploy-opts)
     (deploy-dnt! deploy-opts)
     ;; (deploy-district-config! deploy-opts)
     ;; (ds-auth/set-authority :district-config (contract-address :ds-guard) deploy-opts)
@@ -207,7 +209,7 @@
     (registry/set-factory [:param-change-registry :param-change-registry-fwd]
       {:factory (contract-address :param-change-factory) :factory? true}
       deploy-opts)
-
+    
     (when (pos? transfer-dnt-to-accounts)
       (doseq [account (take transfer-dnt-to-accounts accounts)]
         (dnt/transfer {:to account :amount (web3/to-wei 15000 :ether)}
@@ -215,4 +217,16 @@
           {:from (last accounts)})))
 
     (when write?
-      (write-smart-contracts!))))
+      (write-smart-contracts!))
+    
+    (let [district (district-factory/approve-and-create-district
+                     {:info-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"
+                      :amount (web3/to-wei 10 :ether)}
+
+                     {:from (last accounts)})]
+      (prn "created district")
+      (-> district
+        ;; district-registry/registry-entry-event-in-tx
+        prn)
+      )
+    ))
