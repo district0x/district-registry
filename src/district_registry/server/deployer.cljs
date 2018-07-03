@@ -14,12 +14,14 @@
    [mount.core :as mount :refer [defstate]]
    [district-registry.server.contract.district-factory :as district-factory]
    [district-registry.server.contract.district-registry :as district-registry]
+   [district-registry.server.contract.district :as district]
+
    ))
 
 (declare deploy)
 (defstate ^{:on-reload :noop} deployer
   :start (deploy (merge (:deployer @config)
-                        (:deployer (mount/args)))))
+                   (:deployer (mount/args)))))
 
 (def registry-placeholder "feedfeedfeedfeedfeedfeedfeedfeedfeedfeed")
 (def dnt-placeholder "deaddeaddeaddeaddeaddeaddeaddeaddeaddead")
@@ -209,24 +211,47 @@
     (registry/set-factory [:param-change-registry :param-change-registry-fwd]
       {:factory (contract-address :param-change-factory) :factory? true}
       deploy-opts)
-    
+
     (when (pos? transfer-dnt-to-accounts)
       (doseq [account (take transfer-dnt-to-accounts accounts)]
         (dnt/transfer {:to account :amount (web3/to-wei 15000 :ether)}
-          ;; this is the deployer of dank-token so it owns the initial amount
+          ;; this is the deployer of dnt so it owns the initial amount
           {:from (last accounts)})))
 
     (when write?
       (write-smart-contracts!))
-    
+
     (let [district (district-factory/approve-and-create-district
                      {:info-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"
                       :amount (web3/to-wei 10 :ether)}
+                     {:from (last accounts)})
+          reg-entry (-> district
+                      district-registry/registry-entry-event-in-tx
+                      :args
+                      :registry-entry)]
 
-                     {:from (last accounts)})]
-      (prn "created district")
-      (-> district
-        ;; district-registry/registry-entry-event-in-tx
-        prn)
-      )
-    ))
+      (prn "dnt" (dnt/balance-of (first accounts)))
+      (prn "district token" (district/balance-of reg-entry (first accounts)))
+      (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
+
+      (prn "STAKING...")
+      (district/approve-and-stake
+        {:district reg-entry
+         :amount (web3/to-wei 1 :ether)
+         :data 0}
+        {:from (first accounts)})
+      (prn "STAKED")
+
+      (prn "dnt" (dnt/balance-of (first accounts)))
+      (prn "district token" (district/balance-of reg-entry (first accounts)))
+      (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
+
+      (prn "UNSTAKING...")
+      (district/unstake reg-entry (web3/to-wei 1 :ether) 0)
+      (prn "UNSTAKED")
+
+      (prn "dnt" (dnt/balance-of (first accounts)))
+      (prn "district token" (district/balance-of reg-entry (first accounts)))
+      (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
+
+      )))

@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 import "./RegistryEntry.sol"; 
 // import "proxy/Forwarder.sol"; 
-import "token/erc20/MintableToken.sol";
+import "token/erc20/StandardToken.sol";
 import "./District0xNetworkToken.sol";
 import "token/erc900/TokenReturningStakeBank.sol";
 /* import "./DistrictConfig.sol"; */
@@ -15,17 +15,12 @@ import "token/erc900/TokenReturningStakeBank.sol";
  * pointing into single intance of it.
  */
 
-contract District is RegistryEntry, MintableToken, TokenReturningStakeBank 
+contract District is RegistryEntry
+, StandardToken
+, TokenReturningStakeBank 
 {
 
-
-
-
-  /* string public constant name = "District Token"; */
-  /* string public constant symbol = "DT"; */
-  /* uint8 public constant decimals = 18; */
   bytes public infoHash; // state variable for storing IPFS hash of file that contains all data from form fields
-
 
   /**
    * @dev Constructor for this contract.
@@ -44,15 +39,45 @@ contract District is RegistryEntry, MintableToken, TokenReturningStakeBank
   public
   {
     super.construct(_creator, _version);
-    super.constructStakeBank(registryToken,this,1);
+    super.constructStakeBank(registryToken, this, 1);
 
     infoHash = _infoHash;
   }
 
-  // function setInfoHash(bytes _infoHash) public
-  // {
-  //   require(msg.sender == creator);
-  //   infoHash = _infoHash;
-  // }
+  function setInfoHash(bytes _infoHash) public
+  {
+    require(msg.sender == creator);
+    infoHash = _infoHash;
+  }
+
+  function mint(uint _amount)
+  private
+  {
+    require(_amount > 0);
+    totalSupply_ = totalSupply_.add(_amount);
+    balances[address(this)] = balances[address(this)].add(_amount);
+  }
+
+  /// @notice Stakes a certain amount of tokens for another user.
+  /// @param _user Address of the user to stake for.
+  /// @param _amount Amount of tokens to stake.
+  /// @param _data Data field used for signalling in more complex staking applications.
+  function stakeFor(address _user, uint _amount, bytes _data) 
+  public 
+  {
+    mint(_amount);
+    super.stakeFor(_user, _amount, _data);
+  }
+
+  /// @notice Unstakes a certain amount of tokens.
+  /// @param _amount Amount of tokens to unstake.
+  /// @param _data Data field used for signalling in more complex staking applications.
+  function unstake(uint _amount, bytes _data) public {
+    require(_amount > 0);
+    allowed[msg.sender][this] = _amount;
+    super.unstake(_amount, _data);
+    balances[address(this)] = balances[address(this)].sub(_amount);
+    totalSupply_ = totalSupply_.sub(_amount);
+  }
 
 }

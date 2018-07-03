@@ -41,7 +41,10 @@ contract StakeBank is StakeBankInterface {
         updateCheckpointAtNow(stakesFor[user], amount, false);
         updateCheckpointAtNow(stakeHistory, amount, false);
 
-        require(token.transferFrom(msg.sender, address(this), amount));
+        require(token.transferFrom(tx.origin, address(this), amount));
+        // require(token.transferFrom(msg.sender, address(this), amount));
+        // The line above is the original StakeBank implementation, but we changed
+        // `msg.sender` to `tx.origin` so that it works with `approveAndCall`.
 
         Staked(user, amount, totalStakedFor(user), data);
     }
