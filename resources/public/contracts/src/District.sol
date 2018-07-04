@@ -69,15 +69,21 @@ contract District is RegistryEntry
     super.stakeFor(_user, _amount, _data);
   }
 
+  function unmint(uint _amount)
+  private
+  {
+    require(_amount > 0);
+    balances[address(this)] = balances[address(this)].sub(_amount);
+    totalSupply_ = totalSupply_.sub(_amount);
+  }
+
   /// @notice Unstakes a certain amount of tokens.
   /// @param _amount Amount of tokens to unstake.
   /// @param _data Data field used for signalling in more complex staking applications.
   function unstake(uint _amount, bytes _data) public {
-    require(_amount > 0);
     allowed[msg.sender][this] = _amount;
     super.unstake(_amount, _data);
-    balances[address(this)] = balances[address(this)].sub(_amount);
-    totalSupply_ = totalSupply_.sub(_amount);
+    unmint(_amount);
   }
 
 }
