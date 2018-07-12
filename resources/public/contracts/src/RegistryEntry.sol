@@ -34,7 +34,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
   uint public version;
   uint public deposit;
   uint public challengePeriodEnd;
-  Challenge public challenge;
+
+  Challenge[] public challenges;
 
   struct Challenge {
     address challenger;
@@ -43,8 +44,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
     bytes metaHash;
     uint commitPeriodEnd;
     uint revealPeriodEnd;
-    uint votesFor;
-    uint votesAgainst;
+    uint votesInclude;
+    uint votesExclude;
     uint claimedRewardOn;
     mapping(address => Vote) vote;
   }
@@ -57,7 +58,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
     uint claimedRewardOn;
   }
 
-  enum VoteOption {NoVote, VoteFor, VoteAgainst}
+  enum VoteOption {Neither, Include, Exclude}
 
   /**
    * @dev Modifier that disables function if registry is in emergency state
@@ -68,7 +69,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
   }
 
   /**
-   * @dev Modifier that disables function if registry is in emergency state
+   * @dev Modifier that disables function if registry is not in whitelisted state
    */
   modifier onlyWhitelisted() {
     require(isWhitelisted());
@@ -124,6 +125,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
     require(!wasChallenged());
     require(registryToken.transferFrom(_challenger, this, deposit));
 
+    Challenge memory challenge;
+
     challenge.challenger = _challenger;
     challenge.voteQuorum = registry.db().getUIntValue(voteQuorumKey);
     uint commitDuration = registry.db().getUIntValue(commitPeriodDurationKey);
@@ -134,7 +137,17 @@ contract RegistryEntry is ApproveAndCallFallBack {
     challenge.rewardPool = ((100 - registry.db().getUIntValue(challengeDispensationKey)).mul(deposit)) / 100;
     challenge.metaHash = _challengeMetaHash;
 
+    challenges.push(challenge);
+
     registry.fireRegistryEntryEvent("challengeCreated", version);
+  }
+
+  function currentChallengeIndex() public returns (uint) {
+    return challenges.length - 1;
+  }
+
+  function currentChallenge() internal returns (Challenge storage) {
+    return challenges[currentChallengeIndex()];
   }
 
   /**
@@ -158,8 +171,9 @@ contract RegistryEntry is ApproveAndCallFallBack {
     require(isVoteCommitPeriodActive());
     require(_amount > 0);
     require(registryToken.transferFrom(_voter, this, _amount));
+    Challenge challenge = currentChallenge();
     challenge.vote[_voter].secretHash = _secretHash;
-    challenge.vote[_voter].amount = _amount;
+    challenge.vote[_voter].amount += _amount;
 
     var eventData = new uint[](1);
     eventData[0] = uint(_voter);
@@ -181,7 +195,9 @@ contract RegistryEntry is ApproveAndCallFallBack {
   public
   notEmergency
   {
+   
     require(isVoteRevealPeriodActive());
+    Challenge challenge = currentChallenge();
     require(sha3(uint(_voteOption), _salt) == challenge.vote[msg.sender].secretHash);
     require(!isVoteRevealed(msg.sender));
 
@@ -189,10 +205,10 @@ contract RegistryEntry is ApproveAndCallFallBack {
     uint amount = challenge.vote[msg.sender].amount;
     require(registryToken.transfer(msg.sender, amount));
     challenge.vote[msg.sender].option = _voteOption;
-    if (_voteOption == VoteOption.VoteFor) {
-      challenge.votesFor = challenge.votesFor.add(amount);
-    } else if (_voteOption == VoteOption.VoteAgainst) {
-      challenge.votesAgainst = challenge.votesAgainst.add(amount);
+    if (_voteOption == VoteOption.Include) {
+      challenge.votesInclude = challenge.votesInclude.add(amount);
+    } else if (_voteOption == VoteOption.Exclude) {
+      challenge.votesExclude = challenge.votesExclude.add(amount);
     } else {
       revert();
     }
@@ -210,7 +226,11 @@ contract RegistryEntry is ApproveAndCallFallBack {
 
    * @param _voter Address of a voter
    */
-  function claimVoteReward(
+  function claimVoteReward(address _voter) public {
+    claimVoteRewardNth(currentChallengeIndex(), _voter);
+  }
+  function claimVoteRewardNth(
+    uint _challengeIndex,
     address _voter
   )
   public
@@ -219,14 +239,14 @@ contract RegistryEntry is ApproveAndCallFallBack {
     if (_voter == 0x0) {
       _voter = msg.sender;
     }
-    require(isVoteRevealPeriodOver());
-    require(!isVoteRewardClaimed(_voter));
-    require(isVoteRevealed(_voter));
-    require(votedWinningVoteOption(_voter));
-    uint reward = voteReward(_voter);
+    require(isVoteRevealPeriodOverNth(_challengeIndex));
+    require(!isVoteRewardClaimedNth(_challengeIndex, _voter));
+    require(isVoteRevealedNth(_challengeIndex, _voter));
+    uint reward = voteRewardNth(_challengeIndex, _voter);
     require(reward > 0);
     require(registryToken.transfer(_voter, reward));
-    challenge.vote[_voter].claimedRewardOn = now;
+
+    challenges[_challengeIndex].vote[_voter].claimedRewardOn = now;
 
     var eventData = new uint[](1);
     eventData[0] = uint(_voter);
@@ -235,20 +255,48 @@ contract RegistryEntry is ApproveAndCallFallBack {
 
   /**
    * @dev Claims challenger's reward after reveal period
-   * Challenger has reward only if winning option is VoteAgainst
+   * Challenger has reward only if winning option is Exclude
    * Can be called by anybody, to claim challenger's reward to him/her
    */
-  function claimChallengeReward()
+  function claimChallengeReward() public {
+    claimChallengeRewardNth(currentChallengeIndex());
+  }
+  function claimChallengeRewardNth(uint _challengeIndex)
   public
   notEmergency
   {
-    require(isVoteRevealPeriodOver());
-    require(!isChallengeRewardClaimed());
-    require(!isWinningOptionVoteFor());
-    require(registryToken.transfer(challenge.challenger, challengeReward()));
+    require(isVoteRevealPeriodOverNth(_challengeIndex));
+    require(!isEntryRewardClaimedNth(_challengeIndex));
+    require(!isWinningOptionIncludeNth(_challengeIndex));
+
+    Challenge storage challenge = challenges[_challengeIndex]; 
+    require(registryToken.transfer(challenge.challenger, entryRewardNth(_challengeIndex)));
     challenge.claimedRewardOn = now;
 
     registry.fireRegistryEntryEvent("challengeRewardClaimed", version);
+  }
+
+  /**
+   * @dev Claims creator's reward after reveal period
+   * Creator has reward only if winning option is Include
+   * Can be called by anybody, to claim creator's reward to him/her
+   */
+  function claimCreatorReward() public {
+    claimCreatorRewardNth(currentChallengeIndex());
+  }
+  function claimCreatorRewardNth(uint _challengeIndex)
+  public
+  notEmergency
+  {
+    require(isVoteRevealPeriodOverNth(_challengeIndex));
+    require(!isEntryRewardClaimedNth(_challengeIndex));
+    require(isWinningOptionIncludeNth(_challengeIndex));
+
+    Challenge storage challenge = challenges[_challengeIndex]; 
+    require(registryToken.transfer(creator, entryRewardNth(_challengeIndex)));
+    challenge.claimedRewardOn = now;
+
+    registry.fireRegistryEntryEvent("creatorRewardClaimed", version);
   }
 
   /**
@@ -276,21 +324,22 @@ contract RegistryEntry is ApproveAndCallFallBack {
 
    * @return Status
    */
+
   function status() public constant returns (Status) {
-    if (isChallengePeriodActive() && !wasChallenged()) {
-      return Status.ChallengePeriod;
-    } else if (isVoteCommitPeriodActive()) {
-      return Status.CommitPeriod;
-    } else if (isVoteRevealPeriodActive()) {
-      return Status.RevealPeriod;
-    } else if (isVoteRevealPeriodOver()) {
-      if (isWinningOptionVoteFor()) {
-        return Status.Whitelisted;
-      } else {
-        return Status.Blacklisted;
-      }
-    } else {
+    return statusNth(currentChallengeIndex());   
+  }
+   
+  function statusNth(uint _challengeIndex) public constant returns (Status) {
+    if (isBlacklistedNth(_challengeIndex)) {
+      return Status.Blacklisted;
+    } else if (isWhitelistedNth(_challengeIndex)) {
       return Status.Whitelisted;
+    } else if (isChallengePeriodActive() && !wasChallenged()) {
+      return Status.ChallengePeriod;
+    } else if (isVoteRevealPeriodActiveNth(_challengeIndex)) {
+      return Status.RevealPeriod;
+    } else if (isVoteCommitPeriodActiveNth(_challengeIndex)) {
+      return Status.CommitPeriod;
     }
   }
 
@@ -299,84 +348,134 @@ contract RegistryEntry is ApproveAndCallFallBack {
   }
 
   function isWhitelisted() public constant returns (bool) {
-    return status() == Status.Whitelisted;
+    return isWhitelistedNth(currentChallengeIndex());
+  }
+  function isWhitelistedNth(uint _challengeIndex) public constant returns (bool) {
+    return isVoteRevealPeriodOverNth(_challengeIndex) && isWinningOptionIncludeNth(_challengeIndex);
   }
 
   function isBlacklisted() public constant returns (bool) {
-    return status() == Status.Blacklisted;
+    return isBlacklistedNth(currentChallengeIndex());
+  }
+  function isBlacklistedNth(uint _challengeIndex) public constant returns (bool) {
+    return isVoteRevealPeriodOverNth(_challengeIndex) && !isWinningOptionIncludeNth(_challengeIndex);
   }
 
   /**
    * @dev Returns date when registry entry was whitelisted
-   * Since this doesn't happen with any transaction, it's either reveal or challenge period end
+   * Since this doesn't happen with any transaction, it's the reveal period end
 
    * @return UNIX time of whitelisting
    */
-  function whitelistedOn() public constant returns (uint) {
-    if (!isWhitelisted()) {
+  function whitelistedOn() public constant returns (uint) { 
+    return whitelistedOnNth(currentChallengeIndex());
+  }
+  function whitelistedOnNth(uint _challengeIndex) public constant returns (uint) {
+    if (!isWhitelistedNth(_challengeIndex)) {
       return 0;
     }
-    if (wasChallenged()) {
-      return challenge.revealPeriodEnd;
-    } else {
-      return challengePeriodEnd;
-    }
+    return challenges[_challengeIndex].revealPeriodEnd;
   }
 
   function wasChallenged() public constant returns (bool) {
-    return challenge.challenger != 0x0;
+    return challenges.length != 0;
   }
 
   function isVoteCommitPeriodActive() public constant returns (bool) {
-    return now <= challenge.commitPeriodEnd;
+    return isVoteCommitPeriodActiveNth(currentChallengeIndex());
+  }
+  function isVoteCommitPeriodActiveNth(uint _challengeIndex) public constant returns (bool) {
+    if (challenges.length == 0) {
+      return false;
+    }
+    return now <= challenges[_challengeIndex].commitPeriodEnd;
   }
 
   function isVoteRevealPeriodActive() public constant returns (bool) {
-    return !isVoteCommitPeriodActive() && now <= challenge.revealPeriodEnd;
+    return isVoteRevealPeriodActiveNth(currentChallengeIndex());
+  }
+  function isVoteRevealPeriodActiveNth(uint _challengeIndex) public constant returns (bool) {
+    if (challenges.length == 0) {
+      return false;
+    }
+    return !isVoteCommitPeriodActiveNth(_challengeIndex) && now <= challenges[_challengeIndex].revealPeriodEnd;
   }
 
   function isVoteRevealPeriodOver() public constant returns (bool) {
+    return isVoteRevealPeriodOverNth(currentChallengeIndex());
+  }
+  function isVoteRevealPeriodOverNth(uint _challengeIndex) public constant returns (bool) {
+    if (challenges.length == 0) {
+      return false;
+    }
+    Challenge storage challenge = challenges[_challengeIndex];
     return challenge.revealPeriodEnd > 0 && now > challenge.revealPeriodEnd;
   }
 
   function isVoteRevealed(address _voter) public constant returns (bool) {
-    return challenge.vote[_voter].revealedOn > 0;
+    return isVoteRevealedNth(currentChallengeIndex(), _voter);
+  }
+  function isVoteRevealedNth(uint _challengeIndex, address _voter) public constant returns (bool) {
+    return challenges[_challengeIndex].vote[_voter].revealedOn > 0;
   }
 
   function isVoteRewardClaimed(address _voter) public constant returns (bool) {
-    return challenge.vote[_voter].claimedRewardOn > 0;
+    return isVoteRewardClaimedNth(currentChallengeIndex(), _voter);
+  }
+  function isVoteRewardClaimedNth(uint _challengeIndex, address _voter) public constant returns (bool) {
+    return challenges[_challengeIndex].vote[_voter].claimedRewardOn > 0;
   }
 
-  function isChallengeRewardClaimed() public constant returns (bool) {
-    return challenge.claimedRewardOn > 0;
+  function isEntryRewardClaimed() public constant returns (bool) {
+    return isEntryRewardClaimedNth(currentChallengeIndex());
   }
+  function isEntryRewardClaimedNth(uint _challengeIndex) public constant returns (bool) {
+    return challenges[_challengeIndex].claimedRewardOn > 0;
+  }
+
 
   /**
    * @dev Returns winning vote option in held voting according to vote quorum
    * If voteQuorum is 50, any majority of votes will win
-   * If voteQuorum is 24, only 25 votes out of 100 is enough to VoteFor be winning option
+   * If voteQuorum is 24, only 25 votes out of 100 is enough to Include be winning option
    *
    * @return Winning vote option
    */
   function winningVoteOption() public constant returns (VoteOption) {
-    if (!isVoteRevealPeriodOver()) {
-      return VoteOption.NoVote;
+    return winningVoteOptionNth(currentChallengeIndex());
+  }
+  function winningVoteOptionNth(uint _challengeIndex) public constant returns (VoteOption) {
+    if (!isVoteRevealPeriodOverNth(_challengeIndex)) {
+      return VoteOption.Neither;
     }
-
-    if (challenge.votesFor.mul(100) > challenge.voteQuorum.mul(challenge.votesFor.add(challenge.votesAgainst))) {
-      return VoteOption.VoteFor;
+    uint include = votesIncludeNth(_challengeIndex);
+    uint exclude = votesExcludeNth(_challengeIndex);
+    Challenge challenge = currentChallenge();
+    if (include.mul(100) >= challenge.voteQuorum.mul(include.add(exclude))) {
+      return VoteOption.Include;
     } else {
-      return VoteOption.VoteAgainst;
+      return VoteOption.Exclude;
     }
   }
 
+  function votesIncludeNth(uint _challengeIndex) internal view returns (uint) {
+    return challenges[_challengeIndex].votesInclude;
+  }
+
+  function votesExcludeNth(uint _challengeIndex) internal view returns (uint) {
+    return challenges[_challengeIndex].votesExclude;
+  }
+
   /**
-   * @dev Returns whether VoteFor is winning vote option
+   * @dev Returns whether Include is winning vote option
    *
-   * @return True if VoteFor is winning option
+   * @return True if Include is winning option
    */
-  function isWinningOptionVoteFor() public constant returns (bool) {
-    return winningVoteOption() == VoteOption.VoteFor;
+  function isWinningOptionInclude() public constant returns (bool) {
+    return isWinningOptionIncludeNth(currentChallengeIndex());
+  }
+  function isWinningOptionIncludeNth(uint _challengeIndex) public constant returns (bool) {
+    return winningVoteOptionNth(_challengeIndex) == VoteOption.Include;
   }
 
   /**
@@ -385,12 +484,39 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * @return Amount of votes
    */
   function winningVotesAmount() public constant returns (uint) {
-    VoteOption voteOption = winningVoteOption();
+    return winningVotesAmountNth(currentChallengeIndex());
+  }
+  function winningVotesAmountNth(uint _challengeIndex) public constant returns (uint) {
+    uint include = votesIncludeNth(_challengeIndex);
+    uint exclude = votesExcludeNth(_challengeIndex);
+    if (include >= exclude) {
+      return include;
+    } else {
+      return exclude;
+    }
+  }
 
-    if (voteOption == VoteOption.VoteFor) {
-      return challenge.votesFor;
-    } else if (voteOption == VoteOption.VoteAgainst) {
-      return challenge.votesAgainst;
+  function voterVotesInclude(address _voter) public constant returns (uint) {
+    return voterVotesIncludeNth(currentChallengeIndex(), _voter);
+  }
+  function voterVotesIncludeNth(uint _challengeIndex, address _voter) public constant returns (uint) {
+    Challenge storage challenge = challenges[_challengeIndex];
+    Vote storage vote = challenge.vote[_voter];
+    if (vote.option == VoteOption.Include) {
+      return vote.amount;
+    } else {
+      return 0;
+    }
+  }
+
+  function voterVotesExclude(address _voter) public constant returns (uint) {
+    return voterVotesIncludeNth(currentChallengeIndex(), _voter);
+  }
+  function voterVotesExcludeNth(uint _challengeIndex, address _voter) public constant returns (uint) {
+    Challenge storage challenge = challenges[_challengeIndex];
+    Vote storage vote = challenge.vote[_voter];
+    if (vote.option == VoteOption.Exclude) {
+      return vote.amount;
     } else {
       return 0;
     }
@@ -403,12 +529,18 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * @return Amount of tokens
    */
   function voteReward(address _voter) public constant returns (uint) {
-    uint winningAmount = winningVotesAmount();
+    return voteRewardNth(currentChallengeIndex(), _voter);
+  }
+  function voteRewardNth(uint _challengeIndex, address _voter) public constant returns (uint) {
+    uint winningAmount = winningVotesAmountNth(_challengeIndex);
+    VoteOption winningOption = winningVoteOptionNth(_challengeIndex);
     uint voterAmount = 0;
-    if (votedWinningVoteOption(_voter)) {
-      voterAmount = challenge.vote[_voter].amount;
+    if (winningOption == VoteOption.Include) {
+      voterAmount = voterVotesIncludeNth(_challengeIndex, _voter);
+    } else if (winningOption == VoteOption.Exclude) {
+      voterAmount = voterVotesExcludeNth(_challengeIndex, _voter);
     }
-    return (voterAmount.mul(challenge.rewardPool)) / winningAmount;
+    return (voterAmount.mul(challenges[_challengeIndex].rewardPool)) / winningAmount;
   }
 
   /**
@@ -416,18 +548,11 @@ contract RegistryEntry is ApproveAndCallFallBack {
    *
    * @return Amount of token
    */
-  function challengeReward() public constant returns (uint) {
-    return deposit.sub(challenge.rewardPool);
+  function entryReward() public constant returns (uint) {
+    return entryRewardNth(currentChallengeIndex());
   }
-
-  /**
-   * @dev Returns whether voter voted for winning vote option
-   * @param _voter Address of a voter
-   *
-   * @return True if voter voted for a winning vote option
-   */
-  function votedWinningVoteOption(address _voter) public constant returns (bool) {
-    return challenge.vote[_voter].option == winningVoteOption();
+  function entryRewardNth(uint _challengeIndex) public constant returns (uint) {
+    return deposit.sub(challenges[_challengeIndex].rewardPool);
   }
 
   /**
@@ -448,6 +573,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * @dev Returns all challenge state related to this contract for simpler offchain access
    */
   function loadRegistryEntryChallenge() public constant returns (uint, address, uint, bytes, uint, uint, uint, uint, uint, uint) {
+    Challenge challenge = currentChallenge();
     return (    
     challengePeriodEnd,
     challenge.challenger,
@@ -455,8 +581,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
     challenge.metaHash,
     challenge.commitPeriodEnd,
     challenge.revealPeriodEnd,
-    challenge.votesFor,
-    challenge.votesAgainst,
+    challenge.votesInclude,
+    challenge.votesExclude,
     challenge.claimedRewardOn,
     challenge.voteQuorum
     );
@@ -468,6 +594,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * @param _voter Address of a voter
    */
   function loadVote(address _voter) public constant returns (bytes32, VoteOption, uint, uint, uint) {
+    Challenge challenge = currentChallenge();
     Vote vtr = challenge.vote[_voter];
     return (
     vtr.secretHash,

@@ -81,7 +81,6 @@
                      "District.sol"
                      "ParamChangeFactory.sol"
                      "ParamChangeRegistry.sol"
-                     ;; "TokenReturningStakeBank.sol"
                      ]}
 
   :source-paths ["src" "test"]
