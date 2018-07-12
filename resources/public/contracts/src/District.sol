@@ -15,11 +15,8 @@ import "token/erc900/TokenReturningStakeBank.sol";
  * pointing into single intance of it.
  */
 
-contract District is RegistryEntry
-, StandardToken
-, TokenReturningStakeBank 
+contract District is RegistryEntry, StandardToken, TokenReturningStakeBank
 {
-
   bytes public infoHash; // state variable for storing IPFS hash of file that contains all data from form fields
 
   /**
@@ -40,6 +37,7 @@ contract District is RegistryEntry
   {
     super.construct(_creator, _version);
     super.constructStakeBank(registryToken, this, 1);
+    challengePeriodEnd = ~uint(0);
 
     infoHash = _infoHash;
   }
@@ -50,12 +48,16 @@ contract District is RegistryEntry
     infoHash = _infoHash;
   }
 
-  function mint(uint _amount)
-  private
-  {
+  function mint(uint _amount) private {
     require(_amount > 0);
     totalSupply_ = totalSupply_.add(_amount);
     balances[address(this)] = balances[address(this)].add(_amount);
+  }
+
+  function unmint(uint _amount) private {
+    require(_amount > 0);
+    balances[address(this)] = balances[address(this)].sub(_amount);
+    totalSupply_ = totalSupply_.sub(_amount);
   }
 
   /// @notice Stakes a certain amount of tokens for another user.
@@ -67,14 +69,11 @@ contract District is RegistryEntry
   {
     mint(_amount);
     super.stakeFor(_user, _amount, _data);
+    maybeAdjustStakeDelta(_user, int(_amount));
   }
 
-  function unmint(uint _amount)
-  private
-  {
-    require(_amount > 0);
-    balances[address(this)] = balances[address(this)].sub(_amount);
-    totalSupply_ = totalSupply_.sub(_amount);
+  function stake(uint256 _amount, bytes _data) public {
+    stakeFor(msg.sender, _amount, _data);
   }
 
   /// @notice Unstakes a certain amount of tokens.
@@ -84,6 +83,60 @@ contract District is RegistryEntry
     allowed[msg.sender][this] = _amount;
     super.unstake(_amount, _data);
     unmint(_amount);
+    maybeAdjustStakeDelta(msg.sender, int(_amount) * -1);
+  }
+
+  struct StakeDelta {
+    uint creationBlock;
+    int delta;
+    mapping(address => int) deltas;
+  }
+
+  StakeDelta[] public stakeDeltas;
+
+  function maybeAdjustStakeDelta(
+    address _voter,
+    int _amount
+  ) 
+  private 
+  {
+    if (isVoteCommitPeriodActive()) {
+      uint idx = currentChallengeIndex();
+      stakeDeltas[idx].delta += _amount;
+      stakeDeltas[idx].deltas[_voter] += _amount;
+    }
+  }
+
+  function wasChallenged() public constant returns (bool) {
+    if (challenges.length == 0) {
+      return false;
+    }
+    return currentChallenge().revealPeriodEnd > now;
+  }
+
+  function createChallenge(
+    address _challenger,
+    bytes _challengeMetaHash
+  )
+  public
+  {
+    super.createChallenge(_challenger, _challengeMetaHash);
+    StakeDelta memory sd;
+    sd.creationBlock = block.number;
+    stakeDeltas.push(sd);
+  }
+
+  function votesIncludeNth(uint _challengeIndex) internal view returns (uint) {
+    return uint(int(challenges[_challengeIndex].votesInclude) + stakeDeltas[_challengeIndex].delta);
+  }
+
+  function voterVotesIncludeNth(uint _challengeIndex, address _voter) public constant returns (uint) {
+    int votes = int(super.voterVotesIncludeNth(_challengeIndex, _voter));
+    return uint(votes + stakeDeltas[_challengeIndex].deltas[_voter]);
+  }
+
+  function claimCreatorRewardNth(uint _challengeIndex) public {
+    revert();
   }
 
 }

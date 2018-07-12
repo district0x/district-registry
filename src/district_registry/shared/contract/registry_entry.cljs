@@ -36,9 +36,9 @@
                  :vote/claimed-reward-on])
 
 (def vote-options
-  {0 :vote.option/no-vote
-   1 :vote.option/vote-for
-   2 :vote.option/vote-against})
+  {0 :vote.option/neither
+   1 :vote.option/include
+   2 :vote.option/exclude})
 
 (def vote-option->num (set/map-invert vote-options))
 

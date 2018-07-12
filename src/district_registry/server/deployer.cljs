@@ -4,7 +4,7 @@
    [cljs-web3.eth :as web3-eth]
    [district.cljs-utils :refer [rand-str]]
    [district.server.config :refer [config]]
-   [district.server.smart-contracts :refer [contract-event-in-tx contract-address deploy-smart-contract! instance write-smart-contracts!]]
+   [district.server.smart-contracts :refer [contract-event-in-tx contract-address contract-call deploy-smart-contract! instance write-smart-contracts!]]
    [district.server.web3 :refer [web3]]
    [district-registry.server.contract.dnt :as dnt]
    [district-registry.server.contract.ds-auth :as ds-auth]
@@ -12,10 +12,13 @@
    [district-registry.server.contract.eternal-db :as eternal-db]
    [district-registry.server.contract.registry :as registry]
    [mount.core :as mount :refer [defstate]]
+
    [district-registry.server.contract.district-factory :as district-factory]
    [district-registry.server.contract.district-registry :as district-registry]
    [district-registry.server.contract.district :as district]
-
+   [district-registry.server.contract.registry-entry :as registry-entry]
+   [cljs-web3.evm :as web3-evm]
+   [cljs-time.core :as t]
    ))
 
 (declare deploy)
@@ -65,14 +68,14 @@
 
 (defn deploy-district-registry-fwd! [default-opts]
   (deploy-smart-contract! :district-registry-fwd (merge default-opts {:gas 500000
-                                                                  :placeholder-replacements
-                                                                  {forwarder-target-placeholder :district-registry}})))
+                                                                      :placeholder-replacements
+                                                                      {forwarder-target-placeholder :district-registry}})))
 
 (defn deploy-param-change-registry-fwd! [default-opts]
   (deploy-smart-contract! :param-change-registry-fwd (merge default-opts
-                                                            {:gas 500000
-                                                             :placeholder-replacements
-                                                             {forwarder-target-placeholder :param-change-registry}})))
+                                                       {:gas 500000
+                                                        :placeholder-replacements
+                                                        {forwarder-target-placeholder :param-change-registry}})))
 
 (defn deploy-district! [default-opts]
   (deploy-smart-contract! :district (merge default-opts {:gas 6000000
@@ -99,7 +102,7 @@
                                                       }})))
 
 (defn deploy-param-change! [default-opts]
-  (deploy-smart-contract! :param-change (merge default-opts {:gas 3700000
+  (deploy-smart-contract! :param-change (merge default-opts {:gas 5700000
                                                              :placeholder-replacements
                                                              {dnt-placeholder :DNT
                                                               registry-placeholder :param-change-registry-fwd}})))
@@ -224,7 +227,7 @@
     (let [district (district-factory/approve-and-create-district
                      {:info-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"
                       :amount (web3/to-wei 10 :ether)}
-                     {:from (last accounts)})
+                     {:from (first accounts)})
           reg-entry (-> district
                       district-registry/registry-entry-event-in-tx
                       :args
@@ -234,24 +237,101 @@
       (prn "district token" (district/balance-of reg-entry (first accounts)))
       (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
 
-      (prn "STAKING...")
-      (district/approve-and-stake
-        {:district reg-entry
-         :amount (web3/to-wei 1 :ether)
-         :data 0}
-        {:from (first accounts)})
-      (prn "STAKED")
+      (prn "staked"
+        (district/approve-and-stake
+          {:district reg-entry
+           :amount (web3/to-wei 1 :ether)
+           :data 0}
+          {:from (first accounts)}))
 
       (prn "dnt" (dnt/balance-of (first accounts)))
       (prn "district token" (district/balance-of reg-entry (first accounts)))
       (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
 
-      (prn "UNSTAKING...")
-      (district/unstake reg-entry (web3/to-wei 1 :ether) 0)
-      (prn "UNSTAKED")
+      (prn "unstaked"
+        (district/unstake reg-entry (web3/to-wei 1 :ether) 0))
 
       (prn "dnt" (dnt/balance-of (first accounts)))
       (prn "district token" (district/balance-of reg-entry (first accounts)))
       (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
+
+      (prn
+        "create challenge"
+        (registry-entry/approve-and-create-challenge
+          reg-entry
+          {:amount (web3/to-wei 10 :ether)
+           :meta-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"}
+          {:from (last accounts)}))
+
+      (prn "commit vote"
+        (registry-entry/approve-and-commit-vote
+          reg-entry
+          {:amount (web3/to-wei 1 :ether)
+           :salt "abc"
+           :vote-option :vote.option/include}
+          {:from (first accounts)}))
+
+      (prn "commit vote"
+        (registry-entry/approve-and-commit-vote
+          reg-entry
+          {:amount (web3/to-wei 2 :ether)
+           :salt "abc"
+           :vote-option :vote.option/exclude}
+          {:from (last accounts)}))
+
+      (prn "staked"
+        (district/approve-and-stake
+          {:district reg-entry
+           :amount (web3/to-wei 1 :ether)
+           :data 0}
+          {:from (last accounts)}))
+
+      (prn "increased time 2 mins"
+        (web3-evm/increase-time! @web3 [(inc (t/in-seconds (t/minutes 2)))]))
+
+      (prn "reveal vote"
+        (registry-entry/reveal-vote
+          reg-entry
+          {:vote-option :vote.option/include
+           :salt "abc"}
+          {:from (first accounts)}))
+
+      (prn "reveal vote"
+        (registry-entry/reveal-vote
+          reg-entry
+          {:vote-option :vote.option/exclude
+           :salt "abc"}
+          {:from (last accounts)}))
+
+      (prn "increased time 1 min"
+        (web3-evm/increase-time! @web3 [(inc (t/in-seconds (t/minutes 1)))]))
+
+      (prn "vote reward"
+        (registry-entry/vote-reward
+          reg-entry
+          (first accounts)))
+
+      (prn "vote reward"
+        (registry-entry/vote-reward
+          reg-entry
+          (last accounts)))
+
+      (prn "claim vote reward"
+        (registry-entry/claim-vote-reward
+          reg-entry
+          {:from (first accounts)}))
+
+      (prn "claim vote reward"
+        (registry-entry/claim-vote-reward
+          reg-entry
+          {:from (last accounts)}))
+
+      (prn
+        "create challenge 2"
+        (registry-entry/approve-and-create-challenge
+          reg-entry
+          {:amount (web3/to-wei 10 :ether)
+           :meta-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"}
+          {:from (first accounts)}))
 
       )))
