@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.24;
 // DistrictFactory
 import "./RegistryEntryFactory.sol";
 import "./District.sol"; 
@@ -36,4 +36,6 @@ contract DistrictFactory is RegistryEntryFactory {
     );
   }  
 }
+
+
 

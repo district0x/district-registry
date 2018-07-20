@@ -1,34 +1,34 @@
 (ns district-registry.server.dev
   (:require
-    [camel-snake-kebab.core :as cs :include-macros true]
-    [cljs-time.core :as t]
-    [cljs-web3.core :as web3]
-    [cljs.nodejs :as nodejs]
-    [cljs.pprint :as pprint]
-    [clojure.pprint :refer [print-table]]
-    [clojure.string :as str]
-    [district-registry.server.db]
-    [district-registry.server.deployer]
-    [district-registry.server.generator]
-    [district-registry.server.graphql-resolvers :refer [resolvers-map]]
-    [district-registry.server.syncer]
-    [district-registry.shared.graphql-schema :refer [graphql-schema]]
-    [district-registry.shared.smart-contracts]
-    [district.graphql-utils :as graphql-utils]
-    [district.server.config :refer [config]]
-    [district.server.db :as db]
-    [district.server.db :refer [db]]
-    [district.server.graphql :as graphql]
-    [district.server.graphql.utils :as utils]
-    [district.server.logging :refer [logging]]
-    [district.server.middleware.logging :refer [logging-middlewares]]
-    [district.server.smart-contracts]
-    [district.server.web3 :refer [web3]]
-    [district.server.web3-watcher]
-    [goog.date.Date]
-    [graphql-query.core :refer [graphql-query]]
-    [mount.core :as mount]
-    [print.foo :include-macros true]))
+   [camel-snake-kebab.core :as cs :include-macros true]
+   [cljs-time.core :as t]
+   [cljs-web3.core :as web3]
+   [cljs.nodejs :as nodejs]
+   [cljs.pprint :as pprint]
+   [clojure.pprint :refer [print-table]]
+   [clojure.string :as str]
+   [district-registry.server.db]
+   [district-registry.server.deployer]
+   [district-registry.server.generator]
+   [district-registry.server.graphql-resolvers :refer [resolvers-map]]
+   [district-registry.server.syncer]
+   [district-registry.shared.graphql-schema :refer [graphql-schema]]
+   [district-registry.shared.smart-contracts]
+   [district.graphql-utils :as graphql-utils]
+   [district.server.config :refer [config]]
+   [district.server.db :as db]
+   [district.server.db :refer [db]]
+   [district.server.graphql :as graphql]
+   [district.server.graphql.utils :as utils]
+   [district.server.logging :refer [logging]]
+   [district.server.middleware.logging :refer [logging-middlewares]]
+   [district.server.smart-contracts :as sc]
+   [district.server.web3 :refer [web3]]
+   [district.server.web3-watcher]
+   [goog.date.Date]
+   [graphql-query.core :refer [graphql-query]]
+   [mount.core :as mount]
+   [print.foo :include-macros true]))
 
 (nodejs/enable-util-print!)
 
@@ -126,9 +126,9 @@
   "Usage: (select [:*] :from [:districts])"
   [& [select-fields & r]]
   (-> (db/all (->> (partition 2 r)
-                   (map vec)
-                   (into {:select select-fields})))
-      (print-table)))
+                (map vec)
+                (into {:select select-fields})))
+    (print-table)))
 
 (defn print-db
   "Prints all db tables to the repl"

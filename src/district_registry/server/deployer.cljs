@@ -4,7 +4,7 @@
    [cljs-web3.eth :as web3-eth]
    [district.cljs-utils :refer [rand-str]]
    [district.server.config :refer [config]]
-   [district.server.smart-contracts :refer [contract-event-in-tx contract-address contract-call deploy-smart-contract! instance write-smart-contracts!]]
+   [district.server.smart-contracts :as sc :refer [contract-event-in-tx contract-address contract-call deploy-smart-contract! instance write-smart-contracts!]]
    [district.server.web3 :refer [web3]]
    [district-registry.server.contract.dnt :as dnt]
    [district-registry.server.contract.ds-auth :as ds-auth]
@@ -19,6 +19,7 @@
    [district-registry.server.contract.registry-entry :as registry-entry]
    [cljs-web3.evm :as web3-evm]
    [cljs-time.core :as t]
+   [bignumber.core :as bn]
    ))
 
 (declare deploy)
@@ -78,7 +79,10 @@
                                                         {forwarder-target-placeholder :param-change-registry}})))
 
 (defn deploy-district! [default-opts]
-  (deploy-smart-contract! :district (merge default-opts {:gas 6000000
+  (deploy-smart-contract! :district (merge default-opts {:gas
+                                                         ;; 6000000
+                                                         ;; 6721975
+                                                         10000000000
                                                          :arguments
                                                          [(contract-address :DNT)]
                                                          :placeholder-replacements
@@ -224,6 +228,20 @@
     (when write?
       (write-smart-contracts!))
 
+    (defn watch-contract-events [contract-key]
+      (let [f (-> (apply sc/instance contract-key)
+                (.allEvents))]
+        (.watch f
+          (fn [error result]
+            (if error
+              (println "Error event from " contract-key " " error)
+              (let [{:keys [:event :args :address]} (js->clj result :keywordize-keys true)]
+                (println "Event from " contract-key event " " (if (:eventType args)
+                                                                (update args :eventType web3/to-ascii)
+                                                                args))))))
+        f))
+
+
     (let [district (district-factory/approve-and-create-district
                      {:info-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"
                       :amount (web3/to-wei 10 :ether)}
@@ -233,6 +251,44 @@
                       :args
                       :registry-entry)]
 
+      (def all-filters (doall (map watch-contract-events
+                                [
+                                 [:district-factory]
+                                 [:district]
+                                 [:district reg-entry]
+                                 ;; [:DNT]
+                                 ;; [:district-registry :district-registry-fwd]
+                                 ;; [:param-change-registry :param-change-registry-fwd]
+                                 ])))
+      #_
+      (js/setTimeout
+        #(doseq [f all-filters] (.stopWatching f))
+        5000
+        )
+      #_
+      (prn "test thing"
+        ( contract-call (instance :district reg-entry) :test-thing
+         ))
+      (prn
+        "calculate purchase return"
+        (contract-call (instance :district reg-entry) :calculate-purchase-return
+          ;; (bn/number "10000000000000000000")
+          ;; (bn/number "100000000000000")
+          ;; (bn/number "333333")
+          ;; (bn/number "1116703040208428.1")
+          ;; 10000000000000000000 100000000000000 333333 1116703040208428.1
+          ;; 20 chars 15 chars
+          1 1 333333 (web3/to-wei 10 :ether) ;1116703040208428.1
+
+          ;; (* 10 1e18);;(web3/to-wei 1 :ether) ;; supply
+          ;; 1e14 ;; (web3/to-wei 1 :ether) ;; connector balance
+          ;; 333333 ;; connector weight
+          ;; 14000000000000000000;;
+          ;; (web3/to-wei 1 :ether) ;; deposit amount
+
+          (merge {:gas 300000}
+            {:from (first accounts)})))
+
       (prn "dnt" (dnt/balance-of (first accounts)))
       (prn "district token" (district/balance-of reg-entry (first accounts)))
       (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
@@ -240,98 +296,129 @@
       (prn "staked"
         (district/approve-and-stake
           {:district reg-entry
-           :amount (web3/to-wei 1 :ether)
+           :amount (web3/to-wei 10 :ether)
            :data 0}
           {:from (first accounts)}))
-
       (prn "dnt" (dnt/balance-of (first accounts)))
       (prn "district token" (district/balance-of reg-entry (first accounts)))
       (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
+      ;; (prn "|||||||||||||||||||||||||||||||||||||||||||")
+
+
+      ;; (prn "staked"
+      ;;   (district/approve-and-stake
+      ;;     {:district reg-entry
+      ;;      :amount (web3/to-wei 10 :ether)
+      ;;      :data 0}
+      ;;     {:from (first accounts)}))
+      ;; (prn "dnt" (dnt/balance-of (first accounts)))
+      ;; (prn "district token" (district/balance-of reg-entry (first accounts)))
+      ;; (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
+      ;; (prn "|||||||||||||||||||||||||||||||||||||||||||")
+
+
+
+      ;; (prn "staked"
+      ;;   (district/approve-and-stake
+      ;;     {:district reg-entry
+      ;;      :amount (web3/to-wei 10 :ether)
+      ;;      :data 0}
+      ;;     {:from (first accounts)}))
+      ;; (prn "dnt" (dnt/balance-of (first accounts)))
+      ;; (prn "district token" (district/balance-of reg-entry (first accounts)))
+      ;; (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
+      ;; (prn "|||||||||||||||||||||||||||||||||||||||||||")
+
+      (prn "unstake return"
+        (contract-call (instance :district reg-entry) :calculate-unstake-return
+          (web3/to-wei 1 :ether)
+          (merge {:gas 300000}
+            {:from (first accounts)})))
 
       (prn "unstaked"
-        (district/unstake reg-entry (web3/to-wei 1 :ether) 0))
+        (district/unstake reg-entry (web3/to-wei 1 :szabo) 0))
 
       (prn "dnt" (dnt/balance-of (first accounts)))
       (prn "district token" (district/balance-of reg-entry (first accounts)))
       (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
 
-      (prn
-        "create challenge"
-        (registry-entry/approve-and-create-challenge
-          reg-entry
-          {:amount (web3/to-wei 10 :ether)
-           :meta-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"}
-          {:from (last accounts)}))
+      ;; (prn
+      ;;   "create challenge"
+      ;;   (registry-entry/approve-and-create-challenge
+      ;;     reg-entry
+      ;;     {:amount (web3/to-wei 10 :ether)
+      ;;      :meta-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"}
+      ;;     {:from (last accounts)}))
 
-      (prn "commit vote"
-        (registry-entry/approve-and-commit-vote
-          reg-entry
-          {:amount (web3/to-wei 1 :ether)
-           :salt "abc"
-           :vote-option :vote.option/include}
-          {:from (first accounts)}))
+      ;; (prn "commit vote"
+      ;;   (registry-entry/approve-and-commit-vote
+      ;;     reg-entry
+      ;;     {:amount (web3/to-wei 1 :ether)
+      ;;      :salt "abc"
+      ;;      :vote-option :vote.option/include}
+      ;;     {:from (first accounts)}))
 
-      (prn "commit vote"
-        (registry-entry/approve-and-commit-vote
-          reg-entry
-          {:amount (web3/to-wei 2 :ether)
-           :salt "abc"
-           :vote-option :vote.option/exclude}
-          {:from (last accounts)}))
+      ;; (prn "commit vote"
+      ;;   (registry-entry/approve-and-commit-vote
+      ;;     reg-entry
+      ;;     {:amount (web3/to-wei 2 :ether)
+      ;;      :salt "abc"
+      ;;      :vote-option :vote.option/exclude}
+      ;;     {:from (last accounts)}))
 
-      (prn "staked"
-        (district/approve-and-stake
-          {:district reg-entry
-           :amount (web3/to-wei 1 :ether)
-           :data 0}
-          {:from (last accounts)}))
+      ;; (prn "staked"
+      ;;   (district/approve-and-stake
+      ;;     {:district reg-entry
+      ;;      :amount (web3/to-wei 1 :ether)
+      ;;      :data 0}
+      ;;     {:from (last accounts)}))
 
-      (prn "increased time 2 mins"
-        (web3-evm/increase-time! @web3 [(inc (t/in-seconds (t/minutes 2)))]))
+      ;; (prn "increased time 2 mins"
+      ;;   (web3-evm/increase-time! @web3 [(inc (t/in-seconds (t/minutes 2)))]))
 
-      (prn "reveal vote"
-        (registry-entry/reveal-vote
-          reg-entry
-          {:vote-option :vote.option/include
-           :salt "abc"}
-          {:from (first accounts)}))
+      ;; (prn "reveal vote"
+      ;;   (registry-entry/reveal-vote
+      ;;     reg-entry
+      ;;     {:vote-option :vote.option/include
+      ;;      :salt "abc"}
+      ;;     {:from (first accounts)}))
 
-      (prn "reveal vote"
-        (registry-entry/reveal-vote
-          reg-entry
-          {:vote-option :vote.option/exclude
-           :salt "abc"}
-          {:from (last accounts)}))
+      ;; (prn "reveal vote"
+      ;;   (registry-entry/reveal-vote
+      ;;     reg-entry
+      ;;     {:vote-option :vote.option/exclude
+      ;;      :salt "abc"}
+      ;;     {:from (last accounts)}))
 
-      (prn "increased time 1 min"
-        (web3-evm/increase-time! @web3 [(inc (t/in-seconds (t/minutes 1)))]))
+      ;; (prn "increased time 1 min"
+      ;;   (web3-evm/increase-time! @web3 [(inc (t/in-seconds (t/minutes 1)))]))
 
-      (prn "vote reward"
-        (registry-entry/vote-reward
-          reg-entry
-          (first accounts)))
+      ;; (prn "vote reward"
+      ;;   (registry-entry/vote-reward
+      ;;     reg-entry
+      ;;     (first accounts)))
 
-      (prn "vote reward"
-        (registry-entry/vote-reward
-          reg-entry
-          (last accounts)))
+      ;; (prn "vote reward"
+      ;;   (registry-entry/vote-reward
+      ;;     reg-entry
+      ;;     (last accounts)))
 
-      (prn "claim vote reward"
-        (registry-entry/claim-vote-reward
-          reg-entry
-          {:from (first accounts)}))
+      ;; (prn "claim vote reward"
+      ;;   (registry-entry/claim-vote-reward
+      ;;     reg-entry
+      ;;     {:from (first accounts)}))
 
-      (prn "claim vote reward"
-        (registry-entry/claim-vote-reward
-          reg-entry
-          {:from (last accounts)}))
+      ;; (prn "claim vote reward"
+      ;;   (registry-entry/claim-vote-reward
+      ;;     reg-entry
+      ;;     {:from (last accounts)}))
 
-      (prn
-        "create challenge 2"
-        (registry-entry/approve-and-create-challenge
-          reg-entry
-          {:amount (web3/to-wei 10 :ether)
-           :meta-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"}
-          {:from (first accounts)}))
+      ;; (prn
+      ;;   "create challenge 2"
+      ;;   (registry-entry/approve-and-create-challenge
+      ;;     reg-entry
+      ;;     {:amount (web3/to-wei 10 :ether)
+      ;;      :meta-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"}
+      ;;     {:from (first accounts)}))
 
       )))
