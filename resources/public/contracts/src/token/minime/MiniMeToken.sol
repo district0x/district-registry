@@ -100,7 +100,7 @@ contract MiniMeToken is Controlled {
   /// @param _decimalUnits Number of decimals of the new token
   /// @param _tokenSymbol Token Symbol for the new token
   /// @param _transfersEnabled If true, tokens will be able to be transferred
-  function MiniMeToken(
+  function constructMiniMeToken(
     address _tokenFactory,
     address _parentToken,
     uint _parentSnapShotBlock,
@@ -109,6 +109,7 @@ contract MiniMeToken is Controlled {
     string _tokenSymbol,
     bool _transfersEnabled
   ) public {
+    require(creationBlock == 0);
     tokenFactory = MiniMeTokenFactory(_tokenFactory);
     name = _tokenName;                                 // Set the name
     decimals = _decimalUnits;                          // Set the decimals
@@ -548,7 +549,8 @@ contract MiniMeTokenFactory {
     string _tokenSymbol,
     bool _transfersEnabled
   ) public returns (MiniMeToken) {
-    MiniMeToken newToken = new MiniMeToken(
+    MiniMeToken newToken = new MiniMeToken();
+    newToken.constructMiniMeToken(
       this,
       _parentToken,
       _snapshotBlock,
