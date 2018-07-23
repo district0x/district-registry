@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 import "ownership/Ownable.sol";
-import "token/erc20/ERC20.sol";
+import "token/minime/MiniMeToken.sol";
 import "./StakeBankInterface.sol";
 import "math/SafeMath.sol";
 
@@ -9,19 +9,19 @@ contract StakeBank is StakeBankInterface {
 
     using SafeMath for uint256;
 
-    struct Checkpoint {
+    struct StakeBankCheckpoint {
         uint256 at;
         uint256 amount;
     }
 
-    ERC20 public token;
+    MiniMeToken public token;
 
-    Checkpoint[] public stakeHistory;
+    StakeBankCheckpoint[] public stakeHistory;
 
-    mapping (address => Checkpoint[]) public stakesFor;
+    mapping (address => StakeBankCheckpoint[]) public stakesFor;
 
     /// @param _token Token that can be staked.
-    function constructStakeBank(ERC20 _token) internal {
+    function constructStakeBank(MiniMeToken _token) internal {
         require(address(_token) != 0x0);
         token = _token;   
     }
@@ -38,8 +38,8 @@ contract StakeBank is StakeBankInterface {
     /// @param amount Amount of tokens to stake.
     /// @param data Data field used for signalling in more complex staking applications.
     function stakeFor(address user, uint256 amount, bytes data) public {
-        updateCheckpointAtNow(stakesFor[user], amount, false);
-        updateCheckpointAtNow(stakeHistory, amount, false);
+        updateStakeBankCheckpointAtNow(stakesFor[user], amount, false);
+        updateStakeBankCheckpointAtNow(stakeHistory, amount, false);
 
         require(token.transferFrom(tx.origin, address(this), amount));
         // require(token.transferFrom(msg.sender, address(this), amount));
@@ -55,8 +55,8 @@ contract StakeBank is StakeBankInterface {
     function unstake(uint256 amount, bytes data) public {
         require(totalStakedFor(msg.sender) >= amount);
 
-        updateCheckpointAtNow(stakesFor[msg.sender], amount, true);
-        updateCheckpointAtNow(stakeHistory, amount, true);
+        updateStakeBankCheckpointAtNow(stakesFor[msg.sender], amount, true);
+        updateStakeBankCheckpointAtNow(stakeHistory, amount, true);
 
         require(token.transfer(msg.sender, amount));
         Unstaked(msg.sender, amount, totalStakedFor(msg.sender), data);
@@ -66,7 +66,7 @@ contract StakeBank is StakeBankInterface {
     /// @param addr Address to check.
     /// @return amount of tokens staked.
     function totalStakedFor(address addr) public view returns (uint256) {
-        Checkpoint[] storage stakes = stakesFor[addr];
+        StakeBankCheckpoint[] storage stakes = stakesFor[addr];
 
         if (stakes.length == 0) {
             return 0;
@@ -97,7 +97,7 @@ contract StakeBank is StakeBankInterface {
     /// @param addr Address to check.
     /// @return block number of last stake.
     function lastStakedFor(address addr) public view returns (uint256) {
-        Checkpoint[] storage stakes = stakesFor[addr];
+        StakeBankCheckpoint[] storage stakes = stakesFor[addr];
 
         if (stakes.length == 0) {
             return 0;
@@ -121,19 +121,19 @@ contract StakeBank is StakeBankInterface {
         return stakedAt(stakeHistory, blockNumber);
     }
 
-    function updateCheckpointAtNow(Checkpoint[] storage history, uint256 amount, bool isUnstake) internal {
+    function updateStakeBankCheckpointAtNow(StakeBankCheckpoint[] storage history, uint256 amount, bool isUnstake) internal {
 
         uint256 length = history.length;
         if (length == 0) {
-            history.push(Checkpoint({at: block.number, amount: amount}));
+            history.push(StakeBankCheckpoint({at: block.number, amount: amount}));
             return;
         }
 
         if (history[length-1].at < block.number) {
-            history.push(Checkpoint({at: block.number, amount: history[length-1].amount}));
+            history.push(StakeBankCheckpoint({at: block.number, amount: history[length-1].amount}));
         }
 
-        Checkpoint storage checkpoint = history[length];
+        StakeBankCheckpoint storage checkpoint = history[length];
 
         if (isUnstake) {
             checkpoint.amount = checkpoint.amount.sub(amount);
@@ -142,7 +142,7 @@ contract StakeBank is StakeBankInterface {
         }
     }
 
-    function stakedAt(Checkpoint[] storage history, uint256 blockNumber) internal view returns (uint256) {
+    function stakedAt(StakeBankCheckpoint[] storage history, uint256 blockNumber) internal view returns (uint256) {
         uint256 length = history.length;
 
         if (length == 0 || blockNumber < history[0].at) {

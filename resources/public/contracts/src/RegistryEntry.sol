@@ -21,6 +21,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
 
   Registry public constant registry = Registry(0xfEEDFEEDfeEDFEedFEEdFEEDFeEdfEEdFeEdFEEd);
   District0xNetworkToken public constant registryToken = District0xNetworkToken(0xDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaD);
+  // MiniMeToken public constant registryToken = MiniMeToken(0xDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaD);
   bytes32 public constant challengePeriodDurationKey = sha3("challengePeriodDuration");
   bytes32 public constant commitPeriodDurationKey = sha3("commitPeriodDuration");
   bytes32 public constant revealPeriodDurationKey = sha3("revealPeriodDuration");

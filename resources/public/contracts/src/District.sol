@@ -1,11 +1,8 @@
 pragma solidity ^0.4.18;
 
 import "./RegistryEntry.sol"; 
-// import "proxy/Forwarder.sol"; 
-import "token/erc20/StandardToken.sol";
 import "./District0xNetworkToken.sol";
-import "token/erc900/TokenReturningStakeBank.sol";
-/* import "./DistrictConfig.sol"; */
+import "token/stakebank/StakeBank.sol";
 
 /**
  * @title Contract created for each submitted District into the DistrictFactory TCR.
@@ -15,9 +12,12 @@ import "token/erc900/TokenReturningStakeBank.sol";
  * pointing into single intance of it.
  */
 
-contract District is RegistryEntry, StandardToken, TokenReturningStakeBank
+contract District is RegistryEntry, MiniMeToken, StakeBank
 {
-  bytes public infoHash; // state variable for storing IPFS hash of file that contains all data from form fields
+  /** 
+  * @dev IPFS hash of file that contains all data from form fields
+  */
+  bytes public infoHash;
 
   /**
    * @dev Constructor for this contract.
@@ -36,7 +36,17 @@ contract District is RegistryEntry, StandardToken, TokenReturningStakeBank
   public
   {
     super.construct(_creator, _version);
-    super.constructStakeBank(registryToken, this, 1);
+    super.constructMiniMeToken(
+      this,
+      0x0,
+      0,
+      "TODO Token Name",
+      18,
+      "TODO",
+      false 
+    );
+    changeController(this);
+    super.constructStakeBank(registryToken);
     challengePeriodEnd = ~uint(0);
 
     infoHash = _infoHash;
@@ -48,18 +58,6 @@ contract District is RegistryEntry, StandardToken, TokenReturningStakeBank
     infoHash = _infoHash;
   }
 
-  function mint(uint _amount) private {
-    require(_amount > 0);
-    totalSupply_ = totalSupply_.add(_amount);
-    balances[address(this)] = balances[address(this)].add(_amount);
-  }
-
-  function unmint(uint _amount) private {
-    require(_amount > 0);
-    balances[address(this)] = balances[address(this)].sub(_amount);
-    totalSupply_ = totalSupply_.sub(_amount);
-  }
-
   /// @notice Stakes a certain amount of tokens for another user.
   /// @param _user Address of the user to stake for.
   /// @param _amount Amount of tokens to stake.
@@ -67,8 +65,8 @@ contract District is RegistryEntry, StandardToken, TokenReturningStakeBank
   function stakeFor(address _user, uint _amount, bytes _data) 
   public 
   {
-    mint(_amount);
     super.stakeFor(_user, _amount, _data);
+    require(generateTokens(_user, _amount));
     maybeAdjustStakeDelta(_user, int(_amount));
   }
 
@@ -80,9 +78,8 @@ contract District is RegistryEntry, StandardToken, TokenReturningStakeBank
   /// @param _amount Amount of tokens to unstake.
   /// @param _data Data field used for signalling in more complex staking applications.
   function unstake(uint _amount, bytes _data) public {
-    allowed[msg.sender][this] = _amount;
     super.unstake(_amount, _data);
-    unmint(_amount);
+    require(this.destroyTokens(msg.sender, _amount));
     maybeAdjustStakeDelta(msg.sender, int(_amount) * -1);
   }
 
