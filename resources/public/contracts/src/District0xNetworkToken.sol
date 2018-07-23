@@ -11,16 +11,16 @@ import "./token/erc20/StandardToken.sol";
 
 contract District0xNetworkToken is StandardToken, MiniMeToken {
   function District0xNetworkToken(address _tokenFactory, uint _mintedAmount)
-  MiniMeToken(
-    _tokenFactory,
-    0x0,
-    0,
-    "district0x Network Token",
-    18,
-    "DNT",
-    true
-  )
   {
+    super.constructMiniMeToken(
+      _tokenFactory,
+      0x0,
+      0,
+      "district0x Network Token",
+      18,
+      "DNT",
+      true
+    );
     generateTokens(msg.sender, _mintedAmount);
     changeController(0x0);
   }
