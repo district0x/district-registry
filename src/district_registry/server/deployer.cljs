@@ -78,7 +78,7 @@
                                                         {forwarder-target-placeholder :param-change-registry}})))
 
 (defn deploy-district! [default-opts]
-  (deploy-smart-contract! :district (merge default-opts {:gas 6000000
+  (deploy-smart-contract! :district (merge default-opts {:gas 7999990
                                                          :arguments
                                                          [(contract-address :DNT)]
                                                          :placeholder-replacements

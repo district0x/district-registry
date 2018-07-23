@@ -109,6 +109,7 @@ contract MiniMeToken is Controlled {
     string _tokenSymbol,
     bool _transfersEnabled
   ) public {
+    super.constructControlled();
     require(creationBlock == 0);
     tokenFactory = MiniMeTokenFactory(_tokenFactory);
     name = _tokenName;                                 // Set the name
