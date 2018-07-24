@@ -4,7 +4,6 @@ import "Registry.sol";
 import "proxy/Forwarder.sol";
 import "db/EternalDb.sol";
 import "token/minime/MiniMeToken.sol";
-import "./District0xNetworkToken.sol";
 import "math/SafeMath.sol";
 
 /**
@@ -20,8 +19,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
   using SafeMath for uint;
 
   Registry public constant registry = Registry(0xfEEDFEEDfeEDFEedFEEdFEEDFeEdfEEdFeEdFEEd);
-  District0xNetworkToken public constant registryToken = District0xNetworkToken(0xDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaD);
-  // MiniMeToken public constant registryToken = MiniMeToken(0xDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaD);
+  MiniMeToken public constant registryToken = MiniMeToken(0xDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaD);
   bytes32 public constant challengePeriodDurationKey = sha3("challengePeriodDuration");
   bytes32 public constant commitPeriodDurationKey = sha3("commitPeriodDuration");
   bytes32 public constant revealPeriodDurationKey = sha3("revealPeriodDuration");
