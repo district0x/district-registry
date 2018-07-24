@@ -1,7 +1,6 @@
 pragma solidity ^0.4.18;
 
 import "./RegistryEntry.sol"; 
-import "./District0xNetworkToken.sol";
 import "token/stakebank/StakeBank.sol";
 
 /**
