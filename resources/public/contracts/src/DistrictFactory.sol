@@ -24,7 +24,8 @@ contract DistrictFactory is RegistryEntryFactory {
    */
   function createDistrict(
     address _creator,
-    bytes _infoHash
+    bytes _infoHash,
+    uint32 _dntWeight
   )
   public
   {
@@ -32,7 +33,8 @@ contract DistrictFactory is RegistryEntryFactory {
     district.construct(
       _creator,
       version,
-      _infoHash
+      _infoHash,
+      _dntWeight
     );
   }  
 }

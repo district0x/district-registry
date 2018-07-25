@@ -88,18 +88,6 @@
                                                           ;; district-config-placeholder :district-config
                                                           ;; district-token-placeholder :district-token
                                                           }})))
-#_
-(defn deploy-tsrb! [default-opts]
-  (deploy-smart-contract! :tsrb (merge default-opts {:gas 10000000000
-                                                     #_
-                                                     :placeholder-replacements
-                                                     #_
-                                                     {
-                                                      ;; dank-token-placeholder :DNT
-                                                      ;; registry-placeholder :district-registry-fwd
-                                                      ;; district-config-placeholder :district-config
-                                                      ;; district-token-placeholder :district-token
-                                                      }})))
 
 (defn deploy-param-change! [default-opts]
   (deploy-smart-contract! :param-change (merge default-opts {:gas 5700000
@@ -200,7 +188,7 @@
                       :dst (contract-address :district-registry-db)
                       :sig ds-guard/ANY}
       deploy-opts)
-    
+
     ;; Allow :param-change-registry-fwd to make changes into :param-change-registry-db
     (ds-guard/permit {:src (contract-address :param-change-registry-fwd)
                       :dst (contract-address :param-change-registry-db)
@@ -226,6 +214,7 @@
 
     (let [district (district-factory/approve-and-create-district
                      {:info-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"
+                      :dnt-weight 333333
                       :amount (web3/to-wei 10 :ether)}
                      {:from (first accounts)})
           reg-entry (-> district
@@ -240,7 +229,18 @@
       (prn "staked"
         (district/approve-and-stake
           {:district reg-entry
-           :amount (web3/to-wei 1 :ether)
+           :amount (web3/to-wei 10 :ether)
+           :data 0}
+          {:from (first accounts)}))
+
+      (prn "dnt" (dnt/balance-of (first accounts)))
+      (prn "district token" (district/balance-of reg-entry (first accounts)))
+      (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
+
+      (prn "staked"
+        (district/approve-and-stake
+          {:district reg-entry
+           :amount (web3/to-wei 10 :ether)
            :data 0}
           {:from (first accounts)}))
 
