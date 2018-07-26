@@ -123,11 +123,9 @@ contract District is RegistryEntry, MiniMeToken, StakeBank, Power
   }
 
   function estimateReturnForStake(uint _amount) public view returns (uint) {
-    uint supply = 1e19;
-    uint staked = 1e14;
     return calculatePurchaseReturn(
-      totalSupply() + supply,
-      totalStaked() + staked,
+      totalSupply().add(1e19),
+      totalStaked().add(1e14),
       dntWeight,
       _amount
     );
