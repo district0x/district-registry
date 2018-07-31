@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.24;
 
 import "Registry.sol";
 import "proxy/Forwarder.sol";
@@ -138,10 +138,12 @@ contract RegistryEntry is ApproveAndCallFallBack {
 
     challenges.push(challenge);
 
-    registry.fireRegistryEntryEvent("challengeCreated", version);
+    var eventData = new uint[](1);
+    eventData[0] = currentChallengeIndex();
+    registry.fireRegistryEntryEvent("challengeCreated", version, eventData);
   }
 
-  function currentChallengeIndex() public returns (uint) {
+  function currentChallengeIndex() public constant returns (uint) {
     return challenges.length - 1;
   }
 
@@ -174,8 +176,9 @@ contract RegistryEntry is ApproveAndCallFallBack {
     challenge.vote[_voter].secretHash = _secretHash;
     challenge.vote[_voter].amount += _amount;
 
-    var eventData = new uint[](1);
-    eventData[0] = uint(_voter);
+    var eventData = new uint[](2);
+    eventData[0] = currentChallengeIndex();
+    eventData[1] = uint(_voter);
     registry.fireRegistryEntryEvent("voteCommitted", version, eventData);
   }
 
@@ -212,8 +215,9 @@ contract RegistryEntry is ApproveAndCallFallBack {
       revert();
     }
 
-    var eventData = new uint[](1);
-    eventData[0] = uint(msg.sender);
+    var eventData = new uint[](2);
+    eventData[0] = currentChallengeIndex();
+    eventData[1] = uint(msg.sender);
     registry.fireRegistryEntryEvent("voteRevealed", version, eventData);
   }
 
@@ -247,8 +251,9 @@ contract RegistryEntry is ApproveAndCallFallBack {
 
     challenges[_challengeIndex].vote[_voter].claimedRewardOn = now;
 
-    var eventData = new uint[](1);
-    eventData[0] = uint(_voter);
+    var eventData = new uint[](2);
+    eventData[0] = _challengeIndex;
+    eventData[1] = uint(_voter);
     registry.fireRegistryEntryEvent("voteRewardClaimed", version, eventData);
   }
 
@@ -272,7 +277,9 @@ contract RegistryEntry is ApproveAndCallFallBack {
     require(registryToken.transfer(challenge.challenger, entryRewardNth(_challengeIndex)));
     challenge.claimedRewardOn = now;
 
-    registry.fireRegistryEntryEvent("challengeRewardClaimed", version);
+    var eventData = new uint[](1);
+    eventData[0] = _challengeIndex;
+    registry.fireRegistryEntryEvent("challengeRewardClaimed", version, eventData);
   }
 
   /**
@@ -295,7 +302,9 @@ contract RegistryEntry is ApproveAndCallFallBack {
     require(registryToken.transfer(creator, entryRewardNth(_challengeIndex)));
     challenge.claimedRewardOn = now;
 
-    registry.fireRegistryEntryEvent("creatorRewardClaimed", version);
+    var eventData = new uint[](1);
+    eventData[0] = _challengeIndex;
+    registry.fireRegistryEntryEvent("creatorRewardClaimed", version, eventData);
   }
 
   /**
@@ -556,23 +565,26 @@ contract RegistryEntry is ApproveAndCallFallBack {
 
   /**
    * @dev Returns all basic state related to this contract for simpler offchain access
-   * For challenge info see loadRegistryEntryChallenge()
+   * For challenge info see loadChallenge()
    */
-  function loadRegistryEntry() public constant returns (uint, Status, address, uint, uint) {
+  function loadRegistryEntry() public constant returns (uint, Status, address, uint, uint, uint) {
     return (
     version,
     status(),
     creator,
     deposit,
-    challengePeriodEnd
+    challengePeriodEnd,
+    challenges.length
     );
   }
 
   /**
    * @dev Returns all challenge state related to this contract for simpler offchain access
    */
-  function loadRegistryEntryChallenge() public constant returns (uint, address, uint, bytes, uint, uint, uint, uint, uint, uint) {
-    Challenge challenge = currentChallenge();
+  function loadChallenge(uint _challengeIndex) public constant returns (uint, address, uint, bytes, uint, uint, uint, uint, uint, uint) {
+    Challenge storage challenge = challenges[_challengeIndex];
+    uint include = votesIncludeNth(_challengeIndex);
+    uint exclude = votesExcludeNth(_challengeIndex);
     return (    
     challengePeriodEnd,
     challenge.challenger,
@@ -580,8 +592,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
     challenge.metaHash,
     challenge.commitPeriodEnd,
     challenge.revealPeriodEnd,
-    challenge.votesInclude,
-    challenge.votesExclude,
+    include,
+    exclude,
     challenge.claimedRewardOn,
     challenge.voteQuorum
     );
@@ -592,15 +604,15 @@ contract RegistryEntry is ApproveAndCallFallBack {
    *
    * @param _voter Address of a voter
    */
-  function loadVote(address _voter) public constant returns (bytes32, VoteOption, uint, uint, uint) {
-    Challenge challenge = currentChallenge();
-    Vote vtr = challenge.vote[_voter];
+  function loadVote(uint _challengeIndex, address _voter) public constant returns (bytes32, VoteOption, uint, uint, uint) {
+    Challenge storage challenge = challenges[_challengeIndex];
+    Vote storage vote = challenge.vote[_voter];
     return (
-    vtr.secretHash,
-    vtr.option,
-    vtr.amount,
-    vtr.revealedOn,
-    vtr.claimedRewardOn
+    vote.secretHash,
+    vote.option,
+    vote.amount,
+    vote.revealedOn,
+    vote.claimedRewardOn
     );
   }
 }

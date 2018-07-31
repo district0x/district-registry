@@ -332,6 +332,42 @@
           reg-entry
           {:amount (web3/to-wei 10 :ether)
            :meta-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"}
-          {:from (first accounts)}))
+          {:from (last accounts)}))
+
+      (prn "commit vote"
+        (registry-entry/approve-and-commit-vote
+          reg-entry
+          {:amount (web3/to-wei 20 :ether)
+           :salt "abc"
+           :vote-option :vote.option/exclude}
+          {:from (last accounts)}))
+
+      (prn "increased time 2 mins"
+        (web3-evm/increase-time! @web3 [(inc (t/in-seconds (t/minutes 2)))]))
+
+      (prn "reveal vote"
+        (registry-entry/reveal-vote
+          reg-entry
+          {:vote-option :vote.option/exclude
+           :salt "abc"}
+          {:from (last accounts)}))
+
+      (prn "increased time 1 min"
+        (web3-evm/increase-time! @web3 [(inc (t/in-seconds (t/minutes 1)))]))
+
+      (prn "vote reward"
+        (registry-entry/vote-reward
+          reg-entry
+          (last accounts)))
+
+      (prn "claim vote reward"
+        (registry-entry/claim-vote-reward
+          reg-entry
+          {:from (last accounts)}))
+
+      (prn "claim challenge reward"
+        (registry-entry/claim-challenge-reward
+          reg-entry
+          {:from (last accounts)}))
 
       )))

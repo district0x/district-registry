@@ -213,4 +213,16 @@ contract District is RegistryEntry, MiniMeToken, StakeBank, Power
     revert();
   }
 
+  /**
+   * @dev Returns all state related to this contract for simpler offchain access
+   */
+  function loadDistrict() public constant returns (bytes, uint32, uint, uint) {
+    return (
+      infoHash,
+      dntWeight,
+      totalStaked(),
+      totalSupply()
+    );
+  }
+
 }

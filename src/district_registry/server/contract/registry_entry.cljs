@@ -8,7 +8,7 @@
    [district-registry.server.contract.dnt :as dnt]
    [district-registry.server.contract.minime-token :as minime-token]
    [district-registry.shared.contract.registry-entry :refer [parse-status parse-load-registry-entry
-                                                             parse-load-registry-entry-challenge
+                                                             parse-load-challenge
                                                              parse-load-vote vote-option->num]]))
 
 (defn registry [contract-addr]
@@ -23,10 +23,11 @@
     contract-addr
     (contract-call (instance :district contract-addr) :load-registry-entry)))
 
-(defn load-registry-entry-challenge [contract-addr]
-  (parse-load-registry-entry-challenge
+(defn load-challenge [contract-addr challenge-index]
+  (parse-load-challenge
     contract-addr
-    (contract-call (instance :district contract-addr) :load-registry-entry-challenge)))
+    challenge-index
+    (contract-call (instance :district contract-addr) :load-challenge challenge-index)))
 
 (defn create-challenge [contract-addr {:keys [:challenger :meta-hash]} & [opts]]
   (contract-call (instance :district contract-addr) :create-challenge challenger meta-hash (merge {:gas 1200000} opts)))
@@ -63,11 +64,12 @@
 (defn claim-vote-reward [contract-addr & [opts]]
   (contract-call (instance :district contract-addr) :claim-vote-reward (:from opts) (merge {:gas 500000} opts)))
 
-(defn load-vote [contract-addr voter-address]
+(defn load-vote [contract-addr challenge-index voter-address]
   (parse-load-vote
     contract-addr
+    challenge-index
     voter-address
-    (contract-call (instance :district contract-addr) :load-vote voter-address)))
+    (contract-call (instance :district contract-addr) :load-vote challenge-index voter-address)))
 
 (defn vote-reward [contract-addr voter-address]
   (contract-call (instance :district contract-addr) :vote-reward voter-address))
