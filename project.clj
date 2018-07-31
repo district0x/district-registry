@@ -80,8 +80,7 @@
                      "DistrictFactory.sol"
                      "District.sol"
                      "ParamChangeFactory.sol"
-                     "ParamChangeRegistry.sol"
-                     ]}
+                     "ParamChangeRegistry.sol"]}
 
   :source-paths ["src" "test"]
 

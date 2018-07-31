@@ -29,72 +29,74 @@
 (def error-text "smart-contract event error")
 
 (defn on-constructed [{:keys [:registry-entry :timestamp] :as args} _ type]
-  (info info-text {:args args} ::on-constructed)
+  (info info-text type {:args args} ::on-constructed)
   (try
-    (db/insert-registry-entry! (merge (registry-entry/load-registry-entry registry-entry)
-                                 (registry-entry/load-registry-entry-challenge registry-entry)
+    (db/insert-registry-entry! (merge
+                                 (registry-entry/load-registry-entry registry-entry)
                                  {:reg-entry/created-on timestamp}))
     (if (= type :district)
-      (db/insert-district! (merge (district/load-district registry-entry)
-                             {:district/image-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"
-                              :district/title "HapplyHarambe"}))
+      (db/insert-district! (district/load-district registry-entry))
       (db/insert-param-change! (param-change/load-param-change registry-entry)))
     (catch :default e
       (error error-text {:args args :error (ex-message e)} ::on-constructed))))
 
-
-(defn on-challenge-created [{:keys [:registry-entry :timestamp] :as args}]
+(defn on-challenge-created [{:keys [:registry-entry :timestamp :data] :as args}]
   (info info-text {:args args} ::on-challenge-created)
   (try
-    (db/update-registry-entry! (merge (registry-entry/load-registry-entry registry-entry)
-                                      (registry-entry/load-registry-entry-challenge registry-entry)
-                                      {:challenge/created-on timestamp}))
+    (let [challenge-index (-> data first .toNumber)]
+      (db/insert-challenge!
+        (merge
+          (registry-entry/load-challenge registry-entry challenge-index)
+          {:challenge/index challenge-index})))
     (catch :default e
       (error error-text {:args args :error (ex-message e)} ::on-challenge-created))))
-
 
 (defn on-vote-committed [{:keys [:registry-entry :timestamp :data] :as args}]
   (info info-text {:args args} ::on-vote-committed)
   (try
-    (let [voter (web3-utils/uint->address (first data))
-          vote (registry-entry/load-vote registry-entry voter)]
-      (db/insert-vote! (merge vote {:vote/created-on timestamp})))
+    (let [[challenge-index voter] data
+          challenge-index (.toNumber challenge-index)
+          voter (web3-utils/uint->address voter)
+          vote (registry-entry/load-vote registry-entry challenge-index voter)]
+      (db/insert-vote! (merge vote
+                         {:vote/created-on timestamp})))
     (catch :default e
       (error error-text {:args args :error (ex-message e)} ::on-vote-committed))))
-
 
 (defn on-vote-revealed [{:keys [:registry-entry :timestamp :data] :as args}]
   (info info-text {:args args} ::on-vote-revealed)
   (try
-    (let [voter (web3-utils/uint->address (first data))]
-      (db/update-registry-entry! (merge (registry-entry/load-registry-entry registry-entry)
-                                        (registry-entry/load-registry-entry-challenge registry-entry)))
-      (db/update-vote! (registry-entry/load-vote registry-entry voter)))
+    (let [[challenge-index voter] data
+          challenge-index (.toNumber challenge-index)
+          voter (web3-utils/uint->address voter)
+          vote (registry-entry/load-vote registry-entry challenge-index voter)
+          challenge (registry-entry/load-challenge registry-entry challenge-index)]
+      (db/update-challenge! challenge)
+      (db/update-vote! vote))
     (catch :default e
       (error error-text {:args args :error (ex-message e)} ::on-vote-revealed))))
-
 
 (defn on-vote-reward-claimed [{:keys [:registry-entry :timestamp :data] :as args}]
   (info info-text {:args args} ::on-vote-reward-claimed)
   (try
-    (let [voter (web3-utils/uint->address (first data))
-          vote (registry-entry/load-vote registry-entry voter)]
+    (let [[challenge-index voter] data
+          challenge-index (.toNumber challenge-index)
+          voter (web3-utils/uint->address voter)
+          vote (registry-entry/load-vote registry-entry challenge-index voter)]
       (db/update-vote! vote))
     (catch :default e
       (error error-text {:args args :error (ex-message e)} ::on-vote-reward-claimed))))
 
-
 (defn on-challenge-reward-claimed [{:keys [:registry-entry :timestamp :data] :as args}]
   (info info-text {:args args} ::on-challenge-reward-claimed)
   (try
-    (let [{:keys [:challenge/challenger :reg-entry/deposit] :as reg-entry}
-          (merge (registry-entry/load-registry-entry registry-entry)
-                 (registry-entry/load-registry-entry-challenge registry-entry))]
-
-      (db/update-registry-entry! reg-entry))
+    (->> data
+      first
+      .toNumber
+      (registry-entry/load-challenge registry-entry)
+      db/update-challenge!)
     (catch :default e
       (error error-text {:args args :error (ex-message e)} ::on-challenge-reward-claimed))))
-
 
 (def registry-entry-events
   {:constructed on-constructed
@@ -104,30 +106,25 @@
    :vote-reward-claimed on-vote-reward-claimed
    :challenge-reward-claimed on-challenge-reward-claimed})
 
-
 (defn dispatch-registry-entry-event [type err {{:keys [:event-type] :as args} :args :as event}]
   (let [event-type (cs/->kebab-case-keyword (web3-utils/bytes32->str event-type))]
     ((get registry-entry-events event-type identity)
-      (-> args
-        (assoc :event-type event-type)
-        (update :timestamp bn/number)
-        (update :version bn/number))
-      event
-      type)))
-
+     (-> args
+       (assoc :event-type event-type)
+       (update :timestamp bn/number)
+       (update :version bn/number))
+     event
+     type)))
 
 (defn start [opts]
   (when-not (web3/connected? @web3)
     (throw (js/Error. "Can't connect to Ethereum node")))
-  #_
   [(-> (registry/registry-entry-event [:district-registry :district-registry-fwd] {} {:from-block 0 :to-block "latest"})
      (replay-past-events (partial dispatch-registry-entry-event :district)))
    (-> (registry/registry-entry-event [:param-change-registry :param-change-registry-fwd] {} {:from-block 0 :to-block "latest"})
      (replay-past-events (partial dispatch-registry-entry-event :param-change)))])
 
-
 (defn stop [syncer]
-  #_
   (doseq [filter (remove nil? @syncer)]
     (web3-eth/stop-watching! filter (fn [err]))))
 

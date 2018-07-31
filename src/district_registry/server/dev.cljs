@@ -78,7 +78,9 @@
 
 (defn -main [& _]
   (-> (mount/with-args
-        {:config {:default {:logging {:level "info"
+        {:config {:default {:db {:opts {:memory true}
+                                 :path "district-registry.db"}
+                            :logging {:level "info"
                                       :console? true}
                             :graphql {:port 6300
                                       :middlewares [logging-middlewares]

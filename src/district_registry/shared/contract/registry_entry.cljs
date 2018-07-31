@@ -16,18 +16,19 @@
                                :reg-entry/status
                                :reg-entry/creator
                                :reg-entry/deposit
-                               :reg-entry/challenge-period-end])
+                               :reg-entry/challenge-period-end,
+                               :reg-entry/challenges-count])
 
-(def load-registry-entry-challenge-keys [:reg-entry/challenge-period-end
-                                         :challenge/challenger
-                                         :challenge/reward-pool
-                                         :challenge/meta-hash-
-                                         :challenge/commit-period-end
-                                         :challenge/reveal-period-end
-                                         :challenge/votes-for
-                                         :challenge/votes-against
-                                         :challenge/claimed-reward-on
-                                         :challenge/vote-quorum])
+(def load-challenge-keys [:reg-entry/challenge-period-end
+                          :challenge/challenger
+                          :challenge/reward-pool
+                          :challenge/meta-hash
+                          :challenge/commit-period-end
+                          :challenge/reveal-period-end
+                          :challenge/votes-include
+                          :challenge/votes-exclude
+                          :challenge/claimed-reward-on
+                          :challenge/vote-quorum])
 
 (def vote-props [:vote/secret-hash
                  :vote/option
@@ -55,29 +56,31 @@
         (update :reg-entry/status parse-status)
         (update :reg-entry/challenge-period-end (if parse-dates? web3-time->local-date-time bn/number))))))
 
-(defn parse-load-registry-entry-challenge [reg-entry-addr registry-entry & [{:keys [:parse-dates?]}]]
+(defn parse-load-challenge [reg-entry-addr challenge-index registry-entry & [{:keys [:parse-dates?]}]]
   (when registry-entry
-    (let [registry-entry (zipmap load-registry-entry-challenge-keys registry-entry)]
+    (let [registry-entry (zipmap load-challenge-keys registry-entry)]
       (-> registry-entry
-          (update :reg-entry/challenge-period-end (if parse-dates? web3-time->local-date-time bn/number))
-          (update :challenge/challenger #(when-not (empty-address? %) %))
-          (update :challenge/reward-pool wei->eth-number)
-          (update :challenge/meta-hash #(when-not (empty-address? %) (web3/to-ascii %)))
-          (update :challenge/commit-period-end (if parse-dates? web3-time->local-date-time bn/number))
-          (update :challenge/reveal-period-end (if parse-dates? web3-time->local-date-time bn/number))
-          (update :challenge/votes-for bn/number)
-          (update :challenge/vote-quorum bn/number)
-          (update :challenge/votes-against bn/number)
-          (update :challenge/claimed-reward-on (if parse-dates? web3-time->local-date-time bn/number))))))
+        (assoc :reg-entry/address reg-entry-addr)
+        (assoc :challenge/index challenge-index)
+        (update :challenge/challenger #(when-not (empty-address? %) %))
+        (update :challenge/reward-pool wei->eth-number)
+        (update :challenge/meta-hash #(when-not (empty-address? %) (web3/to-ascii %)))
+        (update :challenge/commit-period-end (if parse-dates? web3-time->local-date-time bn/number))
+        (update :challenge/reveal-period-end (if parse-dates? web3-time->local-date-time bn/number))
+        (update :challenge/votes-include bn/number)
+        (update :challenge/votes-exclude bn/number)
+        (update :challenge/claimed-reward-on (if parse-dates? web3-time->local-date-time bn/number))
+        (update :challenge/vote-quorum bn/number)))))
 
 (defn parse-vote-option [vote-option]
   (vote-options (bn/number vote-option)))
 
-(defn parse-load-vote [contract-addr voter-address voter & [{:keys [:parse-dates? :parse-vote-option?]}]]
+(defn parse-load-vote [contract-addr challenge-index voter-address voter & [{:keys [:parse-dates? :parse-vote-option?]}]]
   (when voter
     (let [voter (zipmap vote-props voter)]
       (-> voter
         (assoc :reg-entry/address contract-addr)
+        (assoc :challenge/index challenge-index)
         (assoc :vote/voter voter-address)
         (update :vote/option (if parse-vote-option? parse-vote-option bn/number))
         (update :vote/amount bn/number)
