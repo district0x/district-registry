@@ -10,7 +10,7 @@ pragma solidity ^0.4.24;
  * and to You under the Apache License, Version 2.0. "
  */
 contract Power {
-  string public version = "0.3";
+  // string public version = "0.3";
 
   uint256 private constant ONE = 1;
   // uint32 private constant MAX_WEIGHT = 1000000;

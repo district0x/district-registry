@@ -98,13 +98,25 @@
     (catch :default e
       (error error-text {:args args :error (ex-message e)} ::on-challenge-reward-claimed))))
 
+(defn on-staked-or-unstaked-fn [event {:keys [:registry-entry :timestamp :data] :as args}]
+  (info info-text {:args args} event)
+  (try
+    (db/update-district! (district/load-district registry-entry))
+    (catch :default e
+      (error error-text {:args args :error (ex-message e)} event))))
+
+(def on-staked (partial on-staked-or-unstaked-fn ::on-staked))
+(def on-unstaked (partial on-staked-or-unstaked-fn ::on-unstaked))
+
 (def registry-entry-events
   {:constructed on-constructed
    :challenge-created on-challenge-created
    :vote-committed on-vote-committed
    :vote-revealed on-vote-revealed
    :vote-reward-claimed on-vote-reward-claimed
-   :challenge-reward-claimed on-challenge-reward-claimed})
+   :challenge-reward-claimed on-challenge-reward-claimed
+   :staked on-staked
+   :unstaked on-unstaked})
 
 (defn dispatch-registry-entry-event [type err {{:keys [:event-type] :as args} :args :as event}]
   (let [event-type (cs/->kebab-case-keyword (web3-utils/bytes32->str event-type))]

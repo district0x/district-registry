@@ -28,7 +28,6 @@
    [:reg-entry/created-on :unsigned :integer not-nil]
    [:reg-entry/challenge-period-end :unsigned :integer not-nil]])
 
-
 (def districts-columns
   [[:reg-entry/address address not-nil]
    [:district/info-hash ipfs-hash not-nil]
