@@ -24,7 +24,7 @@
     (merge {:gas 6000000} opts)))
 
 (defn unstake [contract-addr amount data & [opts]]
-  (contract-call (instance :district contract-addr) :unstake amount data (merge {:gas 300000} opts)))
+  (contract-call (instance :district contract-addr) :unstake amount data (merge {:gas 600000} opts)))
 
 (defn balance-of [contract-addr owner]
   (contract-call (instance :district contract-addr) :balance-of owner))
