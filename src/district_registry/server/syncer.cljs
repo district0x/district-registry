@@ -102,6 +102,11 @@
   (info info-text {:args args} event)
   (try
     (db/update-district! (district/load-district registry-entry))
+    (->> data
+      first
+      web3-utils/uint->address
+      (district/load-stake registry-entry)
+      db/insert-or-replace-stake!)
     (catch :default e
       (error error-text {:args args :error (ex-message e)} event))))
 

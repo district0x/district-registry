@@ -73,11 +73,20 @@
    [(sql/call :primary-key :vote/voter :challenge/index :reg-entry/address)]
    [(sql/call :foreign-key :reg-entry/address) (sql/call :references :reg-entries :reg-entry/address)]])
 
+(def stakes-columns
+  [[:reg-entry/address address not-nil]
+   [:stake/staker address not-nil]
+   [:stake/dnt :unsigned :integer not-nil]
+   [:stake/tokens :unsigned :integer not-nil]
+   [(sql/call :primary-key :reg-entry/address :stake/staker)]
+   [(sql/call :foreign-key :reg-entry/address) (sql/call :references :districts :reg-entry/address)]])
+
 (def registry-entry-column-names (map first registry-entries-columns))
 (def districts-column-names (map first districts-columns))
 (def param-change-column-names (filter keyword? (map first param-changes-columns)))
 (def votes-column-names (map first votes-columns))
 (def challenges-column-names (map first challenges-columns))
+(def stakes-column-names (map first stakes-columns))
 
 (defn- index-name [col-name]
   (keyword (namespace col-name) (str (name col-name) "-index")))
@@ -97,9 +106,13 @@
             :with-columns [param-changes-columns]})
 
   (db/run! {:create-table [:votes]
-            :with-columns [votes-columns]}))
+            :with-columns [votes-columns]})
+
+  (db/run! {:create-table [:stakes]
+            :with-columns [stakes-columns]}))
 
 (defn stop []
+  (db/run! {:drop-table [:stakes]})
   (db/run! {:drop-table [:votes]})
   (db/run! {:drop-table [:challenges]})
   (db/run! {:drop-table [:param-changes]})
@@ -155,3 +168,7 @@
 
 (def insert-vote! (create-insert-fn :votes votes-column-names))
 (def update-vote! (create-update-fn :votes votes-column-names [:reg-entry/address :challenge/index :vote/voter]))
+
+(def insert-stake! (create-insert-fn :stakes stakes-column-names))
+(def insert-or-replace-stake! (create-insert-fn :stakes stakes-column-names {:insert-or-replace? true}))
+(def update-stake! (create-update-fn :stakes stakes-column-names [:reg-entry/address :stake/staker]))

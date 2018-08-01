@@ -10,6 +10,10 @@
    :district/dnt-staked
    :district/total-supply])
 
+(def load-stake-keys
+  [:stake/dnt
+   :stake/tokens])
+
 (defn parse-load-district [contract-addr district & [{:keys [:parse-dates?]}]]
   (when district
     (let [district (zipmap load-district-keys district)]
@@ -20,3 +24,12 @@
         (update :district/dnt-staked bn/number)
         (update :district/total-supply bn/number)
         ))))
+
+(defn parse-load-stake [contract-addr staker-addr stake & [{:keys [:parse-dates?]}]]
+  (when stake
+    (let [stake (zipmap load-stake-keys stake)]
+      (-> stake
+        (assoc :reg-entry/address contract-addr)
+        (assoc :stake/staker staker-addr)
+        (update :stake/dnt bn/number)
+        (update :stake/tokens bn/number)))))
