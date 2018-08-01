@@ -2,14 +2,22 @@
   (:require
    [district.server.smart-contracts :refer [contract-call instance contract-address]]
    [district-registry.server.contract.dnt :as dnt]
-   [district-registry.shared.contract.district :refer [parse-load-district]]
+   [district-registry.shared.contract.district :refer [parse-load-district parse-load-stake]]
    [cljs-web3.eth :as web3-eth]))
 
 (defn mint [contract-addr & [amount opts]]
   (contract-call [:district contract-addr] :mint (or amount 0) (merge {:gas 6000000} opts)))
 
 (defn load-district [contract-addr]
-  (parse-load-district contract-addr (contract-call (instance :district contract-addr) :load-district)))
+  (parse-load-district
+    contract-addr
+    (contract-call (instance :district contract-addr) :load-district)))
+
+(defn load-stake [contract-addr staker-addr]
+  (parse-load-stake
+    contract-addr
+    staker-addr
+    (contract-call (instance :district contract-addr) :load-stake staker-addr)))
 
 (defn transfer-deposit [contract-addr & [opts]]
   (contract-call (instance :district contract-addr) :transfer-deposit (merge {:gas 300000} opts)))

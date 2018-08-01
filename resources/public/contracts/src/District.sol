@@ -141,7 +141,10 @@ contract District is RegistryEntry, MiniMeToken, StakeBank, Power
     super.stakeFor(_user, _amount, _data);
     require(generateTokens(_user, estimateReturnForStake(_amount)));
     maybeAdjustStakeDelta(_user, int(_amount));
-    registry.fireRegistryEntryEvent("staked", version);
+
+    var eventData = new uint[](1);
+    eventData[0] = uint(_user);
+    registry.fireRegistryEntryEvent("staked", version, eventData);
   }
 
   function stake(uint256 _amount, bytes _data) public {
@@ -159,7 +162,10 @@ contract District is RegistryEntry, MiniMeToken, StakeBank, Power
     super.unstake(_amount, _data);
     require(this.destroyTokens(msg.sender, toDestroy));
     maybeAdjustStakeDelta(msg.sender, int(_amount) * -1);
-    registry.fireRegistryEntryEvent("unstaked", version);
+
+    var eventData = new uint[](1);
+    eventData[0] = uint(msg.sender);
+    registry.fireRegistryEntryEvent("unstaked", version, eventData);
   }
 
   struct StakeDelta {
@@ -224,6 +230,13 @@ contract District is RegistryEntry, MiniMeToken, StakeBank, Power
       dntWeight,
       totalStaked(),
       totalSupply()
+    );
+  }
+
+  function loadStake(address _staker) public constant returns (uint, uint) {
+    return (
+      totalStakedFor(_staker),
+      balanceOf(_staker)
     );
   }
 
