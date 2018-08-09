@@ -25,14 +25,15 @@
    [mount.core :as mount :refer [defstate]]))
 
 (declare start)
-(defstate ^{:on-reload :noop} generator :start (start (merge (:generator @config)
-                                                             (:generator (mount/args)))))
-
+(defstate ^{:on-reload :noop} generator :start (start (merge
+                                                        (:generator @config)
+                                                        (:generator (mount/args)))))
 
 (defn get-scenarios [{:keys [:accounts :use-accounts :items-per-account :scenarios]}]
-  (when (and (pos? use-accounts)
-             (pos? items-per-account)
-             (seq scenarios))
+  (when (and
+          (pos? use-accounts)
+          (pos? items-per-account)
+          (seq scenarios))
     (let [accounts-repeated (flatten (for [x accounts]
                                        (repeat items-per-account x)))
           scenarios (map #(if (keyword? %) {:scenario-type %} %) scenarios)
@@ -130,6 +131,7 @@
                     district-registry/registry-entry-event-in-tx
                     :args
                     :registry-entry)]
+    (prn "accounts " accounts)
 
     (prn "dnt" (dnt/balance-of (first accounts)))
     (prn "district token" (district/balance-of reg-entry (first accounts)))

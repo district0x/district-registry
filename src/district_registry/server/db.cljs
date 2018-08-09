@@ -26,7 +26,9 @@
    [:reg-entry/creator address not-nil]
    [:reg-entry/deposit :unsigned :BIG :INT not-nil]
    [:reg-entry/created-on :unsigned :integer not-nil]
-   [:reg-entry/challenge-period-end :unsigned :integer not-nil]])
+   [:reg-entry/challenge-period-end :unsigned :integer not-nil]
+   ;; Make joining reg entries with their latest challenge a lot easier
+   [:reg-entry/current-challenge-index :unsigned :integer]])
 
 (def districts-columns
   [[:reg-entry/address address not-nil]
