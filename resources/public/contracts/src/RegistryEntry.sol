@@ -585,7 +585,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
     Challenge storage challenge = challenges[_challengeIndex];
     uint include = votesIncludeNth(_challengeIndex);
     uint exclude = votesExcludeNth(_challengeIndex);
-    return (    
+    return (
     challengePeriodEnd,
     challenge.challenger,
     challenge.rewardPool,

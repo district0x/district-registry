@@ -47,7 +47,9 @@
       (db/insert-challenge!
         (merge
           (registry-entry/load-challenge registry-entry challenge-index)
-          {:challenge/index challenge-index})))
+          {:challenge/index challenge-index}))
+      (db/update-registry-entry! {:reg-entry/current-challenge-index challenge-index
+                                  :reg-entry/address registry-entry}))
     (catch :default e
       (error error-text {:args args :error (ex-message e)} ::on-challenge-created))))
 
