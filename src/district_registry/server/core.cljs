@@ -1,17 +1,18 @@
 (ns district-registry.server.core
   (:require
-    [cljs.nodejs :as nodejs]
-    [district.server.config :refer [config]]
-    [district.server.logging]
-    [district.server.middleware.logging :refer [logging-middlewares]]
-    [district.server.web3-watcher]
-    [district-registry.server.db]
-    [district-registry.server.deployer]
-    [district-registry.server.generator]
-    [district-registry.server.syncer]
-    [district-registry.shared.smart-contracts]
-    [mount.core :as mount]
-    [taoensso.timbre :refer-macros [info warn error]]))
+   [cljs.nodejs :as nodejs]
+   [district-registry.server.db]
+   [district-registry.server.deployer]
+   [district-registry.server.generator]
+   [district-registry.server.ipfs :as ipfs]
+   [district-registry.server.syncer]
+   [district-registry.shared.smart-contracts]
+   [district.server.config :refer [config]]
+   [district.server.logging]
+   [district.server.middleware.logging :refer [logging-middlewares]]
+   [district.server.web3-watcher]
+   [mount.core :as mount]
+   [taoensso.timbre :refer-macros [info warn error]]))
 
 (nodejs/enable-util-print!)
 

@@ -1,7 +1,6 @@
 pragma solidity ^0.4.18;
-// DistrictFactory
 import "./RegistryEntryFactory.sol";
-import "./District.sol"; 
+import "./District.sol";
 
 /**
  * @title Factory contract for creating District contracts
@@ -15,7 +14,6 @@ contract DistrictFactory is RegistryEntryFactory {
   function DistrictFactory(Registry _registry, MiniMeToken _registryToken)
   RegistryEntryFactory(_registry, _registryToken)
   {
-    
   }
 
   /**
@@ -36,6 +34,6 @@ contract DistrictFactory is RegistryEntryFactory {
       _infoHash,
       _dntWeight
     );
-  }  
+  }
 }
 

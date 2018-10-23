@@ -59,7 +59,7 @@ contract District is RegistryEntry, MiniMeToken, StakeBank, Power
       "TODO Token Name",
       18,
       "TODO",
-      false 
+      false
     );
     changeController(this);
 
@@ -135,8 +135,8 @@ contract District is RegistryEntry, MiniMeToken, StakeBank, Power
   /// @param _user Address of the user to stake for.
   /// @param _amount Amount of tokens to stake.
   /// @param _data Data field used for signalling in more complex staking applications.
-  function stakeFor(address _user, uint _amount, bytes _data) 
-  public 
+  function stakeFor(address _user, uint _amount, bytes _data)
+  public
   {
     super.stakeFor(_user, _amount, _data);
     require(generateTokens(_user, estimateReturnForStake(_amount)));
@@ -179,8 +179,8 @@ contract District is RegistryEntry, MiniMeToken, StakeBank, Power
   function maybeAdjustStakeDelta(
     address _voter,
     int _amount
-  ) 
-  private 
+  )
+  private
   {
     if (isVoteCommitPeriodActive()) {
       uint idx = currentChallengeIndex();

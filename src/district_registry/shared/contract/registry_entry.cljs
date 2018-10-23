@@ -52,7 +52,7 @@
       (-> registry-entry
         (assoc :reg-entry/address reg-entry-addr)
         (update :reg-entry/version bn/number)
-        (update :reg-entry/deposit wei->eth-number)
+        (update :reg-entry/deposit bn/number)
         (update :reg-entry/status parse-status)
         (update :reg-entry/challenge-period-end (if parse-dates? web3-time->local-date-time bn/number))))))
 
@@ -63,7 +63,7 @@
         (assoc :reg-entry/address reg-entry-addr)
         (assoc :challenge/index challenge-index)
         (update :challenge/challenger #(when-not (empty-address? %) %))
-        (update :challenge/reward-pool wei->eth-number)
+        (update :challenge/reward-pool bn/number)
         (update :challenge/meta-hash #(when-not (empty-address? %) (web3/to-ascii %)))
         (update :challenge/commit-period-end (if parse-dates? web3-time->local-date-time bn/number))
         (update :challenge/reveal-period-end (if parse-dates? web3-time->local-date-time bn/number))
