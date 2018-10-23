@@ -1,11 +1,13 @@
 (ns district-registry.server.generator
   (:require
    [bignumber.core :as bn]
+   [cljs-ipfs-api.files :as ipfs-files]
    [cljs-time.core :as t]
    [cljs-web3.core :as web3]
    [cljs-web3.eth :as web3-eth]
    [cljs-web3.evm :as web3-evm]
    [cljs-web3.utils :refer [js->cljkk camel-case]]
+   [district.format :as format]
    [district-registry.server.contract.district :as district]
    [district-registry.server.contract.district-factory :as district-factory]
    [district-registry.server.contract.district-registry :as district-registry]
@@ -22,12 +24,17 @@
    [district.server.config :refer [config]]
    [district.server.smart-contracts :refer [contract-address contract-call instance]]
    [district.server.web3 :refer [web3]]
-   [mount.core :as mount :refer [defstate]]))
+   [mount.core :as mount :refer [defstate]]
+   [taoensso.timbre :as log]))
+
+(def fs (js/require "fs"))
 
 (declare start)
-(defstate ^{:on-reload :noop} generator :start (start (merge
-                                                        (:generator @config)
-                                                        (:generator (mount/args)))))
+(defstate ^{:on-reload :noop} generator
+  :start (start (merge
+                  (:generator @config)
+                  (:generator (mount/args))))
+  :stop (constantly nil))
 
 (defn get-scenarios [{:keys [:accounts :use-accounts :items-per-account :scenarios]}]
   (when (and
@@ -39,7 +46,6 @@
           scenarios (map #(if (keyword? %) {:scenario-type %} %) scenarios)
           scenarios-repeated (take (* use-accounts items-per-account) (cycle scenarios))]
       (partition 2 (interleave accounts-repeated scenarios-repeated)))))
-
 
 (defn generate-districts [{:keys [:accounts :districts/use-accounts :districts/items-per-account :districts/scenarios]}]
   (let [[max-total-supply max-auction-duration deposit commit-period-duration reveal-period-duration]
@@ -92,7 +98,6 @@
 
                       (registry-entry/claim-vote-reward registry-entry {:from creator}))))))))))))
 
-
 (defn generate-param-changes [{:keys [:accounts
                                       :param-changes/use-accounts
                                       :param-changes/items-per-account
@@ -120,17 +125,58 @@
 
           (param-change-registry/apply-param-change registry-entry {:from account}))))))
 
-(defn generate-district-and-challenges [_]
+(defn upload-image [file-path]
+  (log/info "Uploading" file-path ::upload-image)
+  (js/Promise.
+    (fn [resolve reject]
+      (.readFile fs
+        file-path
+        (fn [err data]
+          (if err
+            (reject err)
+            (ipfs-files/add
+              data
+              (fn [err {image-hash :Hash}]
+                (if err
+                  (reject err)
+                  (do
+                    (log/info (str "Uploaded " file-path " received") {:image-hash image-hash} ::upload-meme)
+                    (resolve image-hash)))))))))))
+
+(defn upload-data [data]
+  (log/info "Uploading data" {:data data} ::upload-data)
+  (js/Promise.
+    (fn [resolve reject]
+      (ipfs-files/add
+        (-> data clj->js js/JSON.stringify js/Buffer.from)
+        (fn [err {hash :Hash}]
+          (if err
+            (log/error "ifps error" {:error err} ::upload-data)
+            (do
+              (log/info "Uploaded data received " {:hash hash} ::upload-data)
+              (resolve hash))))))))
+
+(defn generate-district-and-challenges [{:keys [district-hashes
+                                                challenge-hashes]}]
   (let [accounts (web3-eth/accounts @web3)
         district (district-factory/approve-and-create-district
-                   {:info-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"
+                   {:info-hash (first district-hashes)
                     :dnt-weight 333333
                     :amount (web3/to-wei 10 :ether)}
                    {:from (first accounts)})
         reg-entry (-> district
                     district-registry/registry-entry-event-in-tx
                     :args
-                    :registry-entry)]
+                    :registry-entry)
+        district2 (district-factory/approve-and-create-district
+                    {:info-hash (second district-hashes)
+                     :dnt-weight 1000000
+                     :amount (web3/to-wei 10 :ether)}
+                    {:from (first accounts)})
+        reg-entry2 (-> district2
+                     district-registry/registry-entry-event-in-tx
+                     :args
+                     :registry-entry)]
     (prn "accounts " accounts)
 
     (prn "dnt" (dnt/balance-of (first accounts)))
@@ -171,7 +217,7 @@
       (registry-entry/approve-and-create-challenge
         reg-entry
         {:amount (web3/to-wei 10 :ether)
-         :meta-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"}
+         :meta-hash (first challenge-hashes)}
         {:from (last accounts)}))
 
     (prn "commit vote"
@@ -242,7 +288,7 @@
       (registry-entry/approve-and-create-challenge
         reg-entry
         {:amount (web3/to-wei 10 :ether)
-         :meta-hash "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH"}
+         :meta-hash (first challenge-hashes)}
         {:from (last accounts)}))
 
     (prn "commit vote"
@@ -279,12 +325,65 @@
     (prn "claim challenge reward"
       (registry-entry/claim-challenge-reward
         reg-entry
-        {:from (last accounts)}))))
+        {:from (last accounts)}))
+
+    ))
 
 (defn start [opts]
   (let [opts (assoc opts :accounts (web3-eth/accounts @web3))]
+    #_
+    (defn generate-param-changes [{:keys [:accounts
+                                          :param-changes/use-accounts
+                                          :param-changes/items-per-account
+                                          :param-changes/scenarios]}]
+      (let [[deposit challenge-period-duration]
+            (->> (eternal-db/get-uint-values :param-change-registry-db [:deposit :challenge-period-duration])
+              (map bn/number))]
+        (doseq [[account {:keys [:scenario-type :param-change-db]}]
+                (get-scenarios {:accounts accounts
+                                :use-accounts use-accounts
+                                :items-per-account items-per-account
+                                :scenarios scenarios})]
+
+          (let [tx-hash (param-change-factory/approve-and-create-param-change
+                          {:db (contract-address (or param-change-db :district-registry-db))
+                           :key :deposit
+                           :value (web3/to-wei 800 :ether)
+                           :amount deposit}
+                          {:from account})
+
+                {:keys [:registry-entry]} (:args (param-change-registry/registry-entry-event-in-tx tx-hash))]
+
+            (when-not (= scenario-type :scenario/create)
+              (web3-evm/increase-time! @web3 [(inc challenge-period-duration)])
+
+              (param-change-registry/apply-param-change registry-entry {:from account}))))))
+
     ;; TODO: Parameterize district creation and remove printing
-    (generate-district-and-challenges opts)
+    (-> #js [(upload-image "resources/dev/logo.png")
+             (upload-image "resources/dev/background.jpg")]
+      js/Promise.all
+      (.then (fn [arr]
+               (->> (range 2)
+                 (mapcat (fn [i]
+                           [(upload-data
+                              {:name (str "District #" i)
+                               :description (str "Description for District #" i)
+                               :url (str "https://example.com/district" i)
+                               :github-url (str "https://github.com/district0x/district" i)
+                               :logo-image-hash (aget arr 0)
+                               :background-image-hash (aget arr 1)})
+                            (upload-data {:comment (str "Challenge for District #" i)})]))
+                 into-array
+                 js/Promise.all)))
+      (.then (fn [arr]
+               (let [district-hash->challenge-hash (apply hash-map (js->clj arr))]
+                 (generate-district-and-challenges
+                   (assoc opts
+                     :district-hashes (keys district-hash->challenge-hash)
+                     :challenge-hashes (vals district-hash->challenge-hash))))))
+      (.catch (fn [err]
+                (log/error err))))
     #_
     (generate-districts opts)
     #_

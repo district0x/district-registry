@@ -46,10 +46,10 @@
                                                                             district-auction-cut]})))
 
 (defn deploy-district-registry-db! [default-opts]
-  (deploy-smart-contract! :district-registry-db (merge default-opts {:gas 1700000})))
+  (deploy-smart-contract! :district-registry-db (merge default-opts {:gas 2700000})))
 
 (defn deploy-param-change-registry-db! [default-opts]
-  (deploy-smart-contract! :param-change-registry-db (merge default-opts {:gas 1700000})))
+  (deploy-smart-contract! :param-change-registry-db (merge default-opts {:gas 2700000})))
 
 
 (defn deploy-district-registry! [default-opts]

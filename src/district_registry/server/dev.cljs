@@ -1,34 +1,35 @@
 (ns district-registry.server.dev
   (:require
-    [camel-snake-kebab.core :as cs :include-macros true]
-    [cljs-time.core :as t]
-    [cljs-web3.core :as web3]
-    [cljs.nodejs :as nodejs]
-    [cljs.pprint :as pprint]
-    [clojure.pprint :refer [print-table]]
-    [clojure.string :as str]
-    [district-registry.server.db]
-    [district-registry.server.deployer]
-    [district-registry.server.generator]
-    [district-registry.server.graphql-resolvers :refer [resolvers-map]]
-    [district-registry.server.syncer]
-    [district-registry.shared.graphql-schema :refer [graphql-schema]]
-    [district-registry.shared.smart-contracts]
-    [district.graphql-utils :as graphql-utils]
-    [district.server.config :refer [config]]
-    [district.server.db :as db]
-    [district.server.db :refer [db]]
-    [district.server.graphql :as graphql]
-    [district.server.graphql.utils :as utils]
-    [district.server.logging :refer [logging]]
-    [district.server.middleware.logging :refer [logging-middlewares]]
-    [district.server.smart-contracts]
-    [district.server.web3 :refer [web3]]
-    [district.server.web3-watcher]
-    [goog.date.Date]
-    [graphql-query.core :refer [graphql-query]]
-    [mount.core :as mount]
-    [print.foo :include-macros true]))
+   [camel-snake-kebab.core :as cs :include-macros true]
+   [cljs-time.core :as t]
+   [cljs-web3.core :as web3]
+   [cljs.nodejs :as nodejs]
+   [cljs.pprint :as pprint]
+   [clojure.pprint :refer [print-table]]
+   [clojure.string :as str]
+   [district-registry.server.db]
+   [district-registry.server.deployer]
+   [district-registry.server.generator]
+   [district-registry.server.graphql-resolvers :refer [resolvers-map]]
+   [district-registry.server.ipfs :as ipfs]
+   [district-registry.server.syncer]
+   [district-registry.shared.graphql-schema :refer [graphql-schema]]
+   [district-registry.shared.smart-contracts]
+   [district.graphql-utils :as graphql-utils]
+   [district.server.config :refer [config]]
+   [district.server.db :as db]
+   [district.server.db :refer [db]]
+   [district.server.graphql :as graphql]
+   [district.server.graphql.utils :as utils]
+   [district.server.logging :refer [logging]]
+   [district.server.middleware.logging :refer [logging-middlewares]]
+   [district.server.smart-contracts]
+   [district.server.web3 :refer [web3]]
+   [district.server.web3-watcher]
+   [goog.date.Date]
+   [graphql-query.core :refer [graphql-query]]
+   [mount.core :as mount]
+   [print.foo :include-macros true]))
 
 (nodejs/enable-util-print!)
 
@@ -61,9 +62,7 @@
   (-> (mount/with-args
         (merge
           (mount/args)
-          {:deployer {:write? true
-                      ;; :transfer-dnt-to-accounts 1
-                      }}))
+          {:deployer {:write? true}}))
     (mount/start)
     pprint/pprint))
 
@@ -92,6 +91,9 @@
                                       :path "/graphql"
                                       :graphiql true}
                             :web3 {:port 8549}
+                            :ipfs {:host "http://127.0.0.1:5001"
+                                   :endpoint "/api/v0"
+                                   :gateway "http://127.0.0.1:8080/ipfs"}
                             :generator {:districts/use-accounts 1
                                         :districts/items-per-account 1
                                         :districts/scenarios [:scenario/buy]
@@ -105,9 +107,7 @@
                                                             :reveal-period-duration (t/in-seconds (t/minutes 1))
                                                             :deposit (web3/to-wei 10 :ether)
                                                             :challenge-dispensation 50
-                                                            :vote-quorum 50
-                                                            :max-total-supply 10
-                                                            :max-auction-duration (t/in-seconds (t/weeks 20))}
+                                                            :vote-quorum 50}
                                         :param-change-registry {:challenge-period-duration (t/in-seconds (t/minutes 10))
                                                                 :commit-period-duration (t/in-seconds (t/minutes 2))
                                                                 :reveal-period-duration (t/in-seconds (t/minutes 1))
@@ -144,3 +144,6 @@
 
 (comment
   (redeploy))
+
+(comment
+  (print-db))

@@ -4,15 +4,25 @@
    [cljs-web3.core :as web3-core]
    [cljs-web3.eth :as web3-eth]
    [cljs.nodejs :as nodejs]
+   [clojure.pprint :refer [pprint]]
    [clojure.string :as str]
    [district-registry.server.db :as district-db]
    [district.graphql-utils :as graphql-utils]
+   [district.server.config :refer [config]]
    [district.server.db :as db]
+   [district.server.smart-contracts :as smart-contracts]
    [district.server.web3 :as web3]
+   [district.shared.error-handling :refer [try-catch-throw]]
    [honeysql.core :as sql]
    [honeysql.helpers :as sqlh]
-   [taoensso.timbre :as log])
-  (:require-macros [district-registry.shared.macros :refer [try-catch-throw]]))
+   [taoensso.timbre :as log]))
+
+(def whitelisted-config-keys [:ipfs])
+
+(defn config-query-resolver []
+  (log/debug "config-query-resolver")
+  (try-catch-throw
+    (select-keys @config whitelisted-config-keys)))
 
 (def enum graphql-utils/kw->gql-name)
 
@@ -98,12 +108,12 @@
           now (last-block-timestamp)
           page-start-idx (when after (js/parseInt after))
           page-size first
-          query (cond-> {:select [:*]
-                         :from [[:reg-entries :re] [:districts :d]  [:challenges :c]]
-                         :join [:districts [:= :re.reg-entry/address :d.reg-entry/address]
-                                :challenges [:and
-                                             [:= :re.reg-entry/address :c.reg-entry/address]
-                                             [:= :re.reg-entry/current-challenge-index :c.challenge/index]]]}
+          query (cond-> {:select [:re.* :d.*]
+                         :from [[:reg-entries :re]]
+                         :join [[:districts :d] [:= :re.reg-entry/address :d.reg-entry/address]]
+                         :left-join [[:challenges :c] [:and
+                                                       [:= :re.reg-entry/address :c.reg-entry/address]
+                                                       [:= :re.reg-entry/current-challenge-index :c.challenge/index]]]}
                   statuses-set (sqlh/merge-where [:in (reg-entry-status-sql-clause now) statuses-set])
                   order-by     (sqlh/merge-order-by [[(get {:districts.order-by/reveal-period-end :c.challenge/reveal-period-end
                                                             :districts.order-by/commited-period-end :c.challenge/commit-period-end
@@ -124,15 +134,45 @@
       (log/debug "param-change query" sql-query)
       sql-query)))
 
-(defn search-param-changes-query-resolver [_ {:keys [:first :after] :as args}]
-  (log/debug "search-param-changes args" args)
+(defn search-param-changes-query-resolver [_ {:keys [:key :db :order-by :order-dir :group-by :first :after]
+                                              :or {order-dir :asc}
+                                              :as args}]
+  (log/info "search-param-changes args" args)
   (try-catch-throw
-    (paged-query {:select [:*]
-                  :from [:param-changes]
-                  :join [:reg-entries [:= :reg-entries.reg-entry/address :param-changes.reg-entry/address]]}
-      first
-      (when after
-        (js/parseInt after)))))
+    (let [db (if (contains? #{"districtRegistryDb" "paramChangeRegistryDb"} db)
+               (smart-contracts/contract-address (graphql-utils/gql-name->kw db))
+               db)
+          param-changes-query (cond-> {:select [:*]
+                                       :from [:param-changes]
+                                       :left-join [:reg-entries [:= :reg-entries.reg-entry/address :param-changes.reg-entry/address]]}
+                                key (sqlh/merge-where [:= key :param-changes.param-change/key])
+                                db (sqlh/merge-where [:= db :param-changes.param-change/db])
+                                order-by (sqlh/merge-where [:not= nil :param-changes.param-change/applied-on])
+                                order-by (sqlh/merge-order-by [[(get {:param-changes.order-by/applied-on :param-changes.param-change/applied-on}
+                                                                  (graphql-utils/gql-name->kw order-by))
+                                                                order-dir]])
+                                group-by (merge {:group-by [(get {:param-changes.group-by/key :param-changes.param-change/key}
+                                                              (graphql-utils/gql-name->kw group-by))]}))
+          param-changes-result (paged-query param-changes-query
+                                 first
+                                 (when after
+                                   (js/parseInt after)))]
+
+      (if-not (= 0 (:total-count param-changes-result))
+        param-changes-result
+        (do
+          (log/debug "No parameter changes could be retrieved. Querying for initial parameters")
+          (let [initial-params-query {:select [[:initial-params.initial-param/key :param-change/key]
+                                               [:initial-params.initial-param/db :param-change/db]
+                                               [:initial-params.initial-param/value :param-change/value]
+                                               [:initial-params.initial-param/set-on :param-change/applied-on]]
+                                      :from [:initial-params]
+                                      :where [:and [:= key :initial-params.initial-param/key]
+                                              [:= db :initial-params.initial-param/db]]}]
+            (paged-query initial-params-query
+              first
+              (when after
+                (js/parseInt after)))))))))
 
 (defn param-query-resolver [_ {:keys [:db :key] :as args}]
   (log/debug "param-query-resolver" args)
@@ -203,7 +243,7 @@
 
         :else nil))))
 
-(defn challenge->vote [{:keys [:reg-entry/address :challenge/index] :as challenge} {:keys [:vote/voter]}]
+(defn challenge->vote [{:keys [:reg-entry/address :challenge/index] :as challenge} {:keys [:voter]}]
   (log/debug "challenge->vote args" {:challenge challenge :voter voter})
   (try-catch-throw
     (db/get {:select [:*]
@@ -222,8 +262,8 @@
         (bn/number votes-include)
         (bn/number votes-exclude)))))
 
-(defn district-list->items-resolver [meme-list]
-  (:items meme-list))
+(defn district-list->items-resolver [district-list]
+  (:items district-list))
 
 (defn param-change-list->items-resolver [param-change-list]
   (:items param-change-list))
@@ -237,7 +277,8 @@
              :order-by [[:challenges.challenge/index :asc]]})))
 
 (def Query
-  {:district district-query-resolver
+  {:config config-query-resolver
+   :district district-query-resolver
    :search-districts search-districts-query-resolver
    :param-change param-change-query-resolver
    :search-param-changes search-param-changes-query-resolver
@@ -248,8 +289,22 @@
   {:reg-entry/challenges reg-entry->challenges
    :reg-entry/status reg-entry->status-resolver})
 
+(defn- get-stake [{:as district
+                   :keys [:reg-entry/address]}
+                  {:as args
+                   :keys [:staker]}]
+  (db/get {:select [:*]
+           :from [:stakes]
+           :where [:and
+                   [:= :stakes.reg-entry/address address]
+                   [:= :stakes.stake/staker staker]]}))
+
 (def District
-  RegEntry)
+  (assoc RegEntry
+    :district/dnt-staked-for (fn [district args]
+                               (:stake/dnt (get-stake district args)))
+    :district/balance-of (fn [district args]
+                           (:stake/tokens (get-stake district args)))))
 
 (def ParamChange
   RegEntry)

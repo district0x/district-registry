@@ -5,15 +5,20 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[camel-snake-kebab "0.4.0"]
                  [cljs-web3 "0.19.0-0-10"]
+                 [cljsjs/buffer "5.1.0-1"]
+                 [cljsjs/react "16.5.2-0"]
+                 [cljsjs/react-dom "16.5.2-0"]
+                 [cljsjs/react-infinite "0.13.0-0"]
                  [com.andrewmcveigh/cljs-time "0.5.2"]
                  [com.taoensso/encore "2.92.0"]
                  [com.taoensso/timbre "4.10.0"]
                  [district0x/bignumber "1.0.1"]
+                 [district0x/cljs-ipfs-native "0.0.5-SNAPSHOT"]
                  [district0x/cljs-solidity-sha3 "1.0.0"]
                  [district0x/district-cljs-utils "1.0.3"]
                  [district0x/district-encryption "1.0.0"]
-                 [district0x/district-format "1.0.0"]
-                 [district0x/district-graphql-utils "1.0.5"]
+                 [district0x/district-format "1.0.3"]
+                 [district0x/district-graphql-utils "1.0.6"]
                  [district0x/district-sendgrid "1.0.0"]
                  [district0x/district-server-config "1.0.1"]
                  [district0x/district-server-db "1.0.1"]
@@ -24,10 +29,12 @@
                  [district0x/district-server-web3 "1.0.1"]
                  [district0x/district-server-web3-watcher "1.0.2"]
                  [district0x/district-ui-component-active-account "1.0.0"]
-                 [district0x/district-ui-component-active-account-balance "1.0.0"]
+                 [district0x/district-ui-component-active-account-balance "1.0.1"]
+                 [district0x/district-ui-component-form "0.1.11-SNAPSHOT"]
                  [district0x/district-ui-component-notification "1.0.0"]
-                 [district0x/district-ui-graphql "1.0.0"]
-                 [district0x/district-ui-logging "1.0.0"]
+                 [district0x/district-ui-component-tx-button "1.0.0"]
+                 [district0x/district-ui-graphql "1.0.7"]
+                 [district0x/district-ui-logging "1.0.1"]
                  [district0x/district-ui-notification "1.0.1"]
                  [district0x/district-ui-now "1.0.1"]
                  [district0x/district-ui-reagent-render "1.0.1"]
@@ -43,11 +50,15 @@
                  [district0x/district-ui-web3-tx-log "1.0.2"]
                  [district0x/district-ui-window-size "1.0.1"]
                  [district0x/district-web3-utils "1.0.2"]
+                 [district0x/error-handling "1.0.0-1"]
+                 [district0x/re-frame-ipfs-fx "0.0.2"]
                  [medley "1.0.0"]
                  [mount "0.1.12"]
                  [org.clojure/clojurescript "1.10.238"]
+                 [org.clojure/core.async "0.4.474"]
                  [print-foo-cljs "2.0.3"]
-                 [re-frame "0.10.5"]]
+                 [re-frame "0.10.5"]
+                 [reagent "0.8.1"]]
 
   :exclusions [express-graphql]
 
@@ -55,18 +66,18 @@
             [lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.16"]
             [lein-shell "0.5.0"]
-            [lein-solc "1.0.0"]
+            [lein-solc "1.0.2"]
             [lein-doo "0.1.8"]
             [lein-npm "0.6.2"]
             [lein-pdo "0.1.1"]]
-  
-  :npm {:dependencies [;; needed until v0.6.13 is officially released
-                       [express-graphql "./resources/libs/express-graphql-0.6.13.tgz"]
-                       [graphql-tools "3.0.1"]
-                       [graphql "0.13.1"]
+
+  :npm {:dependencies [[cors "2.8.4"]
                        [express "4.15.3"]
-                       [cors "2.8.4"]
+                       ;; needed until v0.6.13 is officially released
+                       [express-graphql "./resources/libs/express-graphql-0.6.13.tgz"]
+                       [graphql "0.13.1"]
                        [graphql-fields "1.0.2"]
+                       [graphql-tools "3.0.1"]
                        [solc "0.4.20"]
                        [source-map-support "0.5.3"]
                        [ws "4.0.0"]]}
@@ -76,18 +87,13 @@
          :build-path "resources/public/contracts/build"
          :solc-err-only true
          :wc true
-         :contracts ["District0xNetworkToken.sol"
-                     "DistrictFactory.sol"
-                     "District.sol"
-                     "ParamChangeFactory.sol"
-                     "ParamChangeRegistry.sol"]}
+         :contracts :all}
 
   :source-paths ["src" "test"]
 
   :figwheel {:server-port 4177
              :css-dirs ["resources/public/css"]
              :repl-eval-timeout 60000}
-
 
   :aliases {"clean-prod-server" ["shell" "rm" "-rf" "server"]
             "watch-css" ["shell" "./semantic.sh" "watch"]
@@ -108,10 +114,10 @@
                                     "server/"
                                     "target/"]
 
-  :profiles {:dev {:dependencies [[org.clojure/clojure "1.9.0"]
-                                  [binaryage/devtools "0.9.9"]
+  :profiles {:dev {:dependencies [[binaryage/devtools "0.9.9"]
                                   [com.cemerick/piggieback "0.2.2"]
                                   [figwheel-sidecar "0.5.14" :exclusions [org.clojure/core.async]]
+                                  [org.clojure/clojure "1.9.0"]
                                   [org.clojure/tools.reader "1.2.1"]]
                    :source-paths ["dev" "src"]
                    :resource-paths ["resources"]}}
@@ -125,6 +131,9 @@
                                    :target :nodejs
                                    :optimizations :none
                                    :closure-defines {goog.DEBUG true}
+                                   :static-fns true
+                                   :fn-invoke-direct true
+                                   :anon-fn-naming-policy :mapped
                                    :source-map true}}
                        {:id "dev"
                         :source-paths ["src/district_registry/ui" "src/district_registry/shared"]
