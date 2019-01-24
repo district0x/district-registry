@@ -22,16 +22,14 @@
 (def dnt-placeholder "deaddeaddeaddeaddeaddeaddeaddeaddeaddead")
 (def forwarder-target-placeholder "beefbeefbeefbeefbeefbeefbeefbeefbeefbeef")
 (def district-config-placeholder "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd")
-(def district-token-placeholder "dabbdabbdabbdabbdabbdabbdabbdabbdabbdabb")
+(def challenge-factory-placeholder "cccccccccccccccccccccccccccccccccccccccc")
+(def stake-bank-factory-placeholder "dddddddddddddddddddddddddddddddddddddddd")
+(def power-factory-placeholder "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
 
 (defn deploy-dnt! [default-opts]
   (deploy-smart-contract! :DNT (merge default-opts {:gas 5200000
                                                     :arguments [(contract-address :minime-token-factory)
                                                                 (web3/to-wei 1000000 :ether)]})))
-
-(defn deploy-district-token! [default-opts]
-  (deploy-smart-contract! :district-token (merge default-opts {:gas 2200000
-                                                               :arguments [(contract-address :district-registry-fwd)]})))
 
 (defn deploy-minime-token-factory! [default-opts]
   (deploy-smart-contract! :minime-token-factory (merge default-opts {:gas 2300000})))
@@ -53,10 +51,10 @@
 
 
 (defn deploy-district-registry! [default-opts]
-  (deploy-smart-contract! :district-registry (merge default-opts {:gas 1000000})))
+  (deploy-smart-contract! :district-registry (merge default-opts {:gas 2700000})))
 
 (defn deploy-param-change-registry! [default-opts]
-  (deploy-smart-contract! :param-change-registry (merge default-opts {:gas 1700000})))
+  (deploy-smart-contract! :param-change-registry (merge default-opts {:gas 2700000})))
 
 (defn deploy-district-registry-fwd! [default-opts]
   (deploy-smart-contract! :district-registry-fwd (merge default-opts {:gas 500000
@@ -69,23 +67,38 @@
                                                         :placeholder-replacements
                                                         {forwarder-target-placeholder :param-change-registry}})))
 
+(defn deploy-challenge-factory! [default-opts]
+  (deploy-smart-contract! :challenge-factory (merge default-opts
+                                                       {:gas 5000000
+                                                        :placeholder-replacements
+                                                        {dnt-placeholder :DNT}})))
+
+(defn deploy-stake-bank-factory! [default-opts]
+  (deploy-smart-contract! :stake-bank-factory (merge default-opts
+                                                       {:gas 5000000
+                                                        :placeholder-replacements
+                                                        {power-factory-placeholder :power-factory}})))
+
+(defn deploy-power-factory! [default-opts]
+  (deploy-smart-contract! :power-factory (merge default-opts
+                                                       {:gas 5000000})))
+
 (defn deploy-district! [default-opts]
-  (deploy-smart-contract! :district (merge default-opts {:gas 7999990
+  (deploy-smart-contract! :district (merge default-opts {:gas 7999999
                                                          :arguments
                                                          [(contract-address :DNT)]
                                                          :placeholder-replacements
-                                                         {
-                                                          dnt-placeholder :DNT
+                                                         {dnt-placeholder :DNT
                                                           registry-placeholder :district-registry-fwd
-                                                          ;; district-config-placeholder :district-config
-                                                          ;; district-token-placeholder :district-token
-                                                          }})))
+                                                          challenge-factory-placeholder :challenge-factory
+                                                          stake-bank-factory-placeholder :stake-bank-factory}})))
 
 (defn deploy-param-change! [default-opts]
   (deploy-smart-contract! :param-change (merge default-opts {:gas 5700000
                                                              :placeholder-replacements
                                                              {dnt-placeholder :DNT
-                                                              registry-placeholder :param-change-registry-fwd}})))
+                                                              registry-placeholder :param-change-registry-fwd
+                                                              challenge-factory-placeholder :challenge-factory}})))
 
 
 (defn deploy-district-factory! [default-opts]
@@ -106,14 +119,17 @@
                       :use-n-account-as-deposit-collector :use-n-account-as-cut-collector]
                :as deploy-opts}]
   (let [accounts (web3-eth/accounts @web3)
-        deploy-opts (merge {:from (last accounts)
+        deploy-opts (merge {:from (first accounts)
                             ;; this keys are to make testing simpler
                             ;; :deposit-collector (nth accounts (or use-n-account-as-deposit-collector 0))
                             ;; :district-auction-cut-collector (nth accounts (or use-n-account-as-cut-collector 0))
                             ;; :district-auction-cut 0
-
                             }
-                      deploy-opts)]
+                      deploy-opts)
+        deploy-opts (dissoc deploy-opts
+                      :write?
+                      :initial-registry-params
+                      :transfer-dnt-to-accounts)]
 
     (deploy-ds-guard! deploy-opts)
     ;; make deployed :ds-guard its own autority
@@ -148,8 +164,11 @@
                       :sig ds-guard/ANY}
       deploy-opts)
 
+    (deploy-power-factory! deploy-opts)
 
-    ;; (deploy-district-token! deploy-opts)
+    (deploy-stake-bank-factory! deploy-opts)
+
+    (deploy-challenge-factory! deploy-opts)
 
     (deploy-district! deploy-opts)
 
@@ -195,11 +214,10 @@
       {:factory (contract-address :param-change-factory) :factory? true}
       deploy-opts)
 
-    (when (pos? transfer-dnt-to-accounts)
-      (doseq [account (take transfer-dnt-to-accounts accounts)]
-        (dnt/transfer {:to account :amount (web3/to-wei 15000 :ether)}
-          ;; this is the deployer of dnt so it owns the initial amount
-          {:from (last accounts)})))
+    (doseq [account (rest accounts)]
+      (dnt/transfer {:to account :amount (web3/to-wei 15000 :ether)}
+        ;; this is the deployer of dnt so it owns the initial amount
+        {:from (first accounts)}))
 
     (when write?
       (write-smart-contracts!))))

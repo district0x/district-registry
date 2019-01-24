@@ -1,4 +1,5 @@
 pragma solidity ^0.4.18;
+
 import "./RegistryEntryFactory.sol";
 import "./District.sol";
 
@@ -12,7 +13,7 @@ contract DistrictFactory is RegistryEntryFactory {
   uint public constant version = 1;
 
   function DistrictFactory(Registry _registry, MiniMeToken _registryToken)
-  RegistryEntryFactory(_registry, _registryToken)
+    RegistryEntryFactory(_registry, _registryToken)
   {
   }
 
@@ -22,16 +23,16 @@ contract DistrictFactory is RegistryEntryFactory {
    */
   function createDistrict(
     address _creator,
-    bytes _infoHash,
+    bytes _metaHash,
     uint32 _dntWeight
   )
-  public
+    public
   {
     District district = District(createRegistryEntry(_creator));
     district.construct(
       _creator,
       version,
-      _infoHash,
+      _metaHash,
       _dntWeight
     );
   }

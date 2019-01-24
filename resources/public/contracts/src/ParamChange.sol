@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.24;
 
 import "RegistryEntry.sol";
 import "db/EternalDb.sol";
@@ -15,19 +15,49 @@ import "db/EternalDb.sol";
 contract ParamChange is RegistryEntry {
 
   EternalDb public db;
-  string public key;
-  EternalDb.Types public valueType;
-  uint public value;
-  uint public originalValue;
-  uint public appliedOn;
+  string private key;
+  EternalDb.Types private valueType;
+  uint private value;
+  uint private originalValue;
+  uint private appliedOn;
+
+  function isChangeAllowed(Registry registry, bytes32 record, uint _value)
+    private
+    constant
+    returns (bool) {
+
+    if(record == registry.challengePeriodDurationKey() || record == registry.commitPeriodDurationKey() ||
+       record == registry.revealPeriodDurationKey() || record == registry.depositKey()) {
+      if(_value > 0) {
+        return true;
+      }
+    }
+
+    if(record == registry.challengeDispensationKey() || record == registry.voteQuorumKey() ||
+       record == registry.maxTotalSupplyKey()) {
+      if (_value >= 0 && _value <= 100) {
+        return true;
+      }
+    }
+
+    // see MemeAuction.sol
+    if(record == registry.maxAuctionDurationKey()) {
+      if(_value > 1 minutes) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   /**
    * @dev Constructor for this contract.
    * Native constructor is not used, because users create only forwarders into single instance of this contract,
    * therefore constructor must be called explicitly.
+   * Can only be called if the parameter value is within its allowed domain.
 
-   * @param _creator Creator of a district
-   * @param _version Version of District contract
+   * @param _creator Creator of a meme
+   * @param _version Version of Meme contract
    * @param _db EternalDb change will be applied to
    * @param _key Key of a changed parameter
    * @param _value New value of a parameter
@@ -39,14 +69,25 @@ contract ParamChange is RegistryEntry {
     string _key,
     uint _value
   )
-  public
+    external
   {
+    bytes32 record = sha3(_key);
+    require(isChangeAllowed(registry, record, _value));
     super.construct(_creator, _version);
     db = EternalDb(_db);
     key = _key;
     value = _value;
     valueType = EternalDb.Types.UInt;
-    originalValue = db.getUIntValue(sha3(key));
+    originalValue = db.getUIntValue(record);
+    registry.fireParamChangeConstructedEvent(
+      version,
+      _creator,
+      db,
+      _key,
+      value,
+      deposit,
+      challengePeriodEnd
+    );
   }
 
   /**
@@ -59,42 +100,16 @@ contract ParamChange is RegistryEntry {
    * Creator gets deposit back
    */
   function applyChange()
-  public
-  notEmergency
+    external
+    notEmergency
   {
-    require(isOriginalValueCurrentValue());
-    require(!wasApplied());
-    require(isWhitelisted());
+    require(db.getUIntValue(sha3(key)) == originalValue);
+    require(appliedOn < 0);
+    require(currentChallenge().isWhitelisted());
     require(registryToken.transfer(creator, deposit));
     db.setUIntValue(sha3(key), value);
     appliedOn = now;
-    registry.fireRegistryEntryEvent("changeApplied", version);
   }
 
-  /**
-   * @dev Returns whether change was already applied
-   */
-  function wasApplied() public constant returns (bool) {
-    return appliedOn > 0;
-  }
-
-  /**
-   * @dev Returns whether parameter value at contract creation is still current parameter value
-   */
-  function isOriginalValueCurrentValue() public constant returns (bool) {
-    return db.getUIntValue(sha3(key)) == originalValue;
-  }
-
-  /**
-   * @dev Returns all state related to this contract for simpler offchain access
-   */
-  function loadParamChange() public constant returns (EternalDb, string, EternalDb.Types, uint, uint) {
-    return (
-    db,
-    key,
-    valueType,
-    value,
-    appliedOn
-    );
-  }
 }
+

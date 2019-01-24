@@ -3,40 +3,49 @@
 (def smart-contracts 
 {:district-factory
  {:name "DistrictFactory",
-  :address "0x66fa20c4f7a63388f60aad4fdfcffd57cc4f480b"},
+  :address "0x9e90054f4b6730cffaf1e6f6ea10e1bf9dd26dbb"},
  :ds-guard
  {:name "DSGuard",
-  :address "0x6bb25ab71f3c92e3f8c64e089f93633725c47655"},
+  :address "0x4cfb3f70bf6a80397c2e634e5bdd85bc0bb189ee"},
  :param-change-registry
  {:name "ParamChangeRegistry",
-  :address "0x1b05fd39887e51539e03fc8d1a7c59e9c6b10aec"},
+  :address "0xe97dbd7116d168190f8a6e7beb1092c103c53a12"},
  :DNT
  {:name "District0xNetworkToken",
-  :address "0xcef0818f50c30f99063f8928a53e52788d06e764"},
+  :address "0x47a2db5d68751eeadfbc44851e84acdb4f7299cc"},
  :param-change-registry-db
  {:name "EternalDb",
-  :address "0x0bffb1ca8365ab797bcc84f5d37f570558ee91f6"},
+  :address "0xeea2fc1d255fd28aa15c6c2324ad40b03267f9c5"},
  :param-change
  {:name "ParamChange",
-  :address "0x7b6ed9a1bb8e3377b1f96a3bdef2324e1ea00670"},
+  :address "0xdfccc9c59c7361307d47c558ffa75840b32dba29"},
  :district-registry
  {:name "Registry",
-  :address "0x486c6c8d7dca52127525ec837684ba6d34a95950"},
+  :address "0xc34175a79acca40392becd22ff10faebfe780ae7"},
  :minime-token-factory
  {:name "MiniMeTokenFactory",
-  :address "0x04e65bbe9585459d52628040926a19c2bebce8fb"},
+  :address "0xceefd27e0542afa926b87d23936c79c276a48277"},
+ :power-factory
+ {:name "PowerFactory",
+  :address "0x2c5f3c004878923f55a2a255f89fe29393177509"},
  :param-change-factory
  {:name "ParamChangeFactory",
-  :address "0x2c0325b1654738c42a5048efe0de3244a1384001"},
+  :address "0xfe82e8f24a51e670133f4268cdfc164c49fc3b37"},
  :param-change-registry-fwd
  {:name "MutableForwarder",
-  :address "0x9105994844d34d85ff53821e0d12264b2628269b"},
+  :address "0xd13ebb5c39fb00c06122827e1cbd389930c9e0e3"},
  :district-registry-db
  {:name "EternalDb",
-  :address "0xc79ffd1fa4bfcc1dd7683aa3d727b187563c3910"},
+  :address "0x988b6cfbf3332ff98ffbded665b1f53a61f92612"},
+ :challenge-factory
+ {:name "ChallengeFactory",
+  :address "0x966d3e76e7a890a2d7b9ae1e370dc219e920f9d4"},
  :district-registry-fwd
  {:name "MutableForwarder",
-  :address "0x6c0f889157084539c0d676ce80fb50d707a70f1d"},
+  :address "0xf16165f1046f1b3cdb37da25e835b986e696313a"},
+ :stake-bank-factory
+ {:name "StakeBankFactory",
+  :address "0x2f3efa6bbdc5faf4dc1a600765c7b7829e47be10"},
  :district
  {:name "District",
-  :address "0x291fa937564488ee70a5e968aa2f8cd04e3947a9"}})
+  :address "0x1abe68277ae236083947f2551fee8b885efca8f5"}})

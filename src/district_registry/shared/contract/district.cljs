@@ -5,7 +5,7 @@
    [district.web3-utils :refer [web3-time->local-date-time empty-address? wei->eth-number]]))
 
 (def load-district-keys
-  [:district/info-hash
+  [:district/meta-hash
    :district/dnt-weight
    :district/dnt-staked
    :district/total-supply])
@@ -19,7 +19,7 @@
     (let [district (zipmap load-district-keys district)]
       (-> district
         (assoc :reg-entry/address contract-addr)
-        (update :district/info-hash web3/to-ascii)
+        (update :district/meta-hash web3/to-ascii)
         (update :district/dnt-weight bn/number)
         (update :district/dnt-staked bn/number)
         (update :district/total-supply bn/number)

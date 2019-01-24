@@ -32,7 +32,7 @@
 
 (def districts-columns
   [[:reg-entry/address address not-nil]
-   [:district/info-hash ipfs-hash]
+   [:district/meta-hash ipfs-hash]
    [:district/name :string]
    [:district/description :string]
    [:district/url :string]
@@ -200,11 +200,13 @@
 (def update-param-change! (create-update-fn :param-changes param-change-column-names :reg-entry/address))
 (def insert-or-replace-param-change! (create-insert-fn :param-changes param-change-column-names {:insert-or-replace? true}))
 
+(def get-challenge (create-get-fn :challenges [:reg-entry/address :challenge/index]))
 (def insert-challenge! (create-insert-fn :challenges challenges-column-names))
 (def update-challenge! (create-update-fn :challenges challenges-column-names [:reg-entry/address :challenge/index]))
 
 (def insert-vote! (create-insert-fn :votes votes-column-names))
 (def update-vote! (create-update-fn :votes votes-column-names [:reg-entry/address :challenge/index :vote/voter]))
+(def get-vote (create-get-fn :votes [:reg-entry/address :challenge/index :vote/voter]))
 
 (def insert-stake! (create-insert-fn :stakes stakes-column-names))
 (def insert-or-replace-stake! (create-insert-fn :stakes stakes-column-names {:insert-or-replace? true}))

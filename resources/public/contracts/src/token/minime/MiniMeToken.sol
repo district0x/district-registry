@@ -40,7 +40,7 @@ contract MiniMeToken is Controlled {
   string public name;                //The Token's name: e.g. DigixDAO Tokens
   uint8 public decimals;             //Number of decimals of the smallest unit
   string public symbol;              //An identifier: e.g. REP
-  // string public version = 'MMT_0.2'; //An arbitrary versioning scheme
+  string public version = 'MMT_0.2'; //An arbitrary versioning scheme
 
 
   /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -100,7 +100,7 @@ contract MiniMeToken is Controlled {
   /// @param _decimalUnits Number of decimals of the new token
   /// @param _tokenSymbol Token Symbol for the new token
   /// @param _transfersEnabled If true, tokens will be able to be transferred
-  function constructMiniMeToken(
+  function MiniMeToken(
     address _tokenFactory,
     address _parentToken,
     uint _parentSnapShotBlock,
@@ -109,8 +109,6 @@ contract MiniMeToken is Controlled {
     string _tokenSymbol,
     bool _transfersEnabled
   ) public {
-    super.constructControlled();
-    require(creationBlock == 0);
     tokenFactory = MiniMeTokenFactory(_tokenFactory);
     name = _tokenName;                                 // Set the name
     decimals = _decimalUnits;                          // Set the decimals
@@ -550,8 +548,7 @@ contract MiniMeTokenFactory {
     string _tokenSymbol,
     bool _transfersEnabled
   ) public returns (MiniMeToken) {
-    MiniMeToken newToken = new MiniMeToken();
-    newToken.constructMiniMeToken(
+    MiniMeToken newToken = new MiniMeToken(
       this,
       _parentToken,
       _snapshotBlock,

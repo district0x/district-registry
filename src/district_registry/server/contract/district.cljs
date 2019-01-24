@@ -22,8 +22,8 @@
 (defn transfer-deposit [contract-addr & [opts]]
   (contract-call (instance :district contract-addr) :transfer-deposit (merge {:gas 300000} opts)))
 
-(defn ^:private stake-data [{:keys [amount data staker]}]
-  (web3-eth/contract-get-data (instance :district) :stake-for staker amount data))
+(defn ^:private stake-data [{:keys [amount staker]}]
+  (web3-eth/contract-get-data (instance :district) :stake-for staker amount))
 
 (defn approve-and-stake [{:keys [amount district] :as args} & [opts]]
   (dnt/approve-and-call {:spender district
@@ -31,11 +31,8 @@
                          :extra-data (stake-data (merge {:staker (:from opts)} args))}
     (merge {:gas 6000000} opts)))
 
-(defn unstake [contract-addr amount data & [opts]]
-  (contract-call (instance :district contract-addr) :unstake amount data (merge {:gas 600000} opts)))
+(defn unstake [contract-addr amount & [opts]]
+  (contract-call (instance :district contract-addr) :unstake amount (merge {:gas 600000} opts)))
 
 (defn balance-of [contract-addr owner]
   (contract-call (instance :district contract-addr) :balance-of owner))
-
-(defn total-staked-for [contract-addr owner]
-  (contract-call (instance :district contract-addr) :total-staked-for owner))
