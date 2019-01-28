@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 import "./token/minime/MiniMeToken.sol";
 
 /**
- * @title Token used for curation of MemeFactory TCR
+ * @title Token used for curation of DistrictRegistry TCR
  *
  * @dev Standard MiniMe Token with pre-minted supply and with dead controller.
  */

@@ -40,13 +40,6 @@ contract ParamChange is RegistryEntry {
       }
     }
 
-    // see MemeAuction.sol
-    if(record == registry.maxAuctionDurationKey()) {
-      if(_value > 1 minutes) {
-        return true;
-      }
-    }
-
     return false;
   }
 
@@ -56,8 +49,8 @@ contract ParamChange is RegistryEntry {
    * therefore constructor must be called explicitly.
    * Can only be called if the parameter value is within its allowed domain.
 
-   * @param _creator Creator of a meme
-   * @param _version Version of Meme contract
+   * @param _creator Creator of a district
+   * @param _version Version of District contract
    * @param _db EternalDb change will be applied to
    * @param _key Key of a changed parameter
    * @param _value New value of a parameter
