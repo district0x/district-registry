@@ -106,7 +106,7 @@ type District implements RegEntry {
   regEntry_challengePeriodEnd: Date
   regEntry_challenges: [Challenge]
 
-  district_infoHash: String
+  district_metaHash: String
   district_name: String
   district_description: String
   district_url: String

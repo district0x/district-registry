@@ -41,16 +41,17 @@
                          :extra-data (create-challenge-data (merge {:challenger (:from opts)} args))}
     (merge {:gas 6000000} opts)))
 
-(defn commit-vote [contract-addr {:keys [:voter :amount :vote-option :salt]} & [opts]]
+(defn commit-vote [contract-addr {:keys [:index :voter :amount :vote-option :salt]} & [opts]]
   (contract-call (instance :district contract-addr)
     :commit-vote
+    (bn/number index)
     voter
     (bn/number amount)
     (solidity-sha3 (vote-option->num vote-option) salt)
     (merge {:gas 1200000} opts)))
 
-(defn commit-vote-data [{:keys [:voter :amount :vote-option :salt]}]
-  (web3-eth/contract-get-data (instance :district) :commit-vote voter (bn/number amount) (solidity-sha3 (vote-option->num vote-option) salt)))
+(defn commit-vote-data [{:keys [:index :voter :amount :vote-option :salt]}]
+  (web3-eth/contract-get-data (instance :district) :commit-vote index voter (bn/number amount) (solidity-sha3 (vote-option->num vote-option) salt)))
 
 (defn approve-and-commit-vote [contract-addr {:keys [:amount] :as args} & [opts]]
   (dnt/approve-and-call {:spender contract-addr
@@ -58,11 +59,11 @@
                          :extra-data (commit-vote-data (merge {:voter (:from opts)} args))}
     (merge opts {:gas 1200000})))
 
-(defn reveal-vote [contract-addr {:keys [:vote-option :salt]} & [opts]]
-  (contract-call (instance :district contract-addr) :reveal-vote (vote-option->num vote-option) salt (merge {:gas 500000} opts)))
+(defn reveal-vote [contract-addr {:keys [:index :vote-option :salt]} & [opts]]
+  (contract-call (instance :district contract-addr) :reveal-vote index (vote-option->num vote-option) salt (merge {:gas 500000} opts)))
 
-(defn claim-vote-reward [contract-addr & [opts]]
-  (contract-call (instance :district contract-addr) :claim-vote-reward (:from opts) (merge {:gas 500000} opts)))
+(defn claim-vote-reward [contract-addr {:keys [:index]} & [opts]]
+  (contract-call (instance :district contract-addr) :claim-vote-reward index (:from opts) (merge {:gas 500000} opts)))
 
 (defn load-vote [contract-addr challenge-index voter-address]
   (parse-load-vote

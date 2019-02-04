@@ -105,13 +105,13 @@
                                        {:district-registry {:challenge-period-duration (t/in-seconds (t/minutes 10))
                                                             :commit-period-duration (t/in-seconds (t/minutes 2))
                                                             :reveal-period-duration (t/in-seconds (t/minutes 1))
-                                                            :deposit (web3/to-wei 10 :ether)
+                                                            :deposit (web3/to-wei 1000 :wei)
                                                             :challenge-dispensation 50
                                                             :vote-quorum 50}
                                         :param-change-registry {:challenge-period-duration (t/in-seconds (t/minutes 10))
                                                                 :commit-period-duration (t/in-seconds (t/minutes 2))
                                                                 :reveal-period-duration (t/in-seconds (t/minutes 1))
-                                                                :deposit (web3/to-wei 1000 :ether)
+                                                                :deposit (web3/to-wei 1000 :wei)
                                                                 :challenge-dispensation 50
                                                                 :vote-quorum 50}}}}}
          :smart-contracts {:contracts-var #'district-registry.shared.smart-contracts/smart-contracts
@@ -142,8 +142,8 @@
       (select [:*] :from [(keyword t)])
       (println "\n\n"))))
 
-(comment
-  (redeploy))
+(comment (redeploy))
 
-(comment
-  (print-db))
+(comment (print-db))
+
+(comment (mount/stop))

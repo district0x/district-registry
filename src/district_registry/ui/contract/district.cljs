@@ -25,8 +25,7 @@
                        (contract-queries/instance db :district )
                        :stake-for
                        (account-queries/active-account db)
-                       dnt
-                       0)]
+                       dnt)]
       {:dispatch [::tx-events/send-tx
                   {:instance (contract-queries/instance db :DNT)
                    :fn :approve-and-call
@@ -50,7 +49,7 @@
     {:dispatch [::tx-events/send-tx
                 {:instance (contract-queries/instance db :district address)
                  :fn :unstake
-                 :args [dnt ""]
+                 :args [dnt]
                  :tx-opts {:from (account-queries/active-account db)
                            :gas 6000000}
                  :tx-id {::unstake address}

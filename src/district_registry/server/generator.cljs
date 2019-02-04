@@ -22,7 +22,7 @@
    [district-registry.server.deployer]
    [district.cljs-utils :refer [rand-str]]
    [district.server.config :refer [config]]
-   [district.server.smart-contracts :refer [contract-address contract-call instance]]
+   [district.server.smart-contracts :refer [contract-address contract-call contract-event-in-tx instance]]
    [district.server.web3 :refer [web3]]
    [mount.core :as mount :refer [defstate]]
    [taoensso.timbre :as log]))
@@ -155,75 +155,89 @@
             (do
               (log/info "Uploaded data received " {:hash hash} ::upload-data)
               (resolve hash))))))))
-
+#_
+(prn
+  (contract-event-in-tx
+    "0xda687280ce3a1bc8a3c5633a3d10220f8b29192381e3607f5affc952f7323546"
+    :district-registry
+    :DistrictConstructedEvent
+    ))
+#_
+(district-factory/approve-and-create-district
+  {:meta-hash "QmbgUT4MgkHuJoTJspTNwMPBNyNRp96MxqHwhfacF4rRgV"
+   :dnt-weight 333333
+   :amount (web3/to-wei 10000 :wei)}
+  {:from "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"})
 (defn generate-district-and-challenges [{:keys [district-hashes
                                                 challenge-hashes]}]
+  (prn "district hashes" district-hashes)
+  (prn "challenge hashes" challenge-hashes)
+
   (let [accounts (web3-eth/accounts @web3)
-        district (district-factory/approve-and-create-district
-                   {:info-hash (first district-hashes)
-                    :dnt-weight 333333
-                    :amount (web3/to-wei 10 :ether)}
-                   {:from (first accounts)})
-        reg-entry (-> district
-                    district-registry/registry-entry-event-in-tx
-                    :args
-                    :registry-entry)
-        district2 (district-factory/approve-and-create-district
-                    {:info-hash (second district-hashes)
-                     :dnt-weight 1000000
-                     :amount (web3/to-wei 10 :ether)}
-                    {:from (first accounts)})
-        reg-entry2 (-> district2
-                     district-registry/registry-entry-event-in-tx
-                     :args
-                     :registry-entry)]
-    (prn "accounts " accounts)
+        reg-entry-from-tx (fn [tx-hash]
+                            (-> tx-hash
+                              (contract-event-in-tx
+                                [:district-registry :district-registry-fwd]
+                                :DistrictConstructedEvent)
+                              :args
+                              :registry-entry))
+        reg-entry (reg-entry-from-tx
+                    (district-factory/approve-and-create-district
+                      {:meta-hash (first district-hashes)
+                       :dnt-weight 333333
+                       :amount (web3/to-wei 1000 :wei)}
+                      {:from (first accounts)}))
+        reg-entry2 (reg-entry-from-tx
+                     (district-factory/approve-and-create-district
+                       {:meta-hash (second district-hashes)
+                        :dnt-weight 1000000
+                        :amount (web3/to-wei 1000 :wei)}
+                       {:from (first accounts)}))]
 
     (prn "dnt" (dnt/balance-of (first accounts)))
+    (prn "reg entry" reg-entry "acct" (first accounts))
     (prn "district token" (district/balance-of reg-entry (first accounts)))
-    (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
 
     (prn "staked"
       (district/approve-and-stake
         {:district reg-entry
-         :amount (web3/to-wei 10 :ether)
-         :data 0}
+         :amount (web3/to-wei 1000 :wei)}
         {:from (first accounts)}))
 
     (prn "dnt" (dnt/balance-of (first accounts)))
     (prn "district token" (district/balance-of reg-entry (first accounts)))
-    (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
 
-    (prn "staked"
+    (prn "staked 2"
       (district/approve-and-stake
         {:district reg-entry
-         :amount (web3/to-wei 10 :ether)
-         :data 0}
+         :amount (web3/to-wei 1000 :wei)}
         {:from (first accounts)}))
 
     (prn "dnt" (dnt/balance-of (first accounts)))
     (prn "district token" (district/balance-of reg-entry (first accounts)))
-    (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
 
     (prn "unstaked"
-      (district/unstake reg-entry (web3/to-wei 1 :ether) 0))
+      (district/unstake reg-entry (web3/to-wei 10 :wei) {:from (first accounts)}))
 
     (prn "dnt" (dnt/balance-of (first accounts)))
     (prn "district token" (district/balance-of reg-entry (first accounts)))
-    (prn "staked dnt" (district/total-staked-for reg-entry (first accounts)))
+
+    (prn "dnt last" (dnt/balance-of (last accounts)))
 
     (prn
       "create challenge"
+      "hash" (first challenge-hashes)
       (registry-entry/approve-and-create-challenge
         reg-entry
-        {:amount (web3/to-wei 10 :ether)
+        {:amount (web3/to-wei 1000 :wei)
          :meta-hash (first challenge-hashes)}
         {:from (last accounts)}))
 
     (prn "commit vote"
       (registry-entry/approve-and-commit-vote
         reg-entry
-        {:amount (web3/to-wei 1 :ether)
+        {:index 0
+         :amount (web3/to-wei 100 :wei)
          :salt "abc"
          :vote-option :vote.option/include}
         {:from (first accounts)}))
@@ -231,7 +245,8 @@
     (prn "commit vote"
       (registry-entry/approve-and-commit-vote
         reg-entry
-        {:amount (web3/to-wei 2 :ether)
+        {:index 0
+         :amount (web3/to-wei 20 :wei)
          :salt "abc"
          :vote-option :vote.option/exclude}
         {:from (last accounts)}))
@@ -239,8 +254,7 @@
     (prn "staked"
       (district/approve-and-stake
         {:district reg-entry
-         :amount (web3/to-wei 1 :ether)
-         :data 0}
+         :amount (web3/to-wei 10 :wei)}
         {:from (last accounts)}))
 
     (prn "increased time 2 mins"
@@ -249,55 +263,45 @@
     (prn "reveal vote"
       (registry-entry/reveal-vote
         reg-entry
-        {:vote-option :vote.option/include
+        {:index 0
+         :vote-option :vote.option/include
          :salt "abc"}
         {:from (first accounts)}))
 
     (prn "reveal vote"
       (registry-entry/reveal-vote
         reg-entry
-        {:vote-option :vote.option/exclude
+        {:index 0
+         :vote-option :vote.option/exclude
          :salt "abc"}
         {:from (last accounts)}))
 
     (prn "increased time 1 min"
       (web3-evm/increase-time! @web3 [(inc (t/in-seconds (t/minutes 1)))]))
 
-    (prn "vote reward"
-      (registry-entry/vote-reward
-        reg-entry
-        (first accounts)))
-
-    (prn "vote reward"
-      (registry-entry/vote-reward
-        reg-entry
-        (last accounts)))
-
     (prn "claim vote reward"
       (registry-entry/claim-vote-reward
         reg-entry
+        {:index 0}
         {:from (first accounts)}))
-
-    (prn "claim vote reward"
-      (registry-entry/claim-vote-reward
-        reg-entry
-        {:from (last accounts)}))
 
     (prn
       "create challenge 2"
       (registry-entry/approve-and-create-challenge
         reg-entry
-        {:amount (web3/to-wei 10 :ether)
+        {:amount (web3/to-wei 1000 :wei)
          :meta-hash (first challenge-hashes)}
         {:from (last accounts)}))
 
     (prn "commit vote"
       (registry-entry/approve-and-commit-vote
         reg-entry
-        {:amount (web3/to-wei 20 :ether)
+        {:index 1
+         :amount (web3/to-wei 100 :wei)
          :salt "abc"
          :vote-option :vote.option/exclude}
         {:from (last accounts)}))
+
 
     (prn "increased time 2 mins"
       (web3-evm/increase-time! @web3 [(inc (t/in-seconds (t/minutes 2)))]))
@@ -305,26 +309,18 @@
     (prn "reveal vote"
       (registry-entry/reveal-vote
         reg-entry
-        {:vote-option :vote.option/exclude
+        {:index 1
+         :vote-option :vote.option/exclude
          :salt "abc"}
         {:from (last accounts)}))
 
     (prn "increased time 1 min"
       (web3-evm/increase-time! @web3 [(inc (t/in-seconds (t/minutes 1)))]))
 
-    (prn "vote reward"
-      (registry-entry/vote-reward
-        reg-entry
-        (last accounts)))
-
     (prn "claim vote reward"
       (registry-entry/claim-vote-reward
         reg-entry
-        {:from (last accounts)}))
-
-    (prn "claim challenge reward"
-      (registry-entry/claim-challenge-reward
-        reg-entry
+        {:index 1}
         {:from (last accounts)}))
 
     ))

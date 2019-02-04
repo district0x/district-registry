@@ -28,7 +28,7 @@
              :reg-entry/challenge-period-end
              [:reg-entry/challenges
               [:challenge/challenger]]
-             :district/info-hash
+             :district/meta-hash
              :district/name
              :district/description
              :district/url
@@ -57,7 +57,7 @@
                              :district/dnt-staked
                              :district/dnt-staked-for
                              :district/github-url
-                             :district/info-hash
+                             :district/meta-hash
                              :district/logo-image-hash
                              :district/name
                              :district/total-supply

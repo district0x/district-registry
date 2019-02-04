@@ -10,11 +10,20 @@
 (defn set-factory [contract-key {:keys [:factory :factory?]} & [opts]]
   (contract-call contract-key :set-factory factory factory? (merge opts {:gas 100000})))
 
-(defn registry-entry-event [contract-key & args]
-  (apply contract-call contract-key :RegistryEntryEvent args))
+(defn district-constructed-event [contract-key & args]
+  (apply contract-call contract-key :DistrictConstructedEvent args))
 
-(defn registry-entry-event-in-tx [contract-key tx-hash & args]
-  (apply contract-event-in-tx tx-hash contract-key :RegistryEntryEvent args))
+(defn district-stake-changed-event [contract-key & args]
+  (apply contract-call contract-key :DistrictStakeChangedEvent args))
+
+(defn challenge-created-event [contract-key & args]
+  (apply contract-call contract-key :ChallengeCreatedEvent args))
+
+(defn vote-committed-event [contract-key & args]
+  (apply contract-call contract-key :VoteCommittedEvent args))
+
+(defn vote-revealed-event [contract-key & args]
+  (apply contract-call contract-key :VoteRevealedEvent args))
 
 (defn factory? [contract-key factory]
   (contract-call contract-key :is-factory factory))

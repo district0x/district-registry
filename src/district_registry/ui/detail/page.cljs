@@ -52,7 +52,7 @@
         :vote/revealed-on
         :vote/claimed-reward-on
         :vote/reward]]]]
-    :district/info-hash
+    :district/meta-hash
     :district/name
     :district/description
     :district/url
