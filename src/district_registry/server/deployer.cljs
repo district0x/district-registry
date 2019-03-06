@@ -25,6 +25,20 @@
 (def challenge-factory-placeholder "cccccccccccccccccccccccccccccccccccccccc")
 (def stake-bank-factory-placeholder "dddddddddddddddddddddddddddddddddddddddd")
 (def power-factory-placeholder "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+;; (def aragon-democracy-kit-placeholder "aAaAaAaaAaAaAaaAaAAAAAAAAaaaAaAaAaaAaaAa")
+(def aragon-democracy-kit-placeholder "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+
+(defn get-aragon-democracy-kit-address []
+  (-> "fs"
+    js/require
+    (.readFileSync "../dao-kits/kits/democracy/arapp_local.json" "utf8")
+    js/JSON.parse
+    (js->clj :keywordize-keys true)
+    :environments
+    :rpc
+    :address))
+
+;; (get-aragon-democracy-kit-address)
 
 (defn deploy-dnt! [default-opts]
   (deploy-smart-contract! :DNT (merge default-opts {:gas 5200000
@@ -106,7 +120,8 @@
                                                                  :arguments [(contract-address :district-registry-fwd)
                                                                              (contract-address :DNT)]
                                                                  :placeholder-replacements
-                                                                 {forwarder-target-placeholder :district}})))
+                                                                 {forwarder-target-placeholder :district
+                                                                  aragon-democracy-kit-placeholder (get-aragon-democracy-kit-address)}})))
 
 (defn deploy-param-change-factory! [default-opts]
   (deploy-smart-contract! :param-change-factory (merge default-opts {:gas 1000000

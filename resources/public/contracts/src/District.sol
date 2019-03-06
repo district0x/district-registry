@@ -15,7 +15,7 @@ import "StakeBankFactory.sol";
 contract District is RegistryEntry {
 
   StakeBankFactory private constant stakeBankFactory = StakeBankFactory(0xDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD);
-  StakeBank private stakeBank;
+  StakeBank public stakeBank;
 
   /**
    * @dev IPFS hash of file that contains all data from form fields

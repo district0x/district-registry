@@ -3,6 +3,20 @@ pragma solidity ^0.4.18;
 import "./RegistryEntryFactory.sol";
 import "./District.sol";
 
+interface DemocracyKit {
+  function newInstance(
+    string name,
+    address[] holders,
+    uint256[] tokens,
+    uint64 supportNeeded,
+    uint64 minAcceptanceQuorum,
+    uint64 voteDuration,
+    address _token
+  ) public;
+
+  function foo() public;
+}
+
 /**
  * @title Factory contract for creating District contracts
  *
@@ -10,6 +24,14 @@ import "./District.sol";
  */
 
 contract DistrictFactory is RegistryEntryFactory {
+
+  // DemocracyKit private constant democracyKit = DemocracyKit(0xaAaAaAaaAaAaAaaAaAAAAAAAAaaaAaAaAaaAaaAa);
+  DemocracyKit private constant democracyKit = DemocracyKit(0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa);
+
+  // DemocracyKit private constant democracyKit = DemocracyKit(0xd02a4b49c53ed1b386df1015583a4c4e2e70a4fe );
+
+
+
   uint public constant version = 1;
 
   function DistrictFactory(Registry _registry, MiniMeToken _registryToken)
@@ -35,6 +57,22 @@ contract DistrictFactory is RegistryEntryFactory {
       _metaHash,
       _dntWeight
     );
+    address[] holders;
+    uint256[] tokens;
+    address mmt = address(district.stakeBank());
+    // require(address(democracyKit) == 0xd02a4b49c53ed1b386df1015583a4c4e2e70a4fe );
+    democracyKit.foo();
+
+    // democracyKit.newInstance(
+    //   "FooBar",
+    //   holders,
+    //   tokens,
+    //   uint64(100),
+    //   uint64(100),
+    //   uint64(100),
+    //   mmt
+    // );
+
   }
 }
 

@@ -31,9 +31,12 @@
 
 (declare start)
 (defstate ^{:on-reload :noop} generator
-  :start (start (merge
-                  (:generator @config)
-                  (:generator (mount/args))))
+  :start (try
+           (start (merge
+                    (:generator @config)
+                    (:generator (mount/args))))
+           (catch :default e
+             (log/error (str e))))
   :stop (constantly nil))
 
 (defn get-scenarios [{:keys [:accounts :use-accounts :items-per-account :scenarios]}]
