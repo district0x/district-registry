@@ -22,24 +22,29 @@
                               (pos? i)))
                         (reset! input s))))]
     (fn [address]
-      [:div
-       [:label "DNT"
-        [:input {:type "number"
-                 :value @input
-                 :on-change on-change
-                 }]]
-       [:button {:on-click (fn []
-                             (dispatch [::district/approve-and-stake-for {:address address
-                                                                          :dnt (-> @input
-                                                                                 web3/to-big-number
-                                                                                 (web3/to-wei :ether))}]))}
-        "Stake"]
-       [:button {:on-click (fn []
-                             (dispatch [::district/unstake {:address address
-                                                            :dnt (-> @input
-                                                                   web3/to-big-number
-                                                                   (web3/to-wei :ether))}]))}
-        "Unstake"]])))
+      [:div.box-cta
+       [:form
+        [:div.form-btns
+         [:div.cta-btns
+          [:a.cta-btn {:href "#"
+                       :on-click (fn []
+                                   (dispatch [::district/approve-and-stake-for {:address address
+                                                                                :dnt (-> @input
+                                                                                       web3/to-big-number
+                                                                                       (web3/to-wei :ether))}]))}
+           "Stake"]
+          [:a.cta-btn {:href "#"
+                       :on-click (fn []
+                                   (dispatch [::district/unstake {:address address
+                                                                  :dnt (-> @input
+                                                                         web3/to-big-number
+                                                                         (web3/to-wei :ether))}]))}
+           "Unstake"]]
+         [:fieldset
+          [:input {:type "number"
+                   :value @input
+                   :on-change on-change}]
+          [:span.cur "DNT"]]]]])))
 
 (defn stake-info [district-address]
   (let [active-account (subscribe [::account-subs/active-account])
@@ -56,16 +61,16 @@
              :keys [:district/total-supply
                     :district/dnt-staked-for
                     :district/balance-of]} (:district @query)]
-        (prn balance-of)
-        [:div
-         [:p (str "You staked " (-> dnt-staked-for
-                                  (web3/from-wei :ether)
-                                  format/format-dnt))]
-         [:p (str "Owning "
-               (-> balance-of
-                 (web3/from-wei :ether)
-                 format/format-token)
-               " (" (if (and (bn/bignumber? balance-of) (.isPositive balance-of))
-                      (.times (.div balance-of total-supply) 100)
-                      0) "%) "
-               "governance tokens")]]))))
+        [:p
+         (str "You staked " (-> dnt-staked-for
+                              (web3/from-wei :ether)
+                              format/format-dnt))
+         [:br]
+         (str "Owning "
+           (-> balance-of
+             (web3/from-wei :ether)
+             format/format-token)
+           " (" (if (and (bn/bignumber? balance-of) (.isPositive balance-of))
+                  (.times (.div balance-of total-supply) 100)
+                  0) "%) "
+           "governance tokens")]))))

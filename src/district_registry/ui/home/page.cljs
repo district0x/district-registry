@@ -66,14 +66,21 @@
                              :reg-entry/challenges
                              :reg-entry/deposit
                              :reg-entry/version]}]
-  [:div
-   [:div {:on-click #(dispatch [:district.ui.router.events/navigate :route/detail {:address address}])}
-    [:h2 name ]
-    [:h3 description]
-    [district-image logo-image-hash]
+  [:div.grid-box
+   [:div.box-image {:on-click #(dispatch [:district.ui.router.events/navigate :route/detail {:address address}])}
     [district-image background-image-hash]]
-   [stake/stake-info address]
-   [stake/stake-form address]])
+   [:div.box-text
+    [:div.box-logo.sized {:on-click #(dispatch [:district.ui.router.events/navigate :route/detail {:address address}])}
+     [district-image logo-image-hash]]
+    [:div.inner
+     [:h2 name]
+     [:p description]
+     [:div.h-line]
+     [stake/stake-info address]
+     [stake/stake-form address]]
+    [:div.arrow-blob {:style {:background-image "url(images/module-arrow-blob@2x.png)"}}
+     [:a {:on-click #(dispatch [:district.ui.router.events/navigate :route/detail {:address address}])}
+      [:span.arr.icon-arrow-right]]]]])
 
 (defn district-tiles [active-account form-data]
   (let [q (subscribe [::gql/query
@@ -81,14 +88,13 @@
                       {:refetch-on #{::district/approve-and-stake-for-success
                                      ::district/unstake-success
                                      }}])]
-    [:ul
+    [:div.grid.spaced
      (->> @q
        :search-districts
        :items
        (map (fn [{:as district
                   :keys [:reg-entry/address]}]
-              [:li {:key address}
-               [district-tile district]]))
+              ^{:key address} [district-tile district]))
        doall)]))
 
 (defmethod page :route/home []
@@ -125,65 +131,52 @@
                            (swap! form-data assoc :order-by
                              (keyword "districts.order-by"
                                (-> event .-target .-id ))))
-        active-account (subscribe [::account-subs/active-account])]
+        active-account (subscribe [::account-subs/active-account])
+        select-menu-open? (r/atom false)]
     (fn []
       [app-layout
-       [:div
-        [:form
-         [:fieldset
-          [:legend "Status"]
-          [:label "In Registry"
-           [:input {:id "in-registry"
-                    :type "radio"
-                    :checked (= @status "in-registry")
-                    :on-change status-handler}]]
-          [:label "Challenged"
-           [:input {:id "challenged"
-                    :type "radio"
-                    :checked (= @status "challenged")
-                    :on-change status-handler}]]
-          [:label "Blacklisted"
-           [:input {:id "blacklisted"
-                    :type "radio"
-                    :checked (= @status "blacklisted")
-                    :on-change status-handler}]]]
-         [:fieldset
-          [:legend "Order By"]
-          [:label "created-on"
-           [:input {:id "created-on"
-                    :type "radio"
-                    :checked (= (:order-by @form-data) :districts.order-by/created-on)
-                    :on-change order-by-handler}]]
-          [:label "total-supply"
-           [:input {:id "total-supply"
-                    :type "radio"
-                    :checked (= (:order-by @form-data) :districts.order-by/total-supply)
-                    :on-change order-by-handler}]]
-          [:label "dnt-staked"
-           [:input {:id "dnt-staked"
-                    :type "radio"
-                    :checked (= (:order-by @form-data) :districts.order-by/dnt-staked)
-                    :on-change order-by-handler}]]
-          [:label "commit-period"
-           [:input {:id "commit-period-end"
-                    :type "radio"
-                    :checked (= (:order-by @form-data) :districts.order-by/commit-period-end)
-                    :on-change order-by-handler}]]
-          [:label "reveal-period"
-           [:input {:id "reveal-period-end"
-                    :type "radio"
-                    :checked (= (:order-by @form-data) :districts.order-by/reveal-period-end)
-                    :on-change order-by-handler}]]]
-         [:fieldset
-          [:legend "Order Direction"]
-          [:label "Ascending"
-           [:input {:id "asc"
-                    :type "radio"
-                    :checked (= (:order-dir @form-data) :asc)
-                    :on-change order-dir-handler}]]
-          [:label "Descending"
-           [:input {:id "desc"
-                    :type "radio"
-                    :checked (= (:order-dir @form-data) :desc)
-                    :on-change order-dir-handler}]]]]
+       [:section#intro
+        [:div.bg-wrap
+         [:div.background.sized
+          [:img {:src "images/blobbg-top@2x.png"}]]]
+        [:div.container
+         [:nav.subnav
+          [:ul
+           [:li {:class (when (= @status "in-registry") "on")}
+            [:a.cta-btn {:id "in-registry"
+                         :on-click status-handler}
+             "In Registry"]]
+           [:li {:class (when (= @status "challenged") "on")}
+            [:a.cta-btn {:id "challenged"
+                         :on-click status-handler}
+             "Challenged"]]
+           [:li {:class (when (= @status "blacklisted") "on")}
+            [:a {:id "blacklisted"
+                 :on-click status-handler}
+             "Blacklisted"]]]]
+         [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat aute irure dolor in reprehenderit."]]]
+       [:section#registry-grid
+        [:div.container
+         [:div.select-menu {:class (when @select-menu-open? "on")
+                            :on-click #(swap! select-menu-open? not) }
+          [:div.select-choice.cta-btn
+           [:div.select-text "Most Staked"]
+           [:div.arrow [:span.arr.icon-arrow-down]]]
+          [:div.select-drop
+           [:ul
+            [:li [:a {:href "#"
+                      :id "created-on"
+                      :checked (= (:order-by @form-data) :districts.order-by/created-on)
+                      :on-click order-by-handler}
+                  "Creation Date"]]
+            [:li [:a {:href "#"
+                      :id "total-supply"
+                      :checked (= (:order-by @form-data) :districts.order-by/total-supply)
+                      :on-click order-by-handler}
+                  "Total Supply"]]
+            [:li [:a {:href "#"
+                      :id "dnt-staked"
+                      :checked (= (:order-by @form-data) :districts.order-by/dnt-staked)
+                      :on-click order-by-handler}
+                  "DNT Staked"]]]]]]
         [district-tiles @active-account @form-data]]])))
