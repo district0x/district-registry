@@ -62,7 +62,8 @@
 
   :exclusions [express-graphql]
 
-  :plugins [[lein-auto "0.1.2"]
+  :plugins [[deraen/lein-less4clj "0.7.0-SNAPSHOT"]
+            [lein-auto "0.1.2"]
             [lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.16"]
             [lein-shell "0.5.0"]
@@ -70,6 +71,9 @@
             [lein-doo "0.1.8"]
             [lein-npm "0.6.2"]
             [lein-pdo "0.1.1"]]
+
+  :less4clj {:target-path "resources/public/css-compiled"
+             :source-paths ["resources/public/css"]}
 
   :npm {:dependencies [[cors "2.8.4"]
                        [express "4.15.3"]
@@ -82,7 +86,6 @@
                        [source-map-support "0.5.3"]
                        [ws "4.0.0"]]}
 
-
   :solc {:src-path "resources/public/contracts/src"
          :build-path "resources/public/contracts/build"
          :solc-err-only true
@@ -92,7 +95,7 @@
   :source-paths ["src" "test"]
 
   :figwheel {:server-port 4177
-             :css-dirs ["resources/public/css"]
+             :css-dirs ["resources/public/css" "resources/public/css-compiled"]
              :repl-eval-timeout 60000}
 
   :aliases {"clean-prod-server" ["shell" "rm" "-rf" "server"]

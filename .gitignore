@@ -4,7 +4,7 @@
 /.cljs_node_repl/
 /.idea/
 /.lein-*
-/.node-xmlhttprequest-sync-*
+/.node-xmlhttprequest-*
 /.nrepl-port
 /browser-tests/
 /checkouts
@@ -17,8 +17,8 @@
 /node_modules/
 /npm-debug.log
 /resources/public/contracts/build/
-/resources/public/css/
 /resources/public/js/
+/resources/public/css-compiled/
 /server-tests/
 /server/
 /target
