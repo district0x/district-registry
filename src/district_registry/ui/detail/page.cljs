@@ -140,7 +140,8 @@
 
 (defn stake-section [{:as district
                       :keys [:reg-entry/address
-                             :reg-entry/status]}]
+                             :reg-entry/status
+                             :district/dnt-weight]}]
   (when (not=
           (normalize-status status)
           :blacklisted)
@@ -149,8 +150,7 @@
      [:p
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
      [:h3 "Voting Token Issuance Curve"]
-     ;; TODO: How do we render this staking curve?
-     [:img.spacer {:src "images/voting-graph-full@2x.png"}]
+     [:img.spacer {:src (str "images/curve-graph-" dnt-weight "-l.png")}]
      [:div.stake
       [:div.row.spaced
        [stake/stake-info address]
