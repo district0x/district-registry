@@ -76,7 +76,12 @@
              [:div.container
               [:p.intro-text
                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, masuada non rutrum ut, ornare ac orci. Lorem ipsum dolor sit amet, consectetur adipiscing. Lorem augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non."]
-              [:div (str (:local @errors))]
+              [:ul
+               (->> @errors
+                 :local
+                 (map (fn [[k v]]
+                        [:li {:key k} (:error v)]))
+                 doall)]
               [:form.image-upload
                [:div.row.spaced
                 [:div.col.left
