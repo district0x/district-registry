@@ -137,8 +137,7 @@
       [app-layout
        [:section#intro
         [:div.bg-wrap
-         [:div.background.sized
-          [:img {:src "images/blobbg-top@2x.png"}]]]
+         [:div.background.sized [:img {:src "images/blobbg-top@2x.png"}]]]
         [:div.container
          [:nav.subnav
           [:ul
@@ -154,7 +153,8 @@
             [:a {:id "blacklisted"
                  :on-click status-handler}
              "Blacklisted"]]]]
-         [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat aute irure dolor in reprehenderit."]]]
+         [:p
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat aute irure dolor in reprehenderit."]]]
        [:section#registry-grid
         [:div.container
          [:div.select-menu {:class (when @select-menu-open? "on")
@@ -178,5 +178,5 @@
                       :id "dnt-staked"
                       :checked (= (:order-by @form-data) :districts.order-by/dnt-staked)
                       :on-click order-by-handler}
-                  "DNT Staked"]]]]]]
-        [district-tiles @active-account @form-data]]])))
+                  "DNT Staked"]]]]]
+         [district-tiles @active-account @form-data]]]])))
