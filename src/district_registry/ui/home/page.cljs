@@ -66,21 +66,25 @@
                              :reg-entry/challenges
                              :reg-entry/deposit
                              :reg-entry/version]}]
-  [:div.grid-box
-   [:div.box-image {:on-click #(dispatch [:district.ui.router.events/navigate :route/detail {:address address}])}
-    [district-image background-image-hash]]
-   [:div.box-text
-    [:div.box-logo.sized {:on-click #(dispatch [:district.ui.router.events/navigate :route/detail {:address address}])}
-     [district-image logo-image-hash]]
-    [:div.inner
-     [:h2 name]
-     [:p description]
-     [:div.h-line]
-     [stake/stake-info address]
-     [stake/stake-form address]]
-    [:div.arrow-blob {:style {:background-image "url(images/module-arrow-blob@2x.png)"}}
-     [:a {:on-click #(dispatch [:district.ui.router.events/navigate :route/detail {:address address}])}
-      [:span.arr.icon-arrow-right]]]]])
+  (let [nav-to-details-props {:style {:cursor "pointer"}
+                              :on-click #(dispatch [:district.ui.router.events/navigate
+                                                    :route/detail
+                                                    {:address address}])}]
+    [:div.grid-box
+     [:div.box-image nav-to-details-props
+      [district-image background-image-hash]]
+     [:div.box-text
+      [:div.box-logo.sized nav-to-details-props
+       [district-image logo-image-hash]]
+      [:div.inner
+       [:h2 nav-to-details-props name]
+       [:p nav-to-details-props description]
+       [:div.h-line]
+       [stake/stake-info address]
+       [stake/stake-form address]]
+      [:div.arrow-blob {:style {:background-image "url(images/module-arrow-blob@2x.png)"}}
+       [:a nav-to-details-props
+        [:span.arr.icon-arrow-right]]]]]))
 
 (defn district-tiles [active-account form-data]
   (let [q (subscribe [::gql/query
