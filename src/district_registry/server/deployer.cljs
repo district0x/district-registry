@@ -125,11 +125,7 @@
                             ;; :district-auction-cut-collector (nth accounts (or use-n-account-as-cut-collector 0))
                             ;; :district-auction-cut 0
                             }
-                      deploy-opts)
-        deploy-opts (dissoc deploy-opts
-                      :write?
-                      :initial-registry-params
-                      :transfer-dnt-to-accounts)]
+                      deploy-opts)]
 
     (deploy-ds-guard! deploy-opts)
     ;; make deployed :ds-guard its own autority

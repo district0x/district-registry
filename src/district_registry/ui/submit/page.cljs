@@ -166,14 +166,13 @@
                  [:p
                   "Lorem ipsum dolor sit amet, consec tetur adipiscing elit, sed do eiusmod."]]]
                [:div.form-btns
-                  [:p (->> @deposit-query
+                  [:p (-> @deposit-query
                         :search-param-changes
                         :items
                         first
                         :param-change/value
-                        ;; FIXME: No deposit param change, why?
-                        )
-                   "10,000 DNT"]
+                        (web3/from-wei :ether)
+                        format/format-dnt)]
                 [:button.cta-btn
                    {:on-click (fn [e]
                                 (.preventDefault e)

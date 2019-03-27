@@ -306,7 +306,11 @@
                            (when (= result :timeout)
                              (log/warn (str "Timed out "  info-text " " contract-type " " (:event-type event)) {:event event} ::timeout-event)))
                          (recur))))
-        watchers [{:watcher (partial registry/district-constructed-event [:district-registry :district-registry-fwd])
+        watchers [{:watcher (partial eternal-db/change-applied-event [:param-change-registry-db])
+                   :on-event (partial enqueue-event event-queue :contract/eternal-db :eternal-db-event)}
+                  {:watcher (partial eternal-db/change-applied-event [:district-registry-db])
+                   :on-event (partial enqueue-event event-queue :contract/eternal-db :eternal-db-event)}
+                  {:watcher (partial registry/district-constructed-event [:district-registry :district-registry-fwd])
                    :on-event (partial enqueue-event event-queue :contract/district :constructed)}
                   {:watcher (partial registry/district-stake-changed-event [:district-registry :district-registry-fwd])
                    :on-event (partial enqueue-event event-queue :contract/district :stake-changed)}
