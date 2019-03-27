@@ -90,8 +90,7 @@
   (let [q (subscribe [::gql/query
                       {:queries [(build-query active-account form-data)]}
                       {:refetch-on #{::district/approve-and-stake-for-success
-                                     ::district/unstake-success
-                                     }}])]
+                                     ::district/unstake-success}}])]
     [:div.grid.spaced
      (->> @q
        :search-districts
@@ -102,7 +101,10 @@
        doall)]))
 
 (defmethod page :route/home []
-  (let [form-data (r/atom
+  (let [order-by-kw->str {:districts.order-by/created-on "Creation Date"
+                          :districts.order-by/total-supply "Total Supply"
+                          :districts.order-by/dnt-staked "DNT Staked"}
+        form-data (r/atom
                     {:first 10
                      :statuses [:reg-entry.status/challenge-period
                                 :reg-entry.status/commit-period
@@ -164,23 +166,19 @@
          [:div.select-menu {:class (when @select-menu-open? "on")
                             :on-click #(swap! select-menu-open? not) }
           [:div.select-choice.cta-btn
-           [:div.select-text "Most Staked"]
+           [:div.select-text (-> @form-data :order-by order-by-kw->str)]
            [:div.arrow [:span.arr.icon-arrow-down]]]
           [:div.select-drop
            [:ul
-            [:li [:a {:href "#"
-                      :id "created-on"
-                      :checked (= (:order-by @form-data) :districts.order-by/created-on)
-                      :on-click order-by-handler}
-                  "Creation Date"]]
-            [:li [:a {:href "#"
-                      :id "total-supply"
-                      :checked (= (:order-by @form-data) :districts.order-by/total-supply)
-                      :on-click order-by-handler}
-                  "Total Supply"]]
-            [:li [:a {:href "#"
-                      :id "dnt-staked"
-                      :checked (= (:order-by @form-data) :districts.order-by/dnt-staked)
-                      :on-click order-by-handler}
-                  "DNT Staked"]]]]]
+            (->> order-by-kw->str
+              keys
+              (remove #(= (:order-by @form-data) %))
+              (map (fn [k]
+                     [:li {:key k}
+                      [:a {:href "#"
+                           :id (name k)
+                           :on-click order-by-handler}
+                       (order-by-kw->str k)]]
+                     ))
+              doall)]]]
          [district-tiles @active-account @form-data]]]])))
