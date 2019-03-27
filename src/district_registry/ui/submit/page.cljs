@@ -165,8 +165,7 @@
                  [:img.radio-img {:src "images/curve-graph-1000000-m.png"}]
                  [:p
                   "Lorem ipsum dolor sit amet, consec tetur adipiscing elit, sed do eiusmod."]]]
-               (when-not (-> @errors :local seq)
-                 [:div.form-btns
+               [:div.form-btns
                   [:p (->> @deposit-query
                         :search-param-changes
                         :items
@@ -175,14 +174,15 @@
                         ;; FIXME: No deposit param change, why?
                         )
                    "10,000 DNT"]
-                  [:button.cta-btn
+                [:button.cta-btn
                    {:on-click (fn [e]
                                 (.preventDefault e)
-                                (dispatch [::events/add-district-logo (->> @deposit-query
-                                                                        :search-param-changes
-                                                                        :items
-                                                                        first
-                                                                        :param-change/value
-                                                                        (assoc @form-data :deposit))]))
+                                (when-not (-> @errors :local seq)
+                                  (dispatch [::events/add-district-logo (->> @deposit-query
+                                                                          :search-param-changes
+                                                                          :items
+                                                                          first
+                                                                          :param-change/value
+                                                                          (assoc @form-data :deposit))])))
                     :type "submit"}
-                   "Submit"]])]]]]]]]))))
+                 "Submit"]]]]]]]]]))))
