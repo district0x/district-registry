@@ -111,7 +111,7 @@
   :clean-targets ^{:protect false} [[:solc :build-path]
                                     ".cljs_node_repl"
                                     "dev-server/"
-                                    "resources/public/css/"
+                                    "resources/public/css-compiled/"
                                     "resources/public/js/"
                                     "server-tests/"
                                     "server/"
