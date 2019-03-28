@@ -38,9 +38,7 @@
         :locale "en-US"}]]
      [:div.select-menu
       [:div.select-choice.cta-btn
-       [:div.select-text [active-account]]
-       [:div.arrow
-        [:span.arr.icon-arrow-down]]]]]]])
+       [:div.select-text [active-account]]]]]]])
 
 (defn footer []
   [:footer#globalFooter
