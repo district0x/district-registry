@@ -88,7 +88,8 @@
                    :route/about "page-about"
                    :route/detail "page-details"
                    :route/home "page-registry"
-                   :route/submit "page-submit")}
+                   :route/submit "page-submit"
+                   :route/not-found "not-found")}
        [header (:name @active-page)]
        (into [:div]
          children)
