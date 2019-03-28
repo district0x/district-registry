@@ -2,6 +2,15 @@
   (:require
    [cljs.spec.alpha :as s]
    [clojure.string :as str]
+   [district-registry.shared.graphql-schema :refer [graphql-schema]]
+   [district-registry.shared.routes :refer [routes]]
+   [district-registry.shared.smart-contracts :refer [smart-contracts]]
+   [district-registry.ui.about.page]
+   [district-registry.ui.detail.page]
+   [district-registry.ui.home.page]
+   [district-registry.ui.ipfs]
+   [district-registry.ui.not-found.page]
+   [district-registry.ui.submit.page]
    [district.ui.component.router :refer [router]]
    [district.ui.graphql]
    [district.ui.notification]
@@ -18,14 +27,6 @@
    [district.ui.web3-tx]
    [district.ui.web3]
    [district.ui.window-size]
-   [district-registry.shared.graphql-schema :refer [graphql-schema]]
-   [district-registry.shared.routes :refer [routes]]
-   [district-registry.shared.smart-contracts :refer [smart-contracts]]
-   [district-registry.ui.home.page]
-   [district-registry.ui.submit.page]
-   [district-registry.ui.detail.page]
-   [district-registry.ui.about.page]
-   [district-registry.ui.ipfs]
    [mount.core :as mount]
    [print.foo :include-macros true]))
 
@@ -46,7 +47,7 @@
          :reagent-render {:id "app"
                           :component-var #'router}
          :router {:routes routes
-                  :default-route :route/home}
+                  :default-route :route/not-found}
          :router-google-analytics {:enabled? (not debug?)}
          :graphql {:schema graphql-schema
                    :url "http://localhost:6300/graphql"}

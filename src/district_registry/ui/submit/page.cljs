@@ -16,7 +16,6 @@
                                              int-input]]
    [district.ui.component.page :refer [page]]
    [district.ui.graphql.subs :as gql]
-   [district.ui.graphql.subs :as gql]
    [print.foo :refer [look] :include-macros true]
    [re-frame.core :as re-frame :refer [subscribe dispatch]]
    [reagent.core :as r]
