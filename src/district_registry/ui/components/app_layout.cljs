@@ -91,6 +91,6 @@
                    :route/submit "page-submit"
                    :route/not-found "not-found")}
        [header (:name @active-page)]
-       (into [:div]
+       (into [:div#page-content]
          children)
        [footer]])))
