@@ -90,15 +90,19 @@
   (let [q (subscribe [::gql/query
                       {:queries [(build-query active-account form-data)]}
                       {:refetch-on #{::district/approve-and-stake-for-success
-                                     ::district/unstake-success}}])]
-    [:div.grid.spaced
-     (->> @q
-       :search-districts
-       :items
-       (map (fn [{:as district
-                  :keys [:reg-entry/address]}]
-              ^{:key address} [district-tile district]))
-       doall)]))
+                                     ::district/unstake-success}}])
+        result (:search-districts @q)
+        districts (:items result)]
+    (cond
+      (nil? result) nil
+      (empty? districts) [:div {:style {:text-align "center"}}
+                          [:h2 "No districts found"]]
+      :else [:div.grid.spaced
+             (->> districts
+               (map (fn [{:as district
+                          :keys [:reg-entry/address]}]
+                      ^{:key address} [district-tile district]))
+               doall)])))
 
 (defmethod page :route/home []
   (let [order-by-kw->str {:districts.order-by/created-on "Creation Date"
@@ -143,7 +147,8 @@
       [app-layout
        [:section#intro
         [:div.bg-wrap
-         [:div.background.sized [:img {:src "images/blobbg-top@2x.png"}]]]
+         [:div.background.sized
+          [:img {:src "images/blobbg-top@2x.png"}]]]
         [:div.container
          [:nav.subnav
           [:ul
