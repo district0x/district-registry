@@ -4,42 +4,53 @@
    [cljs-web3.core :as web3]
    [clojure.pprint :refer [pprint]]
    [district-registry.ui.components.app-layout :refer [app-layout]]
+   [district-registry.ui.components.nav :as nav]
    [district-registry.ui.components.stake :as stake]
    [district-registry.ui.contract.district :as district]
    [district.format :as format]
    [district.ui.component.page :refer [page]]
    [district.ui.graphql.subs :as gql]
+   [district.ui.router.subs :as router-subs]
    [district.ui.web3-accounts.subs :as account-subs]
    [re-frame.core :refer [subscribe dispatch]]
    [reagent.core :as r]))
 
-(defn build-query [active-account form-data]
+(defn build-query [active-account route-query]
   [:search-districts
-   form-data
-   [:total-count
-    :end-cursor
-    :has-next-page
-    [:items [:reg-entry/address
-             :reg-entry/version
-             :reg-entry/status
-             :reg-entry/creator
-             :reg-entry/deposit
-             :reg-entry/created-on
-             :reg-entry/challenge-period-end
-             [:reg-entry/challenges
-              [:challenge/challenger]]
-             :district/meta-hash
-             :district/name
-             :district/description
-             :district/url
-             :district/github-url
-             :district/logo-image-hash
-             :district/background-image-hash
-             :district/dnt-weight
-             :district/dnt-staked
-             :district/total-supply
-             [:district/dnt-staked-for {:staker active-account}]
-             [:district/balance-of {:staker active-account}]]]]])
+     {:order-by (keyword "districts.order-by" (:order-by route-query))
+      :statuses (case (:status route-query)
+                  "in-registry" [:reg-entry.status/challenge-period
+                                 :reg-entry.status/commit-period
+                                 :reg-entry.status/reveal-period
+                                 :reg-entry.status/whitelisted]
+                  "challenged"  [:reg-entry.status/commit-period
+                                 :reg-entry.status/reveal-period]
+                  "blacklisted" [:reg-entry.status/blacklisted])
+      :first 100}
+     [:total-count
+      :end-cursor
+      :has-next-page
+      [:items [:reg-entry/address
+               :reg-entry/version
+               :reg-entry/status
+               :reg-entry/creator
+               :reg-entry/deposit
+               :reg-entry/created-on
+               :reg-entry/challenge-period-end
+               [:reg-entry/challenges
+                [:challenge/challenger]]
+               :district/meta-hash
+               :district/name
+               :district/description
+               :district/url
+               :district/github-url
+               :district/logo-image-hash
+               :district/background-image-hash
+               :district/dnt-weight
+               :district/dnt-staked
+               :district/total-supply
+               [:district/dnt-staked-for {:staker active-account}]
+               [:district/balance-of {:staker active-account}]]]]])
 
 (defn district-image [image-hash]
   (when image-hash
@@ -82,13 +93,13 @@
        [:div.h-line]
        [stake/stake-info address]
        [stake/stake-form address]]
-      [:div.arrow-blob {:style {:background-image "url(images/module-arrow-blob@2x.png)"}}
-       [:a nav-to-details-props
-        [:span.arr.icon-arrow-right]]]]]))
+      [:div.arrow-blob {:style {:background-image "url(/images/module-arrow-blob@2x.png)"}}
+       (nav/a {:route [:route/detail {:address address}]}
+         [:span.arr.icon-arrow-right])]]]))
 
-(defn district-tiles [active-account form-data]
+(defn district-tiles [active-account route-query]
   (let [q (subscribe [::gql/query
-                      {:queries [(build-query active-account form-data)]}
+                      {:queries [(build-query active-account route-query)]}
                       {:refetch-on #{::district/approve-and-stake-for-success
                                      ::district/unstake-success}}])
         result (:search-districts @q)
@@ -105,85 +116,54 @@
                doall)])))
 
 (defmethod page :route/home []
-  (let [order-by-kw->str {:districts.order-by/created-on "Creation Date"
+  (let [active-account (subscribe [::account-subs/active-account])
+        route-query (subscribe [::router-subs/active-page-query])
+        status (or (:status @route-query) "in-registry")
+        order-by (or (:order-by @route-query) "created-on")
+        order-by-kw (keyword "districts.order-by" order-by)
+        order-by-kw->str {:districts.order-by/created-on "Creation Date"
                           :districts.order-by/total-supply "Total Supply"
                           :districts.order-by/dnt-staked "DNT Staked"}
-        form-data (r/atom
-                    {:first 10
-                     :statuses [:reg-entry.status/challenge-period
-                                :reg-entry.status/commit-period
-                                :reg-entry.status/reveal-period
-                                :reg-entry.status/whitelisted]
-                     :order-by :districts.order-by/created-on
-                     :order-dir :asc})
-        order-dir-handler (fn [event]
-                            (swap! form-data assoc :order-dir
-                              (if (-> event
-                                    .-target
-                                    .-id
-                                    (= "asc"))
-                                :asc
-                                :desc)))
-        status (r/atom "in-registry")
-        status-handler (fn [event]
-                         (reset! status (-> event .-target .-id))
-                         (swap! form-data assoc :statuses
-                           (condp = (-> event .-target .-id)
-                             "in-registry" [:reg-entry.status/challenge-period
-                                            :reg-entry.status/commit-period
-                                            :reg-entry.status/reveal-period
-                                            :reg-entry.status/whitelisted]
-                             "challenged"  [:reg-entry.status/commit-period
-                                            :reg-entry.status/reveal-period]
-
-                             "blacklisted" [:reg-entry.status/blacklisted])))
-        order-by-handler (fn [event]
-                           (swap! form-data assoc :order-by
-                             (keyword "districts.order-by"
-                               (-> event .-target .-id ))))
-        active-account (subscribe [::account-subs/active-account])
         select-menu-open? (r/atom false)]
     (fn []
       [app-layout
        [:section#intro
         [:div.bg-wrap
          [:div.background.sized
-          [:img {:src "images/blobbg-top@2x.png"}]]]
+          [:img {:src "/images/blobbg-top@2x.png"}]]]
         [:div.container
          [:nav.subnav
           [:ul
-           [:li {:class (when (= @status "in-registry") "on")}
-            [:a.cta-btn {:id "in-registry"
-                         :on-click status-handler}
-             "In Registry"]]
-           [:li {:class (when (= @status "challenged") "on")}
-            [:a.cta-btn {:id "challenged"
-                         :on-click status-handler}
-             "Challenged"]]
-           [:li {:class (when (= @status "blacklisted") "on")}
-            [:a {:id "blacklisted"
-                 :on-click status-handler}
-             "Blacklisted"]]]]
+           [:li {:class (when (= status "in-registry") "on")}
+            (nav/a {:route [:route/home {} (assoc @route-query :status "in-registry")]
+                    :class "cta-btn"}
+              "In Registry")]
+           [:li {:class (when (= status "challenged") "on")}
+            (nav/a {:class "cta-btn"
+                    :route [:route/home {} (assoc @route-query :status "challenged")]}
+              "Challenged")]
+           [:li {:class (when (= status "blacklisted") "on")}
+            (nav/a {:route [:route/home {} (assoc @route-query :status "blacklisted")]}
+              "Blacklisted")]]]
          [:p
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat aute irure dolor in reprehenderit."]]]
        [:section#registry-grid
         [:div.container
          [:div.select-menu {:class (when @select-menu-open? "on")
-                            :on-click #(swap! select-menu-open? not) }
+                            :on-click #(swap! select-menu-open? not)}
           [:div.select-choice.cta-btn
-           [:div.select-text (-> @form-data :order-by order-by-kw->str)]
+           [:div.select-text (order-by-kw order-by-kw->str)]
            [:div.arrow [:span.arr.icon-arrow-down]]]
           [:div.select-drop
            [:ul
             (->> order-by-kw->str
               keys
-              (remove #(= (:order-by @form-data) %))
+              (remove #(= order-by-kw %))
               (map (fn [k]
                      [:li {:key k}
-                      [:a {:href "#"
-                           :id (name k)
-                           :on-click order-by-handler}
-                       (order-by-kw->str k)]]
-                     ))
+                      (nav/a {:route [:route/home {} (assoc @route-query :order-by (name k))]}
+                        (order-by-kw->str k))]))
               doall)]]]
-         [district-tiles @active-account @form-data]]]])))
+         [district-tiles @active-account (assoc @route-query
+                                           :status status
+                                           :order-by order-by)]]]])))
