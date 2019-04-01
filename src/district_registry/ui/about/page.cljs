@@ -14,7 +14,7 @@
         [:div.hero
          [:div.container
           [:div.header-image.sized
-           [:img {:src "images/about-header@2x.png"}]]
+           [:img {:src "/images/about-header@2x.png"}]]
           [:div.page-title [:h1 "About"]]]]
         [:div.body-text
          [:div.container

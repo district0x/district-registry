@@ -52,6 +52,7 @@
                  [district0x/district-web3-utils "1.0.2"]
                  [district0x/error-handling "1.0.0-1"]
                  [district0x/re-frame-ipfs-fx "0.0.2"]
+                 [funcool/bide "1.6.1-SNAPSHOT"]
                  [medley "1.0.0"]
                  [mount "0.1.12"]
                  [org.clojure/clojurescript "1.10.238"]
@@ -144,7 +145,7 @@
                         :compiler {:main "district-registry.ui.core"
                                    :output-to "resources/public/js/compiled/app.js"
                                    :output-dir "resources/public/js/compiled/out"
-                                   :asset-path "js/compiled/out"
+                                   :asset-path "/js/compiled/out"
                                    :source-map-timestamp true
                                    :preloads [print.foo.preloads.devtools]
                                    :closure-defines {goog.DEBUG true}

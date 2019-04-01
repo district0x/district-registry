@@ -47,7 +47,8 @@
          :reagent-render {:id "app"
                           :component-var #'router}
          :router {:routes routes
-                  :default-route :route/not-found}
+                  :default-route :route/not-found
+                  :html5? true}
          :router-google-analytics {:enabled? (not debug?)}
          :graphql {:schema graphql-schema
                    :url "http://localhost:6300/graphql"}

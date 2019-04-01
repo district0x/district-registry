@@ -1,5 +1,6 @@
 (ns district-registry.ui.components.app-layout
   (:require
+   [district-registry.ui.components.nav :as nav]
    [district-registry.ui.subs :as dr-subs]
    [district-registry.ui.utils :as dr-utils]
    [district.ui.component.active-account :refer [active-account]]
@@ -7,28 +8,27 @@
    [district.ui.component.form.input :as inputs :refer [text-input*]]
    [district.ui.router.events]
    [district.ui.router.subs :as router-subs]
+   [district.ui.router.utils :as router-utils]
    [re-frame.core :refer [subscribe dispatch]]
    [reagent.core :as r]))
 
 (defn header [active-page-name]
   [:header#globalHeader
    [:div.container
-    [:div.logo.sized
-     {:on-click #(dispatch [:district.ui.router.events/navigate :route/home {}])}
-     [:img {:src "images/registry-logo@2x.png"}]]
+    (nav/div {:class "logo sized"
+              :route [:route/home]
+              }
+      [:img {:src "/images/registry-logo@2x.png"}])
     [:nav.toplinks
      [:ul
-      [:li
-       {:class (when (= active-page-name :route/submit)
-                 "on")}
-       [:a
-        {:on-click #(dispatch [:district.ui.router.events/navigate :route/submit {}])}
+      [:li {:class (when (= active-page-name :route/submit)
+                     "on")}
+       [nav/a {:route [:route/submit]}
         "Submit"]]
       [:li
        {:class (when (= active-page-name :route/about)
                  "on")}
-       [:a
-        {:on-click #(dispatch [:district.ui.router.events/navigate :route/about {}])}
+       [nav/a {:route [:route/about]}
         "About"]]]]
     [:div.dnt-wrap
      [:div.total-dnt
@@ -44,9 +44,9 @@
   [:footer#globalFooter
    [:div.bg-wrap
     [:div.background.sized
-     [:img {:src "images/blobbg-bot@2x.png"}]]]
+     [:img {:src "/images/blobbg-bot@2x.png"}]]]
    [:div.container
-    [:div.logo.sized [:img {:src "images/registry-logo@2x.png"}]]
+    [:div.logo.sized [:img {:src "/images/registry-logo@2x.png"}]]
     [:div.row.spaced
      [:div.col
       [:p
