@@ -8,6 +8,7 @@
    [district-registry.ui.components.stake :as stake]
    [district-registry.ui.contract.registry-entry :as reg-entry]
    [district-registry.ui.events :as events]
+   [district-registry.ui.not-found.page :as not-found]
    [district-registry.ui.spec :as spec]
    [district-registry.ui.utils :as ui-utils]
    [district.format :as format]
@@ -292,24 +293,25 @@
 (defn main [{:as props
              :keys [district active-account]}]
   (let [query (subscribe [::gql/query
-                          {:queries [(build-query props)]}])]
-    (when (-> @query :district :reg-entry/status)
-      (let [{:keys [district config]} @query]
-        [:section#main
-         [:div.container
-          [info-section district]
-          [:div.box-wrap.stats
-           [:div.body-text
-            [:div.container
-             [stake-section district]
-             [challenge-section district]
-             [vote-commit-section district]
-             [vote-reveal-section district]]]]]]))))
+                          {:queries [(build-query props)]}])
+        {:keys [district config]} @query]
+    (cond
+      (nil? district) nil
+      (-> district :reg-entry/address nil?) [not-found/not-found]
+      :else [:section#main
+             [:div.container
+              [info-section district]
+              [:div.box-wrap.stats
+               [:div.body-text
+                [:div.container
+                 [stake-section district]
+                 [challenge-section district]
+                 [vote-commit-section district]
+                 [vote-reveal-section district]]]]]])))
 
 (defmethod page :route/detail [& x]
   (let [params (subscribe [::router-subs/active-page-params])
         active-account (subscribe [::account-subs/active-account])]
     [app-layout
-     (when-let [{:keys [address]} @params]
-       [main {:district address
-              :active-account @active-account}])]))
+     [main {:district (:address @params)
+            :active-account @active-account}]]))
