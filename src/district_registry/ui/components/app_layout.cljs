@@ -16,8 +16,7 @@
   [:header#globalHeader
    [:div.container
     (nav/div {:class "logo sized"
-              :route [:route/home]
-              }
+              :route [:route/home]}
       [:img {:src "/images/registry-logo@2x.png"}])
     [:nav.toplinks
      [:ul
