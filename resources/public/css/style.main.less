@@ -252,7 +252,23 @@ input {
   box-shadow: 0px 5px 0px rgba(34, 45, 125, .1);
 }
 
-.cta-btn {
+.help-block:before {
+  content: "\A";
+  white-space: pre;
+}
+
+.dropzone {
+  display: inline;
+  img {
+    display: none;
+  }
+  .file-name:not(:empty)+label {
+    display: none;
+  }
+}
+
+.cta-btn, .dropzone {
+  cursor: pointer;
   display: inline-block;
   position: relative;
   padding: 14px 20px;
@@ -265,12 +281,15 @@ input {
   .solid-shad;
   overflow: hidden;
   z-index: 6;
+  label {
+    cursor: pointer;
+  }
   span {
+    cursor: pointer;
     position: relative;
     z-index: 6;
   }
-  span,
-  .icon {
+  span, .icon {
     .inline-c;
   }
   span+.icon {
@@ -1520,4 +1539,17 @@ form {
 
 a {
   cursor: pointer;
+}
+
+.input-group.has-error {
+  input {
+    border-bottom: 2px solid #df40fa !important;
+  }
+  .help-block {
+    color: #df40fa;
+  }
+}
+
+input[type="file"] {
+  display: none;
 }
