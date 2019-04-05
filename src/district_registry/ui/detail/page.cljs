@@ -124,17 +124,16 @@
         [:li (str "Voting tokens issued: " (-> total-supply
                                              (web3/from-wei :ether)
                                              format/format-token))]]
-       #_ ; FIXME: add social links
        [:nav.social
         [:ul
          [:li
-          [:a {:target "_blank", :href "#"} [:span.icon-facebook]]]
-         [:li [:a {:target "_blank", :href "#"} [:span.icon-twitter]]]
-         [:li
-          [:a
-           {:target "_blank", :href "#"}
-           [:span.icon-instagram]]]]]]
-      ;; TODO: No logo image?
+          [:a {:target "_blank"
+               :href (str "https://www.facebook.com/sharer/sharer.php?u=" js/window.location.href)}
+           [:span.icon-facebook]]]
+         [:li [:a {:target "_blank"
+                   :href (str "https://twitter.com/home?status=" js/window.location.href)}
+               [:span.icon-twitter]]]]]]
+      ;; TODO: We aren't showing the logo image?
       [:div.col.img
        [district-image background-image-hash]]]
      [:p description]]]])
