@@ -161,13 +161,12 @@
     background: linear-gradient(@direction, @start, @end);
 }
 
-/*.animation(@name, @duration, @ease, @repeat:infinite,){
-	-webkit-animation: @name @repeat @duration @ease; 
-	-moz-animation: @name @repeat @duration @ease; 
+.animation(@name, @duration, @ease, @repeat:infinite, ...){
+	-webkit-animation: @name @repeat @duration @ease;
+	-moz-animation: @name @repeat @duration @ease;
 	animation: @name @repeat @duration @ease;
 	animation-fill-mode: forwards;
 }
-*/
 
 .clipped(@fromTop, @fromRight, @fromBottom, @fromLeft) {
     -webkit-clip-path: inset(@fromTop @fromRight @fromBottom @fromLeft);
