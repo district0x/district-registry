@@ -150,7 +150,7 @@
      [:p
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
      [:h3 "Voting Token Issuance Curve"]
-     [:img.spacer {:src (str "/images/curve-graph-" dnt-weight "-l.png")}]
+     [:img.spacer {:src (str "/images/curve-graph-" dnt-weight "-l.svg")}]
      [:div.stake
       [:div.row.spaced
        [stake/stake-info address]

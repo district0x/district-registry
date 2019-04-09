@@ -138,7 +138,7 @@
                             :checked (= (:dnt-weight @form-data) 333333)
                             :on-change (dnt-weight-on-change 333333)}]
                 [:label {:for "r1"} "Curve Option 1/3"]]
-               [:img.radio-img {:src "/images/curve-graph-333333-m.png"}]
+               [:img.radio-img {:src "/images/curve-graph-333333-m.svg"}]
                [:p
                 "Lorem ipsum dolor sit amet, consec tetur adipiscing elit, sed do eiusmod."]]
               [:div.radio-box
@@ -148,7 +148,7 @@
                             :checked (= (:dnt-weight @form-data) 500000)
                             :on-change (dnt-weight-on-change 500000)}]
                 [:label {:for "r2"} "Curve Option 1/2"]]
-               [:img.radio-img {:src "/images/curve-graph-500000-m.png"}]
+               [:img.radio-img {:src "/images/curve-graph-500000-m.svg"}]
                [:p
                 "Lorem ipsum dolor sit amet, consec tetur adipiscing elit, sed do eiusmod."]]
               [:div.radio-box
@@ -158,7 +158,7 @@
                             :checked (= (:dnt-weight @form-data) 1000000)
                             :on-change (dnt-weight-on-change 1000000)}]
                 [:label {:for "r3"} "Curve Option 1/1"]]
-               [:img.radio-img {:src "/images/curve-graph-1000000-m.png"}]
+               [:img.radio-img {:src "/images/curve-graph-1000000-m.svg"}]
                [:p
                 "Lorem ipsum dolor sit amet, consec tetur adipiscing elit, sed do eiusmod."]]]
              [:div.form-btns
