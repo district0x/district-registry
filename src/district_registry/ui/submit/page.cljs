@@ -55,7 +55,7 @@
 
                                      (and
                                        (seq github-url)
-                                       (not (re-find #"http://github.com/.+" github-url)))
+                                       (not (re-find #"https?://github.com/.+" github-url)))
                                      (assoc-in [:github-url :error] "GitHub URL is not valid")
 
                                      (not logo-file-info) (assoc-in [:logo-file-info :error] "No logo file selected")
