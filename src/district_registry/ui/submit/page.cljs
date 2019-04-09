@@ -121,7 +121,8 @@
                                  :file-accept-pred (fn [{:keys [name type size] :as props}]
                                                      (or
                                                        (= type "image/png")
-                                                       (= type "image/jpg") ))
+                                                       (= type "image/jpg")
+                                                       (= type "image/jpeg")))
                                  :on-file-accepted (fn [{:keys [name type size array-buffer] :as props}]
                                                      (prn "Accepted " props))
                                  :on-file-rejected (fn [{:keys [name type size] :as props}]
