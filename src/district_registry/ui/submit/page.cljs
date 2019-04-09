@@ -169,7 +169,7 @@
                     :param-change/value
                     (web3/from-wei :ether)
                     format/format-dnt)]
-              [:button
+              [:button.cta-btn
                {:disabled (-> @errors :local seq boolean)
                 :on-click (fn [e]
                             (.preventDefault e)
