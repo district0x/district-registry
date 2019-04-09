@@ -11,14 +11,36 @@
     <link href="/css/icons.css" rel="stylesheet" type="text/css" />
     <link href="/css-compiled/style.css" rel="stylesheet" type="text/css" />
     <script src="https://use.typekit.net/zhu6uux.js"></script>
-    <script>try{Typekit.load({ async: true });}catch(e){}</script>
+    <script>try{Typekit.load({async:true});}catch(e){}</script>
     <link rel="shortcut icon" href="/images/favicon.png" />
     <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16" />
   </head>
 
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <div id="loader" class="on">
+        <div class="loader-graphic">
+          <img src="/images/svg/loader-blob.svg" class="blob spacer">
+          <div class="loader-floater">
+            <img src="/images/svg/loader-bg.svg" class="bg spacer">
+            <div class="turbine">
+              <img src="/images/svg/turbine-base.svg" class="base">
+              <div class="wheel"><img src="/images/svg/turbine-blade.svg"></div>
+              <img src="/images/svg/turbine-cover.svg" class="cover">
+            </div>
+            <div class="fan" data-num="1">
+              <img src="/images/svg/fan-base.svg" class="base">
+              <div class="wheel"><img src="/images/svg/fan-spokes.svg"></div>
+            </div>
+            <div class="fan" data-num="2">
+              <img src="/images/svg/fan-base.svg" class="base">
+              <div class="wheel"><img src="/images/svg/fan-spokes.svg"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="/js/compiled/app.js"></script>
     <script>district_registry.ui.core.init();</script>
   </body>
