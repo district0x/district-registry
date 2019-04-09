@@ -106,7 +106,9 @@
         districts (:items result)]
     (cond
       (nil? result) nil
-      (empty? districts) [:div {:style {:text-align "center"}}
+      (empty? districts) [:div {:style {:text-align "center"
+                                        :min-height "calc(100vh - 300px)"
+                                        :padding-top "400px"}}
                           [:h2 "No districts found"]]
       :else [:div.grid.spaced
              (->> districts
