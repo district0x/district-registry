@@ -14,7 +14,6 @@
 (re-frame/reg-event-fx
   ::approve-and-create-district
   (fn [{:keys [db]} [_ data {:keys [Name Hash Size]}]]
-    (prn "Distrinct info uploaded with hash " Hash)
     (let [tx-id (str (random-uuid))
           active-account (account-queries/active-account db)
           extra-data (web3-eth/contract-get-data (contract-queries/instance db :district-factory)
@@ -31,7 +30,11 @@
                    :tx-opts {:from active-account
                              :gas 6000000}
                    :tx-id {:district/create-district tx-id}
-                   :on-tx-success-n [[::logging/success [::create-district]]
-                                     [::notification-events/show (gstring/format "District created with info hash %s" Hash)]]
+                   :on-tx-success [::approve-and-create-district-success]
                    :on-tx-hash-error [::logging/error [::create-district]]
                    :on-tx-error [::logging/error [::create-district]]}]})))
+
+(re-frame/reg-event-fx
+  ::approve-and-create-district-success
+  (fn [& args]
+    {:dispatch [:district.ui.router.events/navigate :route/home]}))
