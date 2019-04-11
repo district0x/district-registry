@@ -80,43 +80,43 @@
                  [text-input {:form-data form-data
                               :placeholder "GitHub URL"
                               :id :github-url}]
-                 [:div {:style {:color "#df40fa"}}
-                  [:ul (doall
-                         (for [e errors]
-                           [:li {:key e} e]))]]]
+                 [:div.submit-errors
+                  (doall
+                    (for [e errors]
+                      [:div.error {:key e} "*" e]))]]
                 [:div.col.right
                  [textarea-input {:form-data form-data
                                   :placeholder "Description"
-                                  :id :description}]]]
-               [:div.form-btns
-                [:div.btn-wrap
-                 [file-drag-input {:form-data form-data
-                                   :id :logo-file-info
-                                   :label "Upload Logo"
-                                   :file-accept-pred (fn [{:keys [name type size] :as props}]
-                                                       (or
-                                                         (= type "image/png")
-                                                         (= type "image/jpg")
-                                                         (= type "image/jpeg")))
-                                   :on-file-accepted (fn [{:keys [name type size array-buffer] :as props}]
-                                                       (prn "Accepted " props))
-                                   :on-file-rejected (fn [{:keys [name type size] :as props}]
-                                                       (prn "Rejected " props))}]
-                 [:p "Size 256 x 256"]]
-                [:div.btn-wrap
-                 [file-drag-input {:form-data form-data
-                                   :id :background-file-info
-                                   :label "Upload Background"
-                                   :file-accept-pred (fn [{:keys [name type size] :as props}]
-                                                       (or
-                                                         (= type "image/png")
-                                                         (= type "image/jpg")
-                                                         (= type "image/jpeg")))
-                                   :on-file-accepted (fn [{:keys [name type size array-buffer] :as props}]
-                                                       (prn "Accepted " props))
-                                   :on-file-rejected (fn [{:keys [name type size] :as props}]
-                                                       (prn "Rejected " props))}]
-                 [:p "Size 1024 x 325"]]]]
+                                  :id :description}]
+                 [:div.form-btns
+                  [:div.btn-wrap
+                   [file-drag-input {:form-data form-data
+                                     :id :logo-file-info
+                                     :label "Upload Logo"
+                                     :file-accept-pred (fn [{:keys [name type size] :as props}]
+                                                         (or
+                                                           (= type "image/png")
+                                                           (= type "image/jpg")
+                                                           (= type "image/jpeg")))
+                                     :on-file-accepted (fn [{:keys [name type size array-buffer] :as props}]
+                                                         (prn "Accepted " props))
+                                     :on-file-rejected (fn [{:keys [name type size] :as props}]
+                                                         (prn "Rejected " props))}]
+                   [:p "Size 256 x 256"]]
+                  [:div.btn-wrap
+                   [file-drag-input {:form-data form-data
+                                     :id :background-file-info
+                                     :label "Upload Background"
+                                     :file-accept-pred (fn [{:keys [name type size] :as props}]
+                                                         (or
+                                                           (= type "image/png")
+                                                           (= type "image/jpg")
+                                                           (= type "image/jpeg")))
+                                     :on-file-accepted (fn [{:keys [name type size array-buffer] :as props}]
+                                                         (prn "Accepted " props))
+                                     :on-file-rejected (fn [{:keys [name type size] :as props}]
+                                                         (prn "Rejected " props))}]
+                   [:p "Size 1024 x 325"]]]]]]
               [:div.h-line]
               [:h2 "Voting Token Issuance Curve"]
               [:form.voting
