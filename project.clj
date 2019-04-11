@@ -119,10 +119,11 @@
                                     "target/"]
 
   :profiles {:dev {:dependencies [[binaryage/devtools "0.9.9"]
-                                  [com.cemerick/piggieback "0.2.2"]
-                                  [figwheel-sidecar "0.5.14" :exclusions [org.clojure/core.async]]
+                                  [cider/piggieback "0.3.10"]
+                                  [figwheel-sidecar "0.5.18" :exclusions [org.clojure/core.async]]
                                   [org.clojure/clojure "1.9.0"]
-                                  [org.clojure/tools.reader "1.2.1"]]
+                                  [org.clojure/tools.reader "1.3.0"]]
+                   :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
                    :source-paths ["dev" "src"]
                    :resource-paths ["resources"]}}
 
