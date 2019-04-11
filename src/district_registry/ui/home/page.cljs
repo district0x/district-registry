@@ -104,18 +104,23 @@
                                      ::district/unstake-success}}])
         result (:search-districts @q)
         districts (:items result)]
-    (cond
-      (nil? result) nil
-      (empty? districts) [:div {:style {:text-align "center"
-                                        :min-height "calc(100vh - 300px)"
-                                        :padding-top "400px"}}
-                          [:h2 "No districts found"]]
-      :else [:div.grid.spaced
-             (->> districts
-               (map (fn [{:as district
-                          :keys [:reg-entry/address]}]
-                      ^{:key address} [district-tile district]))
-               doall)])))
+    [:div.district-tiles
+     (cond
+       (nil? result) nil
+       (and (empty? districts)
+            (not (:graphql/loading? @q))) [:div.no-items
+                                           [:h2 "No districts found"]]
+
+       (:graphql/loading? @q)
+       [:div.loader "Loading..."]
+
+       :else
+       [:div.grid.spaced
+        (->> districts
+          (map (fn [{:as district
+                     :keys [:reg-entry/address]}]
+                 ^{:key address} [district-tile district]))
+          doall)])]))
 
 (defmethod page :route/home []
   (let [active-account (subscribe [::account-subs/active-account])
