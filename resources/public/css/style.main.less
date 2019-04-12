@@ -1550,13 +1550,21 @@ input[type="file"] {
   display: none;
 }
 
+.fade-in {
+  opacity: 0;
+}
+.fade-in.visible {
+  .transition(opacity, 1s, ease-in);
+  opacity: 1;
+}
+
 /*! - GLOBAL: LOADER */
 
 #loader {
   .fixed;
   width: 100%;
   height: 100%;
-  background-color: #fff;
+  // background-color: #fff;
   z-index: 60;
   .loader-graphic {
     width: 445px;

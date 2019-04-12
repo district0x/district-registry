@@ -17,40 +17,40 @@
 
 (defn build-query [active-account route-query]
   [:search-districts
-     {:order-by (keyword "districts.order-by" (:order-by route-query))
-      :statuses (case (:status route-query)
-                  "in-registry" [:reg-entry.status/challenge-period
-                                 :reg-entry.status/commit-period
-                                 :reg-entry.status/reveal-period
-                                 :reg-entry.status/whitelisted]
-                  "challenged"  [:reg-entry.status/commit-period
-                                 :reg-entry.status/reveal-period]
-                  "blacklisted" [:reg-entry.status/blacklisted])
-      :first 100}
-     [:total-count
-      :end-cursor
-      :has-next-page
-      [:items [:reg-entry/address
-               :reg-entry/version
-               :reg-entry/status
-               :reg-entry/creator
-               :reg-entry/deposit
-               :reg-entry/created-on
-               :reg-entry/challenge-period-end
-               [:reg-entry/challenges
-                [:challenge/challenger]]
-               :district/meta-hash
-               :district/name
-               :district/description
-               :district/url
-               :district/github-url
-               :district/logo-image-hash
-               :district/background-image-hash
-               :district/dnt-weight
-               :district/dnt-staked
-               :district/total-supply
-               [:district/dnt-staked-for {:staker active-account}]
-               [:district/balance-of {:staker active-account}]]]]])
+   {:order-by (keyword "districts.order-by" (:order-by route-query))
+    :statuses (case (:status route-query)
+                "in-registry" [:reg-entry.status/challenge-period
+                               :reg-entry.status/commit-period
+                               :reg-entry.status/reveal-period
+                               :reg-entry.status/whitelisted]
+                "challenged"  [:reg-entry.status/commit-period
+                               :reg-entry.status/reveal-period]
+                "blacklisted" [:reg-entry.status/blacklisted])
+    :first 100}
+   [:total-count
+    :end-cursor
+    :has-next-page
+    [:items [:reg-entry/address
+             :reg-entry/version
+             :reg-entry/status
+             :reg-entry/creator
+             :reg-entry/deposit
+             :reg-entry/created-on
+             :reg-entry/challenge-period-end
+             [:reg-entry/challenges
+              [:challenge/challenger]]
+             :district/meta-hash
+             :district/name
+             :district/description
+             :district/url
+             :district/github-url
+             :district/logo-image-hash
+             :district/background-image-hash
+             :district/dnt-weight
+             :district/dnt-staked
+             :district/total-supply
+             [:district/dnt-staked-for {:staker active-account}]
+             [:district/balance-of {:staker active-account}]]]]])
 
 (defn district-image [image-hash]
   (when image-hash
@@ -97,6 +97,33 @@
        (nav/a {:route [:route/detail {:address address}]}
          [:span.arr.icon-arrow-right])]]]))
 
+(defn loader []
+  (let [mounted? (r/atom false)]
+    (fn []
+      (when-not @mounted?
+        (js/setTimeout #(swap! mounted? not)))
+      [:div {:class (str "fade-in" (when @mounted? " visible"))
+             :style {:transform "scale(0.8)"
+                     :min-height "calc(100vh - 300px)"
+                     :padding-top "400px"}}
+       [:div#loader
+        [:div.loader-graphic
+         ;; [:img.blob.spacer {:src "/images/svg/loader-blob.svg"}]
+         [:div.loader-floater
+          [:img.bg.spacer {:src "/images/svg/loader-bg.svg"}]
+          [:div.turbine
+           [:img.base {:src "/images/svg/turbine-base.svg"}]
+           [:div.wheel [:img {:src "/images/svg/turbine-blade.svg"}]]
+           [:img.cover {:src "/images/svg/turbine-cover.svg"}]]
+          [:div.fan
+           {:data-num "1"}
+           [:img.base {:src "/images/svg/fan-base.svg"}]
+           [:div.wheel [:img {:src "/images/svg/fan-spokes.svg"}]]]
+          [:div.fan
+           {:data-num "2"}
+           [:img.base {:src "/images/svg/fan-base.svg"}]
+           [:div.wheel [:img {:src "/images/svg/fan-spokes.svg"}]]]]]]])))
+
 (defn district-tiles [active-account route-query]
   (let [q (subscribe [::gql/query
                       {:queries [(build-query active-account route-query)]}
@@ -105,7 +132,7 @@
         result (:search-districts @q)
         districts (:items result)]
     (cond
-      (nil? result) nil
+      (nil? result) [loader]
       (empty? districts) [:div {:style {:text-align "center"
                                         :min-height "calc(100vh - 300px)"
                                         :padding-top "400px"}}
