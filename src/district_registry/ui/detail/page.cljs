@@ -74,12 +74,21 @@
      "regEntry_status_revealPeriod") :challenged
     "regEntry_status_blacklisted"    :blacklisted))
 
-(defn district-image [image-hash]
+(defn district-background [image-hash]
   (when image-hash
     (let [gateway (subscribe [::gql/query {:queries [[:config [[:ipfs [:gateway]]]]]}])]
       (when-not (:graphql/loading? @gateway)
         (if-let [url (-> @gateway :config :ipfs :gateway)]
-          [:img.spacer {:src (str (format/ensure-trailing-slash url) image-hash)}])))))
+          [:div {:style {:background-image (str "url('" (format/ensure-trailing-slash url) image-hash "')")
+                         :background-size "500px 300px"
+                         :height "300px"
+                         :width "500px"}}
+           [:img {:src "/images/district-bg-mask.png"
+                  :style {:position "absolute"
+                          :top 0
+                          :bottom 0
+                          :height "300px"
+                          :width "500px"}}]])))))
 
 (defn info-section [{:as district
                      :keys [:district/name
@@ -119,8 +128,7 @@
                               format/format-local-date))]
         [:li (str "Staked total: " (-> dnt-staked
                                      (web3/from-wei :ether)
-                                     format/format-dnt
-                                     ))]
+                                     format/format-dnt))]
         [:li (str "Voting tokens issued: " (-> total-supply
                                              (web3/from-wei :ether)
                                              format/format-token))]]
@@ -135,7 +143,7 @@
                [:span.icon-twitter]]]]]]
       ;; TODO: We aren't showing the logo image?
       [:div.col.img
-       [district-image background-image-hash]]]
+       [district-background background-image-hash]]]
      [:p description]]]])
 
 (defn stake-section [{:as district
