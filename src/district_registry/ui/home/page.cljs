@@ -88,8 +88,8 @@
       [:div.box-logo.sized nav-to-details-props
        [district-image logo-image-hash]]
       [:div.inner
-       [:h2 nav-to-details-props name]
-       [:p nav-to-details-props description]
+       [:h2 nav-to-details-props (format/truncate name 64)]
+       [:p nav-to-details-props (format/truncate description 200)]
        [:div.h-line]
        [stake/stake-info address]
        [stake/stake-form address]]
