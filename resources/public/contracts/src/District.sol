@@ -70,7 +70,7 @@ contract District is RegistryEntry {
     require(registryToken.transferFrom(_user, address(this), _amount));
     stakeBank.stakeFor(_user, _amount);
     maybeAdjustStakeDelta(_user, int(_amount));
-    registry.fireDistrictStakeChangedEvent(version, _user, stakeBank.totalStakedFor(_user), stakeBank.balanceOf(_user));
+    registry.fireDistrictStakeChangedEvent(version, stakeBank.totalStaked(), stakeBank.totalSupply(), _user, stakeBank.totalStakedFor(_user), stakeBank.balanceOf(_user));
   }
 
   /// @notice Unstakes a certain amount of tokens.
@@ -80,7 +80,7 @@ contract District is RegistryEntry {
   {
     stakeBank.unstake(msg.sender, _amount);
     maybeAdjustStakeDelta(msg.sender, int(_amount) * -1);
-    registry.fireDistrictStakeChangedEvent(version, msg.sender, stakeBank.totalStakedFor(msg.sender), stakeBank.balanceOf(msg.sender));
+    registry.fireDistrictStakeChangedEvent(version, stakeBank.totalStaked(), stakeBank.totalSupply(), msg.sender, stakeBank.totalStakedFor(msg.sender), stakeBank.balanceOf(msg.sender));
   }
 
   function maybeAdjustStakeDelta(

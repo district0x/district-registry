@@ -111,7 +111,7 @@
     (prn "staked"
       (district/approve-and-stake
         {:district reg-entry
-         :amount (web3/to-wei 1000 :wei)}
+         :amount (web3/to-wei 1000 :ether)}
         {:from (first accounts)}))
 
     (prn "dnt" (dnt/balance-of (first accounts)))
@@ -120,14 +120,14 @@
     (prn "staked 2"
       (district/approve-and-stake
         {:district reg-entry
-         :amount (web3/to-wei 1000 :wei)}
+         :amount (web3/to-wei 1000 :ether)}
         {:from (first accounts)}))
 
     (prn "dnt" (dnt/balance-of (first accounts)))
     (prn "district token" (district/balance-of reg-entry (first accounts)))
 
     (prn "unstaked"
-      (district/unstake reg-entry (web3/to-wei 10 :wei) {:from (first accounts)}))
+      (district/unstake reg-entry (web3/to-wei 10 :ether) {:from (first accounts)}))
 
     (prn "dnt" (dnt/balance-of (first accounts)))
     (prn "district token" (district/balance-of reg-entry (first accounts)))
@@ -147,7 +147,7 @@
       (registry-entry/approve-and-commit-vote
         reg-entry
         {:index 0
-         :amount (web3/to-wei 100 :wei)
+         :amount (web3/to-wei 100 :ether)
          :salt "abc"
          :vote-option :vote.option/include}
         {:from (first accounts)}))
@@ -156,7 +156,7 @@
       (registry-entry/approve-and-commit-vote
         reg-entry
         {:index 0
-         :amount (web3/to-wei 20 :wei)
+         :amount (web3/to-wei 20 :ether)
          :salt "abc"
          :vote-option :vote.option/exclude}
         {:from (last accounts)}))
@@ -164,7 +164,7 @@
     (prn "staked"
       (district/approve-and-stake
         {:district reg-entry
-         :amount (web3/to-wei 10 :wei)}
+         :amount (web3/to-wei 10 :ether)}
         {:from (last accounts)}))
 
     (prn "increased time 2 mins"
@@ -207,7 +207,7 @@
       (registry-entry/approve-and-commit-vote
         reg-entry
         {:index 1
-         :amount (web3/to-wei 100 :wei)
+         :amount (web3/to-wei 100 :ether)
          :salt "abc"
          :vote-option :vote.option/exclude}
         {:from (last accounts)}))

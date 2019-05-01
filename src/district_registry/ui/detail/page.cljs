@@ -1,5 +1,7 @@
 (ns district-registry.ui.detail.page
   (:require
+   [bignumber.core :as bn]
+   [cljsjs.bignumber]
    [cljs-web3.core :as web3]
    [clojure.pprint :refer [pprint]]
    [clojure.string :as str]
@@ -123,15 +125,19 @@
                                normalize-status
                                cljs.core/name
                                str/capitalize))]
-        ;; FIXME: Why are dates in 1970?
         [:li (str "Added: " (-> created-on
+                              graphql-utils/gql-date->date
                               format/format-local-date))]
         [:li (str "Staked total: " (-> dnt-staked
+                                     .toString
+                                     js/BigNumber.
                                      (web3/from-wei :ether)
                                      format/format-dnt))]
         [:li (str "Voting tokens issued: " (-> total-supply
+                                             .toString
+                                             js/BigNumber.
                                              (web3/from-wei :ether)
-                                             format/format-token))]]
+                                             (.toFormat 2)))]]
        [:nav.social
         [:ul
          [:li
