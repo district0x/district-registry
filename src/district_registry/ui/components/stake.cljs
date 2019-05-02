@@ -22,7 +22,7 @@
                               (pos? i)))
                         (reset! input s))))]
     (fn [address]
-      [:div.box-cta
+      [:div.box-cta.stake-form
        [:form
         [:div.form-btns
          [:div.cta-btns
@@ -41,9 +41,10 @@
                                                                          (web3/to-wei :ether))}]))}
            "Unstake"]]
          [:fieldset
-          [:input {:type "number"
-                   :value @input
-                   :on-change on-change}]
+          [:input.stake-input
+           {:type "number"
+            :value @input
+            :on-change on-change}]
           [:span.cur "DNT"]]]]])))
 
 (defn stake-info [district-address]
