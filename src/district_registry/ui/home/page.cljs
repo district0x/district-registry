@@ -18,6 +18,7 @@
 (defn build-query [active-account route-query]
   [:search-districts
    {:order-by (keyword "districts.order-by" (:order-by route-query))
+    :order-dir :desc
     :statuses (case (:status route-query)
                 "in-registry" [:reg-entry.status/challenge-period
                                :reg-entry.status/commit-period
