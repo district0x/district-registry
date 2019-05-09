@@ -40,6 +40,7 @@
     :reg-entry/challenge-period-end
     [:reg-entry/challenges
      [:challenge/challenger
+      :challenge/comment
       :challenge/created-on
       :challenge/reward-pool
       :challenge/commit-period-end
@@ -195,82 +196,87 @@
            [:p (format/format-token deposit {:token "DNT"})]
            [tx-button/tx-button {:class "cta-btn"
                                  :primary true
-                                 :disabled (or @tx-success? (not (empty? (:local @errors))))
+                                 :disabled (-> @errors :local boolean)
                                  :pending? @tx-pending?
                                  :pending-text "Challenging..."
-                                 :on-click #(dispatch [::events/add-challenge {:send-tx/id tx-id
-                                                                               :reg-entry/address address
-                                                                               :comment (:challenge/comment @form-data)
-                                                                               :deposit deposit}])}
+                                 :on-click (fn [e]
+                                             (.preventDefault e)
+                                             (dispatch [::events/add-challenge {:send-tx/id tx-id
+                                                                                :reg-entry/address address
+                                                                                :comment (:challenge/comment @form-data)
+                                                                                :deposit deposit}]))}
             "Challenge"]]]]))))
 
 (defn remaining-time [to-time]
   (let [time-remaining (subscribe [::now-subs/time-remaining to-time])
         {:keys [:days :hours :minutes :seconds]} @time-remaining]
-    [:b (str (format/pluralize days "Day") ", "
-          hours " Hr. "
-          minutes " Min. "
-          seconds " Sec.")]))
+    (str (format/pluralize days "day") " " (format/pluralize hours "hour"))))
 
 (defn vote-commit-section [{:as district
                             :keys [:reg-entry/address
                                    :reg-entry/status
                                    :reg-entry/challenges]}]
+
   (when (= "regEntry_status_commitPeriod" status)
     (let [{:as challenge
            :keys [:challenge/commit-period-end]} (last challenges)
           balance-dnt (subscribe [::account-balances-subs/active-account-balance :DNT])
           form-data (r/atom {:vote/amount nil})
-          errors (ratom/reaction {:local (let [amount (-> @form-data :vote/amount js/parseInt (web3/to-wei :ether))]
-                                           (cond-> {}
-                                             (or (not (spec/check ::spec/pos-int amount))
-                                               (< @balance-dnt amount))
-                                             (assoc :vote/amount (str "Amount should be between 0 and your DNT balance"))))})
+          errors (ratom/reaction {:local (let [amount (:vote/amount @form-data)]
+                                           {})})
           tx-id address
           tx-pending? (subscribe [::tx-id-subs/tx-pending? {::reg-entry/approve-and-commit-vote tx-id}])
           tx-success? (subscribe [::tx-id-subs/tx-success? {::reg-entry/approve-and-commit-vote tx-id}])
+          disabled? (fn []
+                      (let [amount (:vote/amount @form-data)]
+                        (or
+                          (not amount)
+                          (bn/> (web3/to-wei (js/BigNumber. amount) :ether) @balance-dnt))))
           vote (fn [option]
                  (dispatch [::reg-entry/approve-and-commit-vote
                             {:send-tx/id tx-id
                              :reg-entry/address address
                              :vote/option option
-                             :vote/amount (-> @form-data :vote/exclude js/parseInt (web3/to-wei :ether))}]))]
+                             :vote/amount (-> @form-data :vote/amount js/BigNumber. (web3/to-wei :ether))}]))]
       (fn []
         [:div
          [:div.h-line]
-         [:h2 "Commit"]
+         [:h2 "Vote"]
          [:p
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
          [:form.voting
           [:div.row.spaced
-           [:p [remaining-time (ui-utils/gql-date->date commit-period-end)]]
+           [:p.challenge-comment (str "\"" (-> challenges last :challenge/comment) "\"")]]
+          [:div.row.spaced
+           [:b (str "Voting period ends in " (remaining-time (ui-utils/gql-date->date commit-period-end)) ".")]
            [:div.form-btns
             [:div.cta-btns
              [inputs/pending-button
               {:class "cta-btn"
                :pending? @tx-pending?
-               :disabled (or (-> @errors :local :vote/amount empty? not)
-                           @tx-success?)
+               :disabled (disabled?)
                :pending-text "Voting..."
                :on-click #(vote :vote.option/include)}
               "Vote For"]
              [inputs/pending-button
               {:class "cta-btn"
                :pending? @tx-pending?
-               :disabled (or (-> @errors :local :vote/amount empty? not)
-                           @tx-success?)
+               :disabled (disabled?)
                :pending-text "Voting..."
                :on-click #(vote :vote.option/exclude)}
               "Vote Against"]]
             [:fieldset
-             [inputs/amount-input {:form-data form-data
+             [inputs/amount-input {:style {:text-align :right}
+                                   :form-data form-data
                                    :id :vote/amount
                                    :placeholder "DNT"
                                    :errors errors}]]]
            [:div
-            [:p "You can vote with up to " (-> @balance-dnt
-                                             (web3/from-wei :ether)
-                                             format/format-dnt)]
+            [:p (str "You can vote with up to "
+                  (-> @balance-dnt
+                    (web3/from-wei :ether)
+                    (.toFormat 2))
+                  " DNT.")]
             [:p "Tokens will be returned to you after revealing your vote."]]]]]))))
 
 (defn vote-reveal-section [{:as district
@@ -291,7 +297,7 @@
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
          [:form.voting
           [:div.row.spaced
-           [:p [remaining-time (ui-utils/gql-date->date reveal-period-end)]]
+           [:p (str "Reveal period will last " (remaining-time (ui-utils/gql-date->date reveal-period-end)) ".")]
            [tx-button/tx-button {:class "cta-btn"
                                  :primary true
                                  :disabled @tx-success?
@@ -306,7 +312,9 @@
 (defn main [{:as props
              :keys [district active-account]}]
   (let [query (subscribe [::gql/query
-                          {:queries [(build-query props)]}])
+                          {:queries [(build-query props)]}
+                          {:refetch-on #{::reg-entry/approve-and-create-challenge-success
+                                         ::tx-id-subs/tx-success?}}])
         {:keys [district config]} @query]
     (cond
       (nil? district) nil
