@@ -151,7 +151,7 @@
       ;; TODO: We aren't showing the logo image?
       [:div.col.img
        [district-background background-image-hash]]]
-     [:p description]]]])
+     [:pre.district-description description]]]])
 
 (defn stake-section [{:as district
                       :keys [:reg-entry/address
