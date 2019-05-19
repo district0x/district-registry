@@ -28,6 +28,18 @@
                           :order-by :param-changes.order-by/applied-on}
    [[:items [:param-change/value :param-change/key]]]])
 
+(defn upload-image-button-label [text]
+  [:div {:style {:display :flex
+                 :align-items :center
+                 :margin-top -17}}
+   [:img {:style {:fill :white
+                  :display :block
+                  :width 17
+                  :height 17}
+          :src "/images/svg/upload.svg"}]
+   [:div {:style {:margin-left 10}}
+    text]])
+
 (defmethod page :route/submit []
   (let [deposit-query (subscribe [::gql/query {:queries [(param-search-query :deposit)]}])
         form-data (r/atom {:dnt-weight 1000000})
@@ -92,7 +104,7 @@
                 [:div.btn-wrap
                  [file-drag-input {:form-data form-data
                                    :id :logo-file-info
-                                   :label "Upload Logo"
+                                   :label [upload-image-button-label "Upload Logo"]
                                    :file-accept-pred (fn [{:keys [name type size] :as props}]
                                                        (or
                                                          (= type "image/png")
@@ -106,7 +118,7 @@
                 [:div.btn-wrap
                  [file-drag-input {:form-data form-data
                                    :id :background-file-info
-                                   :label "Upload Background"
+                                   :label [upload-image-button-label "Upload Background"]
                                    :file-accept-pred (fn [{:keys [name type size] :as props}]
                                                        (or
                                                          (= type "image/png")
