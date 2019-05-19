@@ -29,16 +29,9 @@
    [[:items [:param-change/value :param-change/key]]]])
 
 (defn upload-image-button-label [text]
-  [:div {:style {:display :flex
-                 :align-items :center
-                 :margin-top -17}}
-   [:img {:style {:fill :white
-                  :display :block
-                  :width 17
-                  :height 17}
-          :src "/images/svg/upload.svg"}]
-   [:div {:style {:margin-left 10}}
-    text]])
+  [:div.upload-image-button-label
+   [:img {:src "/images/svg/upload.svg"}]
+   [:div text]])
 
 (defmethod page :route/submit []
   (let [deposit-query (subscribe [::gql/query {:queries [(param-search-query :deposit)]}])
@@ -92,7 +85,7 @@
                  [text-input {:form-data form-data
                               :placeholder "GitHub URL"
                               :id :github-url}]
-                 [:div {:style {:color "#df40fa"}}
+                 [:div.form-errors
                   [:ul (doall
                          (for [e errors]
                            [:li {:key e} e]))]]]

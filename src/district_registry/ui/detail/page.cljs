@@ -82,16 +82,8 @@
     (let [gateway (subscribe [::gql/query {:queries [[:config [[:ipfs [:gateway]]]]]}])]
       (when-not (:graphql/loading? @gateway)
         (if-let [url (-> @gateway :config :ipfs :gateway)]
-          [:div {:style {:background-image (str "url('" (format/ensure-trailing-slash url) image-hash "')")
-                         :background-size "500px 300px"
-                         :height "300px"
-                         :width "500px"}}
-           [:img {:src "/images/district-bg-mask.png"
-                  :style {:position "absolute"
-                          :top 0
-                          :bottom 0
-                          :height "300px"
-                          :width "500px"}}]])))))
+          [:div.background-image {:style {:background-image (str "url('" (format/ensure-trailing-slash url) image-hash "')")}}
+           [:img {:src "/images/district-bg-mask.png"}]])))))
 
 (defn info-section [{:as district
                      :keys [:district/name

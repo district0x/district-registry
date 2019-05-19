@@ -94,7 +94,7 @@
        [:div.h-line]
        [stake/stake-info address]
        [stake/stake-form address]]
-      [:div.arrow-blob {:style {:background-image "url(/images/module-arrow-blob@2x.png)"}}
+      [:div.arrow-blob
        (nav/a {:route [:route/detail {:address address}]}
          [:span.arr.icon-arrow-right])]]]))
 
@@ -103,10 +103,7 @@
     (fn []
       (when-not @mounted?
         (js/setTimeout #(swap! mounted? not)))
-      [:div {:class (str "fade-in" (when @mounted? " visible"))
-             :style {:transform "scale(0.8)"
-                     :min-height "calc(100vh - 300px)"
-                     :padding-top "400px"}}
+      [:div#loader-wrapper {:class (str "fade-in" (when @mounted? " visible"))}
        [:div#loader
         [:div.loader-graphic
          ;; [:img.blob.spacer {:src "/images/svg/loader-blob.svg"}]
@@ -134,9 +131,7 @@
         districts (:items result)]
     (cond
       (nil? result) [loader]
-      (empty? districts) [:div {:style {:text-align "center"
-                                        :min-height "calc(100vh - 300px)"
-                                        :padding-top "400px"}}
+      (empty? districts) [:div.no-districts
                           [:h2 "No districts found"]]
       :else [:div.grid.spaced
              (->> districts
