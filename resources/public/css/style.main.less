@@ -1,13 +1,9 @@
 @charset "UTF-8";
 @import "functions.less";
+@import "colors.less";
 
 /*! VARIABLES */
 
-@blue: #2c398f;
-@bcblue: #47608e;
-@lightblue: #e5fefe;
-@aqua: #7cf8fa;
-@green: #23fdd8;
 @baseW: 1200px;
 @sidemargin: 50px;
 @sidemarginT: 30px;
@@ -942,10 +938,6 @@ form {
     }
   }
 
-  .form-errors {
-    color: #df40fa;
-  }
-
   form.image-upload {
     margin-top: 65px;
     .col {
@@ -1620,6 +1612,7 @@ input[type="file"] {
   min-height: calc(100vh - 300px);
   padding-top: 400px;
 }
+
 #loader {
   .fixed;
   width: 100%;
@@ -1773,5 +1766,29 @@ input[type="file"] {
   }
   .big {
     font-size: 165px !important;
+  }
+}
+
+.district-tiles {
+  min-height: 650px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type=number] {
+  -moz-appearance:textfield; /* Firefox */
+}
+
+.submit-errors {
+  color: @violet;
+  margin-top: 30px;
+
+  .error {
+    margin-bottom: 5px;
   }
 }

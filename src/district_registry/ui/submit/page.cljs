@@ -85,10 +85,10 @@
                  [text-input {:form-data form-data
                               :placeholder "GitHub URL"
                               :id :github-url}]
-                 [:div.form-errors
-                  [:ul (doall
-                         (for [e errors]
-                           [:li {:key e} e]))]]]
+                 [:div.submit-errors
+                  (doall
+                    (for [e errors]
+                      [:div.error {:key e} "*" e]))]]
                 [:div.col.right
                  [textarea-input {:form-data form-data
                                   :placeholder "Description"
