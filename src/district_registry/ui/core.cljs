@@ -13,6 +13,7 @@
    [district-registry.ui.submit.page]
    [district.ui.component.router :refer [router]]
    [district.ui.graphql]
+   [district.ui.graphql.events]
    [district.ui.notification]
    [district.ui.now]
    [district.ui.reagent-render]

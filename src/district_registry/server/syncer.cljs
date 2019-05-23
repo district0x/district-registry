@@ -84,7 +84,8 @@
   [contract-type
    {:keys [:registry-entry :timestamp :creator :meta-hash
            :version :deposit :challenge-period-end
-           :dnt-weight] :as ev}
+           :dnt-weight]
+    :as ev}
    done-chan]
   (try-catch
     (let [registry-entry-data {:reg-entry/address registry-entry
@@ -234,16 +235,23 @@
 (defmethod process-event [:contract/district :stake-changed]
   [_
    {:keys [registry-entry
-           staker
-           dnt
-           tokens]}
+           staker-tokens
+           staker-dnt-staked
+           dnt-staked
+           total-supply
+           staker]
+    :as ev}
    done-chan]
   (try-catch
+    (db/update-district!
+      {:reg-entry/address registry-entry
+       :district/dnt-staked (.toNumber dnt-staked)
+       :district/total-supply (.toNumber total-supply)})
     (db/insert-or-replace-stake!
       {:reg-entry/address registry-entry
        :stake/staker staker
-       :stake/dnt (.toNumber dnt)
-       :stake/tokens (.toNumber tokens)}))
+       :stake/dnt (.toNumber staker-dnt-staked)
+       :stake/tokens (.toNumber staker-tokens)}))
   (a/close! done-chan))
 
 (defmethod process-event [:contract/eternal-db :eternal-db-event]

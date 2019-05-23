@@ -19,7 +19,7 @@ contract Registry is DSAuth {
   event ChallengeCreatedEvent(address registryEntry, uint version, uint index, address challenger, uint commitPeriodEnd, uint revealPeriodEnd, uint rewardPool, bytes metaHash);
   event ChallengeRewardClaimedEvent(address registryEntry, uint version, uint index, address challenger, uint amount);
   event DistrictConstructedEvent(address registryEntry, uint version, address creator, bytes metaHash, uint deposit, uint challengePeriodEnd, uint32 dntWeight);
-  event DistrictStakeChangedEvent(address registryEntry, uint version, address staker, uint dnt, uint tokens);
+  event DistrictStakeChangedEvent(address registryEntry, uint version, uint dntStaked, uint totalSupply, address staker, uint stakerDntStaked, uint stakerTokens);
   event ParamChangeConstructedEvent(address registryEntry, uint version, address creator, address db, string key, uint value, uint deposit, uint challengePeriodEnd);
   event VoteAmountClaimedEvent(address registryEntry, uint version, uint index, address voter);
   event VoteCommittedEvent(address registryEntry, uint version, uint index, address voter, uint amount);
@@ -152,12 +152,11 @@ contract Registry is DSAuth {
   {
     emit DistrictConstructedEvent(msg.sender, version, creator, metaHash, deposit, challengePeriodEnd, dntWeight);
   }
-
-  function fireDistrictStakeChangedEvent(uint version, address staker, uint dnt, uint tokens)
+  function fireDistrictStakeChangedEvent(uint version, uint dntStaked, uint totalSupply, address staker, uint stakerDntStaked, uint stakerTokens)
     public
     onlyRegistryEntry
   {
-    emit DistrictStakeChangedEvent(msg.sender, version, staker, dnt, tokens);
+    emit DistrictStakeChangedEvent(msg.sender, version, dntStaked, totalSupply, staker, stakerDntStaked, stakerTokens);
   }
 
   function fireChallengeCreatedEvent(

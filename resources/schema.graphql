@@ -70,6 +70,7 @@ interface RegEntry {
 
 type Challenge {
   challenge_challenger: ID
+  challenge_comment: String
   challenge_createdOn: Date
   challenge_rewardPool: BigNumber
   challenge_commitPeriodEnd: Date

@@ -21,11 +21,10 @@
 (defn div [{:as props
             :keys [route]}
            & children]
-  (into [:div
+  (into [:div.cursor-pointer
          (r/merge-props
            (dissoc props :route)
-           {:style {:cursor "pointer"}
-            :on-click (fn [e]
+           {:on-click (fn [e]
                         (dispatch (->> route
                                     (cons :district.ui.router.events/navigate)
                                     vec)))})]

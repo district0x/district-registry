@@ -6,23 +6,13 @@
    [reagent.core :as r]))
 
 (defn not-found []
-  [:div
-   [:img {:src "/images/404.svg"
-          :style {:height "400px"
-                  :left "0"
-                  :margin "0 auto"
-                  :position "absolute"
-                  :right "0"
-                  :top "0"
-                  :z-index "2"}}]
+  [:div.not-found
+   [:img {:src "/images/404.svg"}]
    [:section#main
     [:div.container
-     [:div.box-wrap {:style {:height "700px"
-                             :padding-top "300px"
-                             :text-align "center"}}
+     [:div.box-wrap
       [:h1 "Error"]
-      [:h1 {:style {:font-size "165px"}}
-       "404"]
+      [:h1.big "404"]
       [:p.intro-text "We searched high and low, but couldn't find what you're looking for."]
       [:p.intro-text "Let's find a better place for you to go."]
       [:br]

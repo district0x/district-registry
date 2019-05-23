@@ -10,9 +10,19 @@
    [re-frame.core :refer [subscribe dispatch]]
    [reagent.core :as r]))
 
+(defn ^:private gql-stake-info [district-address]
+  (let [active-account (subscribe [::account-subs/active-account])]
+    (subscribe [::gql/query
+                {:queries [[:district {:reg-entry/address district-address}
+                            [:reg-entry/address
+                             :district/total-supply
+                             [:district/dnt-staked-for {:staker @active-account}]
+                             [:district/balance-of {:staker @active-account}]]]]}
+                {:refetch-on #{::district/approve-and-stake-for-success
+                               ::district/unstake-success}}])))
+
 (defn stake-form [district-address]
-  (let [address district-address
-        input (r/atom "1")
+  (let [input (r/atom "1")
         on-change (fn [e]
                     (let [s (-> e .-target .-value)
                           i (js/parseInt s)]
@@ -20,57 +30,68 @@
                             (and
                               (integer? i)
                               (pos? i)))
-                        (reset! input s))))]
-    (fn [address]
-      [:div.box-cta
+                        (reset! input s))))
+        query (gql-stake-info district-address)
+        dnt-balance (subscribe [:district.ui.web3-account-balances.subs/active-account-balance :DNT])]
+    (fn [district-address]
+      [:div.box-cta.stake-form
        [:form
         [:div.form-btns
          [:div.cta-btns
-          [:a.cta-btn {:href "#"
-                       :on-click (fn []
-                                   (dispatch [::district/approve-and-stake-for {:address address
-                                                                                :dnt (-> @input
-                                                                                       web3/to-big-number
-                                                                                       (web3/to-wei :ether))}]))}
+          [:button.cta-btn {:disabled (not (and
+                                             (bn/bignumber? @dnt-balance)
+                                             (bn/< 0 @dnt-balance)))
+                            :on-click (fn [e]
+                                        (.preventDefault e)
+                                        (dispatch [::district/approve-and-stake-for {:address district-address
+                                                                                     :dnt (-> @input
+                                                                                            web3/to-big-number
+                                                                                            (web3/to-wei :ether))}]))}
            "Stake"]
-          [:a.cta-btn {:href "#"
-                       :on-click (fn []
-                                   (dispatch [::district/unstake {:address address
-                                                                  :dnt (-> @input
-                                                                         web3/to-big-number
-                                                                         (web3/to-wei :ether))}]))}
+          [:button.cta-btn {:disabled (->> @query
+                                        :district
+                                        :district/dnt-staked-for
+                                        not)
+                            :on-click (fn [e]
+                                        (.preventDefault e)
+                                        (dispatch [::district/unstake {:address district-address
+                                                                       :dnt (-> @input
+                                                                              web3/to-big-number
+                                                                              (web3/to-wei :ether))}]))}
            "Unstake"]]
          [:fieldset
-          [:input {:type "number"
-                   :value @input
-                   :on-change on-change}]
+          [:input.stake-input
+           {:type "number"
+            :value @input
+            :on-change on-change}]
           [:span.cur "DNT"]]]]])))
 
 (defn stake-info [district-address]
-  (let [active-account (subscribe [::account-subs/active-account])
-        query (subscribe [::gql/query
-                          {:queries [[:district {:reg-entry/address district-address}
-                                      [:reg-entry/address
-                                       :district/total-supply
-                                       [:district/dnt-staked-for {:staker @active-account}]
-                                       [:district/balance-of {:staker @active-account}]]]]}
-                          {:refetch-on #{::district/approve-and-stake-for-success
-                                         ::district/unstake-success}}])]
-    (when-not (:graphql/loading? @query)
-      (let [{:as district
-             :keys [:district/total-supply
-                    :district/dnt-staked-for
-                    :district/balance-of]} (:district @query)]
-        [:p
-         (str "You staked " (-> dnt-staked-for
-                              (web3/from-wei :ether)
-                              format/format-dnt))
-         [:br]
-         (str "Owning "
-           (-> balance-of
-             (web3/from-wei :ether)
-             format/format-token)
-           " (" (if (and (bn/bignumber? balance-of) (.isPositive balance-of))
-                  (.times (.div balance-of total-supply) 100)
-                  0) "%) "
-           "governance tokens")]))))
+  (let [query (gql-stake-info district-address)]
+    (fn []
+      (when-not (:graphql/loading? @query)
+        (let [{:as district
+               :keys [:district/total-supply
+                      :district/dnt-staked-for
+                      :district/balance-of]} (:district @query)]
+          [:p
+           (str "You staked " (-> dnt-staked-for
+                                (web3/from-wei :ether)
+                                format/format-dnt))
+           [:br]
+           (str "Owning "
+             (-> balance-of
+               web3/to-big-number
+               (web3/from-wei :ether)
+               .toNumber
+               (format/format-number {:min-fraction-digits 2
+                                      :max-fraction-digits 2}))
+             " (" (if (and (bn/bignumber? balance-of) (.isPositive balance-of))
+                    (->
+                      (.div balance-of total-supply)
+                      (.times 100)
+                      .toNumber
+                      (format/format-number {:min-fraction-digits 2
+                                             :max-fraction-digits 2}))
+                    0) "%) "
+             "governance tokens")])))))

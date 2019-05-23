@@ -17,40 +17,41 @@
 
 (defn build-query [active-account route-query]
   [:search-districts
-     {:order-by (keyword "districts.order-by" (:order-by route-query))
-      :statuses (case (:status route-query)
-                  "in-registry" [:reg-entry.status/challenge-period
-                                 :reg-entry.status/commit-period
-                                 :reg-entry.status/reveal-period
-                                 :reg-entry.status/whitelisted]
-                  "challenged"  [:reg-entry.status/commit-period
-                                 :reg-entry.status/reveal-period]
-                  "blacklisted" [:reg-entry.status/blacklisted])
-      :first 100}
-     [:total-count
-      :end-cursor
-      :has-next-page
-      [:items [:reg-entry/address
-               :reg-entry/version
-               :reg-entry/status
-               :reg-entry/creator
-               :reg-entry/deposit
-               :reg-entry/created-on
-               :reg-entry/challenge-period-end
-               [:reg-entry/challenges
-                [:challenge/challenger]]
-               :district/meta-hash
-               :district/name
-               :district/description
-               :district/url
-               :district/github-url
-               :district/logo-image-hash
-               :district/background-image-hash
-               :district/dnt-weight
-               :district/dnt-staked
-               :district/total-supply
-               [:district/dnt-staked-for {:staker active-account}]
-               [:district/balance-of {:staker active-account}]]]]])
+   {:order-by (keyword "districts.order-by" (:order-by route-query))
+    :order-dir :desc
+    :statuses (case (:status route-query)
+                "in-registry" [:reg-entry.status/challenge-period
+                               :reg-entry.status/commit-period
+                               :reg-entry.status/reveal-period
+                               :reg-entry.status/whitelisted]
+                "challenged"  [:reg-entry.status/commit-period
+                               :reg-entry.status/reveal-period]
+                "blacklisted" [:reg-entry.status/blacklisted])
+    :first 100}
+   [:total-count
+    :end-cursor
+    :has-next-page
+    [:items [:reg-entry/address
+             :reg-entry/version
+             :reg-entry/status
+             :reg-entry/creator
+             :reg-entry/deposit
+             :reg-entry/created-on
+             :reg-entry/challenge-period-end
+             [:reg-entry/challenges
+              [:challenge/challenger]]
+             :district/meta-hash
+             :district/name
+             :district/description
+             :district/url
+             :district/github-url
+             :district/logo-image-hash
+             :district/background-image-hash
+             :district/dnt-weight
+             :district/dnt-staked
+             :district/total-supply
+             [:district/dnt-staked-for {:staker active-account}]
+             [:district/balance-of {:staker active-account}]]]]])
 
 (defn district-image [image-hash]
   (when image-hash
@@ -88,14 +89,38 @@
       [:div.box-logo.sized nav-to-details-props
        [district-image logo-image-hash]]
       [:div.inner
-       [:h2 nav-to-details-props name]
-       [:p nav-to-details-props description]
+       [:h2 nav-to-details-props (format/truncate name 64)]
+       [:p nav-to-details-props (format/truncate description 200)]
        [:div.h-line]
        [stake/stake-info address]
        [stake/stake-form address]]
-      [:div.arrow-blob {:style {:background-image "url(/images/module-arrow-blob@2x.png)"}}
+      [:div.arrow-blob
        (nav/a {:route [:route/detail {:address address}]}
          [:span.arr.icon-arrow-right])]]]))
+
+(defn loader []
+  (let [mounted? (r/atom false)]
+    (fn []
+      (when-not @mounted?
+        (js/setTimeout #(swap! mounted? not)))
+      [:div#loader-wrapper {:class (str "fade-in" (when @mounted? " visible"))}
+       [:div#loader
+        [:div.loader-graphic
+         ;; [:img.blob.spacer {:src "/images/svg/loader-blob.svg"}]
+         [:div.loader-floater
+          [:img.bg.spacer {:src "/images/svg/loader-bg.svg"}]
+          [:div.turbine
+           [:img.base {:src "/images/svg/turbine-base.svg"}]
+           [:div.wheel [:img {:src "/images/svg/turbine-blade.svg"}]]
+           [:img.cover {:src "/images/svg/turbine-cover.svg"}]]
+          [:div.fan
+           {:data-num "1"}
+           [:img.base {:src "/images/svg/fan-base.svg"}]
+           [:div.wheel [:img {:src "/images/svg/fan-spokes.svg"}]]]
+          [:div.fan
+           {:data-num "2"}
+           [:img.base {:src "/images/svg/fan-base.svg"}]
+           [:div.wheel [:img {:src "/images/svg/fan-spokes.svg"}]]]]]]])))
 
 (defn district-tiles [active-account route-query]
   (let [q (subscribe [::gql/query
@@ -104,23 +129,16 @@
                                      ::district/unstake-success}}])
         result (:search-districts @q)
         districts (:items result)]
-    [:div.district-tiles
-     (cond
-       (nil? result) nil
-       (and (empty? districts)
-            (not (:graphql/loading? @q))) [:div.no-items
-                                           [:h2 "No districts found"]]
-
-       (:graphql/loading? @q)
-       [:div.loader "Loading..."]
-
-       :else
-       [:div.grid.spaced
-        (->> districts
-          (map (fn [{:as district
-                     :keys [:reg-entry/address]}]
-                 ^{:key address} [district-tile district]))
-          doall)])]))
+    (cond
+      (nil? result) [loader]
+      (empty? districts) [:div.no-districts
+                          [:h2 "No districts found"]]
+      :else [:div.grid.spaced
+             (->> districts
+               (map (fn [{:as district
+                          :keys [:reg-entry/address]}]
+                      ^{:key address} [district-tile district]))
+               doall)])))
 
 (defmethod page :route/home []
   (let [active-account (subscribe [::account-subs/active-account])
