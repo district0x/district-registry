@@ -1,8 +1,8 @@
 pragma solidity ^0.4.24;
 
-import "auth/DSAuth.sol";
-import "db/EternalDb.sol";
-import "proxy/MutableForwarder.sol"; // Keep it included despite not being used (for compiler)
+import "./auth/DSAuth.sol";
+import "./db/EternalDb.sol";
+import "./proxy/MutableForwarder.sol"; // Keep it included despite not being used (for compiler)
 
 /**
  * @title Central contract for TCR registry
@@ -78,7 +78,7 @@ contract Registry is DSAuth {
     external
     auth
   {
-    db.setBooleanValue(keccak256("isFactory", _factory), _isFactory);
+    db.setBooleanValue(keccak256(abi.encodePacked("isFactory", _factory)), _isFactory);
   }
 
   /**
@@ -91,7 +91,7 @@ contract Registry is DSAuth {
     onlyFactory
     notEmergency
   {
-    db.setBooleanValue(keccak256("isRegistryEntry", _registryEntry), true);
+    db.setBooleanValue(keccak256(abi.encodePacked("isRegistryEntry", _registryEntry)), true);
   }
 
   /**
@@ -114,7 +114,7 @@ contract Registry is DSAuth {
   function isFactory(address factory)
     public constant returns (bool)
   {
-    return db.getBooleanValue(keccak256("isFactory", factory));
+    return db.getBooleanValue(keccak256(abi.encodePacked("isFactory", factory)));
   }
 
   /**
@@ -124,7 +124,7 @@ contract Registry is DSAuth {
   function isRegistryEntry(address registryEntry)
     public constant returns (bool)
   {
-    return db.getBooleanValue(keccak256("isRegistryEntry", registryEntry));
+    return db.getBooleanValue(keccak256(abi.encodePacked("isRegistryEntry", registryEntry)));
   }
 
   /**

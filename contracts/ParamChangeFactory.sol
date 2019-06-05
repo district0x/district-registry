@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
-import "RegistryEntryFactory.sol";
-import "ParamChange.sol";
+import "./RegistryEntryFactory.sol";
+import "./ParamChange.sol";
 
 /**
  * @title Factory contract for creating ParamChange contracts
@@ -12,7 +12,8 @@ import "ParamChange.sol";
 contract ParamChangeFactory is RegistryEntryFactory {
   uint public constant version = 1;
 
-  function ParamChangeFactory(Registry _registry, MiniMeToken _registryToken)
+  constructor(Registry _registry, MiniMeToken _registryToken)
+  public
   RegistryEntryFactory(_registry, _registryToken)
   {}
 

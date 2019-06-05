@@ -1,10 +1,10 @@
 pragma solidity ^0.4.24;
 
-import "Challenge.sol";
-import "ChallengeFactory.sol";
-import "Registry.sol";
-import "math/SafeMath.sol";
-import "token/minime/MiniMeToken.sol";
+import "./Challenge.sol";
+import "./ChallengeFactory.sol";
+import "./Registry.sol";
+import "./math/SafeMath.sol";
+import "minimetoken/contracts/MiniMeToken.sol";
 
 /**
  * @title Contract created with each submission to a TCR
@@ -20,8 +20,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
   using SafeMath for uint;
 
   Registry internal constant registry = Registry(0xfEEDFEEDfeEDFEedFEEdFEEDFeEdfEEdFeEdFEEd);
-  MiniMeToken internal constant registryToken = MiniMeToken(0xDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaD);
-  ChallengeFactory internal constant challengeFactory = ChallengeFactory(0xCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC);
+  MiniMeToken internal constant registryToken = MiniMeToken(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD);
+  ChallengeFactory internal constant challengeFactory = ChallengeFactory(0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC);
 
   enum Status {ChallengePeriod, CommitPeriod, RevealPeriod, Blacklisted, Whitelisted}
 
@@ -134,11 +134,11 @@ contract RegistryEntry is ApproveAndCallFallBack {
     return challenges.length - 1;
   }
 
-  function getChallenge(uint _challengeIndex) internal returns (Challenge) {
+  function getChallenge(uint _challengeIndex) internal view returns (Challenge) {
     return Challenge(challenges[_challengeIndex]);
   }
 
-  function currentChallenge() internal returns (Challenge) {
+  function currentChallenge() internal view returns (Challenge) {
     return getChallenge(currentChallengeIndex());
   }
 
@@ -276,6 +276,9 @@ contract RegistryEntry is ApproveAndCallFallBack {
   )
     public
   {
+    _from;
+    _amount;
+    _token;
     require(address(this).call(_data));
   }
 }

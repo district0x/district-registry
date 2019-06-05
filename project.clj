@@ -86,7 +86,14 @@
                        [graphql-tools "3.0.1"]
                        [solc "0.4.20"]
                        [source-map-support "0.5.3"]
-                       [ws "4.0.0"]]}
+                       [ws "4.0.0"]
+                       ;; district0x/district-server-web3 needs [ganache-core "2.0.2"]   who also needs "ethereumjs-wallet": "~0.6.0"
+                       ;; https://github.com/ethereumjs/ethereumjs-wallet/issues/64
+                       [ethereumjs-wallet "0.6.0"]
+                       ;; truffle script deps
+                       [jsedn "0.4.1"]
+                       [minimetoken "0.2.0"]
+                       [openzeppelin-solidity "2.3.0"]]}
 
   :solc {:src-path "resources/public/contracts/src"
          :build-path "resources/public/contracts/build"
@@ -119,8 +126,9 @@
                                     "server/"
                                     "target/"]
 
-  :profiles {:dev {:dependencies [[binaryage/devtools "0.9.9"]
-                                  [cider/piggieback "0.3.10"]
+  :profiles {:dev {:dependencies [[org.clojure/clojure "1.9.0"]
+                                  [binaryage/devtools "0.9.10"]
+                                  [cider/piggieback "0.4.0"]
                                   [figwheel-sidecar "0.5.18" :exclusions [org.clojure/core.async]]
                                   [org.clojure/clojure "1.9.0"]
                                   [org.clojure/tools.reader "1.3.0"]]

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
-import "RegistryEntry.sol";
-import "db/EternalDb.sol";
+import "./RegistryEntry.sol";
+import "./db/EternalDb.sol";
 
 /**
  * @title Contract created for each submitted TCR parameter change.
@@ -64,7 +64,7 @@ contract ParamChange is RegistryEntry {
   )
     external
   {
-    bytes32 record = sha3(_key);
+    bytes32 record = keccak256(abi.encodePacked(_key));
     require(isChangeAllowed(registry, record, _value));
     super.construct(_creator, _version);
     db = EternalDb(_db);
@@ -96,11 +96,11 @@ contract ParamChange is RegistryEntry {
     external
     notEmergency
   {
-    require(db.getUIntValue(sha3(key)) == originalValue);
+    require(db.getUIntValue(keccak256(abi.encodePacked(key))) == originalValue);
     require(appliedOn < 0);
     require(currentChallenge().isWhitelisted());
     require(registryToken.transfer(creator, deposit));
-    db.setUIntValue(sha3(key), value);
+    db.setUIntValue(keccak256(abi.encodePacked(key)), value);
     appliedOn = now;
   }
 

@@ -1,8 +1,8 @@
 pragma solidity ^0.4.24;
 
 import "./RegistryEntry.sol";
-import "StakeBank.sol";
-import "StakeBankFactory.sol";
+import "./StakeBank.sol";
+import "./StakeBankFactory.sol";
 
 /**
  * @title Contract created for each submitted District into the DistrictFactory TCR.
@@ -14,7 +14,7 @@ import "StakeBankFactory.sol";
 
 contract District is RegistryEntry {
 
-  StakeBankFactory private constant stakeBankFactory = StakeBankFactory(0xDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD);
+  StakeBankFactory private constant stakeBankFactory = StakeBankFactory(0xDDdDddDdDdddDDddDDddDDDDdDdDDdDDdDDDDDDd);
   StakeBank private stakeBank;
 
   /**
@@ -95,7 +95,7 @@ contract District is RegistryEntry {
   }
 
   function isChallengeable()
-    internal constant returns (bool) {
+    internal view returns (bool) {
     return isChallengePeriodActive() &&
       (challenges.length == 0 ||
        currentChallenge().status() == Challenge.Status.Whitelisted);

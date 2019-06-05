@@ -1,15 +1,15 @@
 pragma solidity ^0.4.24;
 
-import "Registry.sol";
-import "math/SafeMath.sol";
-import "token/minime/MiniMeToken.sol";
-import "ownership/Ownable.sol";
+import "./Registry.sol";
+import "./math/SafeMath.sol";
+import "minimetoken/contracts/MiniMeToken.sol";
+import "./ownership/Ownable.sol";
 
 contract Challenge is Ownable {
 
   using SafeMath for uint;
 
-  MiniMeToken public constant registryToken = MiniMeToken(0xDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaDDeaD);
+  MiniMeToken public constant registryToken = MiniMeToken(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD);
 
   enum VoteOption {Neither, Include, Exclude}
 
@@ -264,8 +264,8 @@ contract Challenge is Ownable {
     if (!isVoteRevealPeriodOver()) {
       return VoteOption.Neither;
     }
-    uint votesInclude = includeVotesAmount();
-    if (votesInclude.mul(100) > voteQuorum.mul(votesInclude.add(votesExclude))) {
+    uint _votesInclude = includeVotesAmount();
+    if (_votesInclude.mul(100) > voteQuorum.mul(_votesInclude.add(votesExclude))) {
       return VoteOption.Include;
     } else {
       return VoteOption.Exclude;
@@ -362,8 +362,9 @@ contract Challenge is Ownable {
   function claimChallengeReward(uint _challengeIndex)
     external
     onlyOwner
-    returns (uint)
   {
+    // TODO Finish up this function
+    _challengeIndex;
     require(isVoteRevealPeriodOver());
     require(!isChallengeRewardClaimed());
     require(!isWinningOptionInclude());

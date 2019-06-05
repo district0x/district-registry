@@ -9,7 +9,7 @@ contract Forwarder is DelegateProxy {
   /*
   * @dev Forwards all calls to target
   */
-  function() payable {
+  function() public payable {
     delegatedFwd(target, msg.data);
   }
 }

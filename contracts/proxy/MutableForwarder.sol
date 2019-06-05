@@ -27,7 +27,7 @@ contract MutableForwarder is DelegateProxy, DSAuth {
     target = _target;
   }
 
-  function() payable {
+  function() public payable {
     delegatedFwd(target, msg.data);
   }
 

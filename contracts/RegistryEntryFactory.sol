@@ -1,8 +1,8 @@
 pragma solidity ^0.4.18;
 
-import "Registry.sol";
-import "proxy/Forwarder.sol";
-import "token/minime/MiniMeToken.sol";
+import "./Registry.sol";
+import "./proxy/Forwarder.sol";
+import "minimetoken/contracts/MiniMeToken.sol";
 
 /**
  * @title Base Factory contract for creating RegistryEntry contracts
@@ -13,9 +13,9 @@ import "token/minime/MiniMeToken.sol";
 contract RegistryEntryFactory is ApproveAndCallFallBack {
   Registry public registry;
   MiniMeToken public registryToken;
-  bytes32 public constant depositKey = sha3("deposit");
+  bytes32 public constant depositKey = keccak256("deposit");
 
-  function RegistryEntryFactory(Registry _registry, MiniMeToken _registryToken) {
+  constructor(Registry _registry, MiniMeToken _registryToken) public {
     registry = _registry;
     registryToken = _registryToken;
   }
@@ -55,6 +55,9 @@ contract RegistryEntryFactory is ApproveAndCallFallBack {
     bytes _data)
   public
   {
-    require(this.call(_data));
+    _from;
+    _amount;
+    _token;
+    require(address(this).call(_data));
   }
 }

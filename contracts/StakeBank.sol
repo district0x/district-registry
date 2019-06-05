@@ -1,10 +1,10 @@
 pragma solidity ^0.4.24;
 
-import "Power.sol";
-import "PowerFactory.sol";
-import "math/SafeMath.sol";
-import "ownership/Ownable.sol";
-import "token/minime/MiniMeToken.sol";
+import "./Power.sol";
+import "./PowerFactory.sol";
+import "./math/SafeMath.sol";
+import "./ownership/Ownable.sol";
+import "minimetoken/contracts/MiniMeToken.sol";
 
 contract StakeBank is Ownable, MiniMeToken {
 
@@ -27,7 +27,7 @@ contract StakeBank is Ownable, MiniMeToken {
   StakeBankCheckpoint[] private stakeHistory;
   mapping (address => StakeBankCheckpoint[]) private stakesFor;
 
-  PowerFactory private constant powerFactory = PowerFactory(0xEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE);
+  PowerFactory private constant powerFactory = PowerFactory(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
   Power private power;
 
   struct StakeBankCheckpoint {

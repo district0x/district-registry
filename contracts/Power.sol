@@ -1,5 +1,4 @@
-pragma solidity ^0.4.24;
-
+pragma solidity ^0.4.18;
 
 /**
  * bancor formula by bancor
@@ -10,11 +9,10 @@ pragma solidity ^0.4.24;
  * and to You under the Apache License, Version 2.0. "
  */
 contract Power {
-  // string public version = "0.3";
+  string public version = "0.3";
 
   uint256 private constant ONE = 1;
-  // uint32 private constant MAX_WEIGHT = 1000000;
-  uint32 internal constant MAX_WEIGHT = 1000000;
+  uint32 private constant MAX_WEIGHT = 1000000;
   uint8 private constant MIN_PRECISION = 32;
   uint8 private constant MAX_PRECISION = 127;
 
@@ -37,12 +35,9 @@ contract Power {
     The values below depend on MIN_PRECISION and MAX_PRECISION. If you choose to change either one of them:
     Apply the same change in file 'PrintFunctionBancorFormula.py', run it and paste the results below.
   */
-  uint256[128] internal maxExpArray;
+  uint256[128] private maxExpArray;
 
-  // function Power() public {
-  //   constructPower();
-  // }
-function constructPower() internal {
+  constructor() public {
 //  maxExpArray[  0] = 0x6bffffffffffffffffffffffffffffffff;
 //  maxExpArray[  1] = 0x67ffffffffffffffffffffffffffffffff;
 //  maxExpArray[  2] = 0x637fffffffffffffffffffffffffffffff;
@@ -190,7 +185,7 @@ function constructPower() internal {
         Hence we need to determine the highest precision which can be used for the given input, before calling the exponentiation function.
         This allows us to compute "base ^ exp" with maximum accuracy and without exceeding 256 bits in any of the intermediate computations.
 */
-  function power(uint256 _baseN, uint256 _baseD, uint32 _expN, uint32 _expD) internal constant returns (uint256, uint8) {
+  function power(uint256 _baseN, uint256 _baseD, uint32 _expN, uint32 _expD) public constant returns (uint256, uint8) {
     uint256 lnBaseTimesExp = ln(_baseN, _baseD) * _expN / _expD;
     uint8 precision = findPositionInMaxExpArray(lnBaseTimesExp);
     return (fixedExp(lnBaseTimesExp >> (MAX_PRECISION - precision), precision), precision);
@@ -203,7 +198,7 @@ function constructPower() internal {
     - The output      is a value between 0 and floor(ln(2 ^ (256 - MAX_PRECISION) - 1) * 2 ^ MAX_PRECISION)
     This functions assumes that the numerator is larger than or equal to the denominator, because the output would be negative otherwise.
   */
-  function ln(uint256 _numerator, uint256 _denominator) internal constant returns (uint256) {
+  function ln(uint256 _numerator, uint256 _denominator) internal pure returns (uint256) {
     assert(_numerator <= MAX_NUM);
 
     uint256 res = 0;
@@ -233,7 +228,7 @@ function constructPower() internal {
   /**
     Compute the largest integer smaller than or equal to the binary logarithm of the input.
   */
-  function floorLog2(uint256 _n) internal constant returns (uint8) {
+  function floorLog2(uint256 _n) internal pure returns (uint8) {
     uint8 res = 0;
     uint256 n = _n;
 
@@ -289,7 +284,7 @@ function constructPower() internal {
       The global "maxExpArray" maps each "precision" to "((maximumExponent + 1) << (MAX_PRECISION - precision)) - 1".
       The maximum permitted value for "x" is therefore given by "maxExpArray[precision] >> (MAX_PRECISION - precision)".
   */
-  function fixedExp(uint256 _x, uint8 _precision) internal constant returns (uint256) {
+  function fixedExp(uint256 _x, uint8 _precision) internal pure returns (uint256) {
     uint256 xi = _x;
     uint256 res = 0;
 

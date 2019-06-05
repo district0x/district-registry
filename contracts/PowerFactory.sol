@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "Power.sol";
+import "./Power.sol";
 
 contract PowerFactory {
   function createPower()

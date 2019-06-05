@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./token/minime/MiniMeToken.sol";
+import "minimetoken/contracts/MiniMeToken.sol";
 
 /**
  * @title Token used for curation of DistrictRegistry TCR
@@ -9,7 +9,8 @@ import "./token/minime/MiniMeToken.sol";
  */
 
 contract District0xNetworkToken is MiniMeToken {
-  function District0xNetworkToken(address _tokenFactory, uint _mintedAmount)
+  constructor(address _tokenFactory, uint _mintedAmount)
+    public
     MiniMeToken(
       _tokenFactory,
       0x0,

@@ -1,8 +1,8 @@
 pragma solidity ^0.4.18;
 
-import "Registry.sol";
-import "ParamChange.sol";
-import "auth/DSGuard.sol";
+import "./Registry.sol";
+import "./ParamChange.sol";
+import "./auth/DSGuard.sol";
 
 /**
  * @title Central contract for TCR parameter change registry
@@ -20,7 +20,7 @@ contract ParamChangeRegistry is Registry {
    * @param _paramChange Address of ParamChange contract
    */
 
-  function applyParamChange(ParamChange _paramChange) {
+  function applyParamChange(ParamChange _paramChange) public {
     require(isRegistryEntry(_paramChange));
     DSGuard guard = DSGuard(_paramChange.db().authority());
     guard.permit(_paramChange, _paramChange.db(), guard.ANY());
