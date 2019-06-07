@@ -8,7 +8,6 @@
     [district.server.web3 :refer [web3]]
     [district-registry.shared.smart-contracts :refer [smart-contracts]]
     [district.server.smart-contracts]
-    [district-registry.server.deployer]
     [mount.core :as mount]))
 
 
@@ -43,8 +42,7 @@
                              deployer-opts)}]
        (-> (mount/with-args args)
            (mount/only [#'district.server.web3/web3
-                        #'district.server.smart-contracts/smart-contracts
-                        #'district-registry.server.deployer/deployer])
+                        #'district.server.smart-contracts/smart-contracts])
            (mount/start))))))
 
 

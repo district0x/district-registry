@@ -2,6 +2,7 @@ pragma solidity ^0.4.24;
 
 import "./RegistryEntry.sol";
 import "./db/EternalDb.sol";
+import "./ParamChangeRegistry.sol";
 
 /**
  * @title Contract created for each submitted TCR parameter change.
@@ -14,6 +15,7 @@ import "./db/EternalDb.sol";
 
 contract ParamChange is RegistryEntry {
 
+  ParamChangeRegistry internal constant registry = ParamChangeRegistry(0xfEEDFEEDfeEDFEedFEEdFEEDFeEdfEEdFeEdFEEd);
   EternalDb public db;
   string private key;
   EternalDb.Types private valueType;
@@ -21,7 +23,7 @@ contract ParamChange is RegistryEntry {
   uint private originalValue;
   uint private appliedOn;
 
-  function isChangeAllowed(Registry registry, bytes32 record, uint _value)
+  function isChangeAllowed(ParamChangeRegistry registry, bytes32 record, uint _value)
     private
     constant
     returns (bool) {
@@ -100,8 +102,11 @@ contract ParamChange is RegistryEntry {
     require(appliedOn < 0);
     require(currentChallenge().isWhitelisted());
     require(registryToken.transfer(creator, deposit));
+
     db.setUIntValue(keccak256(abi.encodePacked(key)), value);
     appliedOn = now;
+
+    registry.fireParamChangeAppliedEvent(version);
   }
 
 }

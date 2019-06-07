@@ -5,10 +5,10 @@
   (contract-call contract-key :db))
 
 (defn construct [contract-key {:keys [:db]} & [opts]]
-  (contract-call contract-key :construct db (merge {:gas 100000} opts)))
+  (contract-call contract-key :construct [db] (merge {:gas 100000} opts)))
 
 (defn set-factory [contract-key {:keys [:factory :factory?]} & [opts]]
-  (contract-call contract-key :set-factory factory factory? (merge opts {:gas 100000})))
+  (contract-call contract-key :set-factory [factory factory?] (merge opts {:gas 100000})))
 
 (defn district-constructed-event [contract-key & args]
   (apply contract-call contract-key :DistrictConstructedEvent args))
@@ -26,4 +26,4 @@
   (apply contract-call contract-key :VoteRevealedEvent args))
 
 (defn factory? [contract-key factory]
-  (contract-call contract-key :is-factory factory))
+  (contract-call contract-key :is-factory [factory]))

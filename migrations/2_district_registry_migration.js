@@ -1,7 +1,3 @@
-/*
-  Main Ethlance Deployment Script
- */
-
 const {copy, smartContractsTemplate, encodeContractEDN, linkBytecode} = require("./utils.js");
 const fs = require("fs");
 const edn = require("jsedn");
@@ -70,22 +66,41 @@ async function deploy_DSGuard(deployer, opts) {
 
 
 async function deploy_MiniMeTokenFactory(deployer, opts) {
-  console.log("Deploying MiniMeTokenFactory");
-  await deployer.deploy(MiniMeTokenFactory, Object.assign({}, opts, {gas: 3.5e6}));
-  const miniMeTokenFactory = await MiniMeTokenFactory.deployed();
+  var miniMeTokenFactory;
+  if (parameters.MiniMeTokenFactory) {
+    miniMeTokenFactory = await MiniMeTokenFactory.at(parameters.MiniMeTokenFactory);
+  } else {
+    console.log("Deploying MiniMeTokenFactory");
+    await deployer.deploy(MiniMeTokenFactory, Object.assign({}, opts, {gas: 3.5e6}));
+    miniMeTokenFactory = await MiniMeTokenFactory.deployed();
+  }
 
   assignContract(miniMeTokenFactory, "MiniMeTokenFactory", "minime-token-factory");
 }
 
 
 async function deploy_DNT(deployer, opts) {
-  console.log("Deploying DNT");
-
-  const miniMeTokenFactory = await MiniMeTokenFactory.deployed();
-  await deployer.deploy(DNT, miniMeTokenFactory.address, "1000000000000000000000000", opts);
-  const dnt = await DNT.deployed();
+  var dnt;
+  if (parameters.DNT) {
+    console.log("Using existing DNT");
+    dnt = await DNT.at(parameters.DNT);
+  } else {
+    console.log("Deploying DNT");
+    const miniMeTokenFactory = await MiniMeTokenFactory.deployed();
+    await deployer.deploy(DNT, miniMeTokenFactory.address, "1000000000000000000000000", opts);
+    dnt = await DNT.deployed();
+  }
 
   assignContract(dnt, "District0xNetworkToken", "DNT");
+}
+
+
+async function getDNT(deployer, opts) {
+  if (parameters.DNT) {
+    return DNT.at(parameters.DNT);
+  } else {
+    return DNT.deployed();
+  }
 }
 
 
@@ -163,7 +178,7 @@ async function deploy_DistrictRegistryForwarder(deployer, opts) {
 async function deploy_ParamChangeRegistry(deployer, opts) {
   console.log("Deploying ParamChangeRegistry");
 
-  await deployer.deploy(ParamChangeRegistry, Object.assign({}, opts, {gas: 3.4e6}));
+  await deployer.deploy(ParamChangeRegistry, Object.assign({}, opts, {gas: 3.6e6}));
   const paramChangeRegistry = await ParamChangeRegistry.deployed();
 
   assignContract(paramChangeRegistry, "ParamChangeRegistry", "param-change-registry");
@@ -223,7 +238,7 @@ async function deploy_StakeBankFactory(deployer, opts) {
 async function deploy_ChallengeFactory(deployer, opts) {
   console.log("Deploying ChallengeFactory");
 
-  const dnt = await DNT.deployed();
+  const dnt = await getDNT();
   linkBytecode(ChallengeFactory, dntPlaceholder, dnt.address);
   await deployer.deploy(ChallengeFactory, Object.assign({}, opts, {gas: 2.5e6}));
   const challengeFactory = await ChallengeFactory.deployed();
@@ -235,7 +250,7 @@ async function deploy_ChallengeFactory(deployer, opts) {
 async function deploy_District(deployer, opts) {
   console.log("Deploying District");
 
-  const dnt = await DNT.deployed();
+  const dnt = await getDNT();
   const challengeFactory = await ChallengeFactory.deployed();
   const stakeBankFactory = await StakeBankFactory.deployed();
   const districtRegistryForwarder = await DistrictRegistryForwarder.deployed();
@@ -255,7 +270,7 @@ async function deploy_District(deployer, opts) {
 async function deploy_ParamChange(deployer, opts) {
   console.log("Deploying ParamChange");
 
-  const dnt = await DNT.deployed();
+  const dnt = await getDNT();
   const challengeFactory = await ChallengeFactory.deployed();
   const paramChangeRegistryForwarder = await ParamChangeRegistryForwarder.deployed();
 
@@ -273,7 +288,7 @@ async function deploy_ParamChange(deployer, opts) {
 async function deploy_DistrictFactory(deployer, opts) {
   console.log("Deploying DistrictFactory");
 
-  const dnt = await DNT.deployed();
+  const dnt = await getDNT();
   const districtRegistryForwarder = await DistrictRegistryForwarder.deployed();
   const district = await District.deployed();
 
@@ -293,7 +308,7 @@ async function deploy_DistrictFactory(deployer, opts) {
 async function deploy_ParamChangeFactory(deployer, opts) {
   console.log("Deploying ParamChangeFactory");
 
-  const dnt = await DNT.deployed();
+  const dnt = await getDNT();
   const paramChangeRegistryForwarder = await ParamChangeRegistryForwarder.deployed();
   const paramChange = await ParamChange.deployed();
 

@@ -30,6 +30,8 @@ let parameters = {
     },
   },
   "prod" : {
+    DNT: "0x0abdace70d3790235af448c88547603b945604ea",
+    MiniMeTokenFactory: "0xa7dd95d9978dde794eae5233889f1ffebcdc9914",
     districtRegistryDb : {
       challengePeriodDuration : 600, // seconds (10 minutes)
       commitPeriodDuration : 600, // seconds

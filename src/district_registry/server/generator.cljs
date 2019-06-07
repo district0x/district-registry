@@ -19,7 +19,6 @@
    [district-registry.server.contract.param-change-registry :as param-change-registry]
    [district-registry.server.contract.registry :as registry]
    [district-registry.server.contract.registry-entry :as registry-entry]
-   [district-registry.server.deployer]
    [district.cljs-utils :refer [rand-str]]
    [district.server.config :refer [config]]
    [district.server.smart-contracts :refer [contract-address contract-call contract-event-in-tx instance]]

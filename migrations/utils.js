@@ -30,7 +30,7 @@ let linkBytecode = (contract, placeholder, replacement) => {
 
 
 let smartContractsTemplate = (map, env) => {
-  return `(ns ethlance.shared.smart-contracts-${env})
+  return `(ns district-registry.shared.smart-contracts-${env})
 
   (def smart-contracts
     ${map})

@@ -6,7 +6,7 @@
    [cljs-web3.eth :as web3-eth]))
 
 (defn mint [contract-addr & [amount opts]]
-  (contract-call [:district contract-addr] :mint (or amount 0) (merge {:gas 6000000} opts)))
+  (contract-call [:district contract-addr] :mint [(or amount 0)] (merge {:gas 6000000} opts)))
 
 (defn load-district [contract-addr]
   (parse-load-district
@@ -17,7 +17,7 @@
   (parse-load-stake
     contract-addr
     staker-addr
-    (contract-call (instance :district contract-addr) :load-stake staker-addr)))
+    (contract-call (instance :district contract-addr) :load-stake [staker-addr])))
 
 (defn transfer-deposit [contract-addr & [opts]]
   (contract-call (instance :district contract-addr) :transfer-deposit (merge {:gas 300000} opts)))
@@ -32,7 +32,7 @@
     (merge {:gas 6000000} opts)))
 
 (defn unstake [contract-addr amount & [opts]]
-  (contract-call (instance :district contract-addr) :unstake amount (merge {:gas 600000} opts)))
+  (contract-call (instance :district contract-addr) :unstake [amount] (merge {:gas 600000} opts)))
 
 (defn balance-of [contract-addr owner]
-  (contract-call (instance :district contract-addr) :balance-of owner))
+  (contract-call (instance :district contract-addr) :balance-of [owner]))

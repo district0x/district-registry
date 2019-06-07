@@ -52,6 +52,6 @@
                   :html5? true}
          :router-google-analytics {:enabled? (not debug?)}
          :graphql {:schema graphql-schema
-                   :url "http://localhost:6300/graphql"}
+                   :url "http://localhost:6400/graphql"}
          :ipfs {:host "http://127.0.0.1:5001" :endpoint "/api/v0"}})
     (mount/start)))

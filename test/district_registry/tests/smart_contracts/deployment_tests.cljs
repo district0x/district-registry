@@ -16,7 +16,6 @@
    [district-registry.server.contract.param-change-factory :as param-change-factory]
    [district-registry.server.contract.registry :as registry]
    [district-registry.server.contract.registry-entry :as registry-entry]
-   [district-registry.server.deployer]
    [district-registry.shared.smart-contracts :refer [smart-contracts]]
    [district-registry.tests.smart-contracts.utils :refer [now create-before-fixture after-fixture]]
    [print.foo :include-macros true]
