@@ -1,24 +1,24 @@
 (ns district-registry.server.syncer
   (:require
-   [bignumber.core :as bn]
-   [camel-snake-kebab.core :as cs :include-macros true]
-   [cljs-solidity-sha3.core :refer [solidity-sha3]]
-   [cljs-web3.core :as web3]
-   [cljs-web3.eth :as web3-eth]
-   [cljs.core.async :as a]
-   [district-registry.server.contract.registry-entry :as registry-entry]
-   [district-registry.server.db :as db]
-   [district-registry.server.ipfs :as ipfs]
-   [district-registry.server.utils :as server-utils]
-   [district.server.config :refer [config]]
-   [district.server.smart-contracts :refer [replay-past-events]]
-   [district.server.web3 :refer [web3]]
-   [district.server.web3-events :refer [register-callback! unregister-callbacks! register-after-past-events-dispatched-callback!]]
-   [district.shared.error-handling :refer [try-catch]]
-   [district.web3-utils :as web3-utils]
-   [mount.core :as mount :refer [defstate]]
-   [print.foo :refer [look] :include-macros true]
-   [taoensso.timbre :as log]))
+    [bignumber.core :as bn]
+    [camel-snake-kebab.core :as cs :include-macros true]
+    [cljs-solidity-sha3.core :refer [solidity-sha3]]
+    [cljs-web3.core :as web3]
+    [cljs-web3.eth :as web3-eth]
+    [district-registry.server.contract.dnt :as dnt]
+    [district-registry.server.contract.registry-entry :as registry-entry]
+    [district-registry.server.db :as db]
+    [district-registry.server.ipfs :as ipfs]
+    [district-registry.server.utils :as server-utils]
+    [district.server.config :refer [config]]
+    [district.server.smart-contracts :refer [replay-past-events]]
+    [district.server.web3 :refer [web3]]
+    [district.server.web3-events :refer [register-callback! unregister-callbacks! register-after-past-events-dispatched-callback!]]
+    [district.shared.error-handling :refer [try-catch]]
+    [district.web3-utils :as web3-utils]
+    [mount.core :as mount :refer [defstate]]
+    [print.foo :refer [look] :include-macros true]
+    [taoensso.timbre :as log]))
 
 (declare start)
 (declare stop)
@@ -30,9 +30,9 @@
   :stop (stop syncer))
 
 
-(defn- add-registry-entry [registry-entry timestamp]
+(defn- insert-registry-entry! [registry-entry timestamp]
   (db/insert-registry-entry! (merge registry-entry
-                               {:reg-entry/created-on timestamp})))
+                                    {:reg-entry/created-on timestamp})))
 
 
 (defn district-constructed-event [_ {:keys [:args]}]
@@ -49,7 +49,8 @@
                       :district/dnt-weight (bn/number dnt-weight)
                       :district/dnt-staked 0
                       :district/total-supply 0}]
-        (add-registry-entry registry-entry-data timestamp)
+        (insert-registry-entry! registry-entry-data timestamp)
+        (db/insert-district! district)
         (let [{:keys [:district/meta-hash]} district]
           (.then (server-utils/get-ipfs-meta @ipfs/ipfs meta-hash)
                  (fn [district-meta]
@@ -58,20 +59,20 @@
                        (map (fn [[k v]]
                               [(keyword "district" (name k))
                                v]))
-                       (into district)
-                       (db/insert-district!))))))))))
+                       (into {:reg-entry/address registry-entry})
+                       (db/update-district!))))))))))
 
 
 (defn param-change-constructed-event [_ {:keys [:args]}]
   (try-catch
     (let [{:keys [:registry-entry :creator :version :deposit :challenge-period-end :db :key :value :timestamp]} args]
-      (add-registry-entry {:reg-entry/address registry-entry
-                           :reg-entry/creator creator
-                           :reg-entry/version version
-                           :reg-entry/created-on timestamp
-                           :reg-entry/deposit (bn/number deposit)
-                           :reg-entry/challenge-period-end (bn/number challenge-period-end)}
-                          timestamp)
+      (insert-registry-entry! {:reg-entry/address registry-entry
+                               :reg-entry/creator creator
+                               :reg-entry/version version
+                               :reg-entry/created-on timestamp
+                               :reg-entry/deposit (bn/number deposit)
+                               :reg-entry/challenge-period-end (bn/number challenge-period-end)}
+                              timestamp)
 
       (db/insert-or-replace-param-change!
         {:reg-entry/address registry-entry
@@ -117,7 +118,7 @@
          :challenge/index (bn/number index)
          :vote/voter voter
          :vote/amount (bn/number amount)
-         :vote/option 0 ; neither, changed to include/exclude when revealed
+         :vote/option 0                                     ; neither, changed to include/exclude when revealed
          :vote/created-on timestamp}))))
 
 
@@ -202,7 +203,7 @@
       (->> (callback err)))))
 
 
-(defn start [{:keys [:initial-param-query] :as opts}]
+(defn start [opts]
   (when-not (:disabled? opts)
 
     (when-not (web3/connected? @web3)

@@ -118,6 +118,8 @@ contract StakeBank is Ownable, MiniMeToken {
     uint minted = balanceOf(user);
     uint toDestroy = minted.div(staked.div(amount));
     require(destroyTokens(user, toDestroy));
+    updateStakeBankCheckpointAtNow(stakesFor[user], amount, true);
+    updateStakeBankCheckpointAtNow(stakeHistory, amount, true);
     return amount;
   }
 

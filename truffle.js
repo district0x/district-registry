@@ -15,7 +15,7 @@ let parameters = {
       challengePeriodDuration : 600, // seconds (10 minutes)
       commitPeriodDuration : 600, // seconds
       revealPeriodDuration : 600, // seconds
-      deposit : 1e18, // 1e18 = 1 DANK
+      deposit : 1e18, // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
       voteQuorum : 50, // percent
     },
@@ -24,7 +24,7 @@ let parameters = {
       challengePeriodDuration : 600, // seconds
       commitPeriodDuration : 600, // seconds
       revealPeriodDuration : 600, // seconds
-      deposit : 1e18, // 1e18 = 1 DANK
+      deposit : 1e18, // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
       voteQuorum : 50 // percent
     },
@@ -36,7 +36,7 @@ let parameters = {
       challengePeriodDuration : 600, // seconds (10 minutes)
       commitPeriodDuration : 600, // seconds
       revealPeriodDuration : 600, // seconds
-      deposit : 1e18, // 1e18 = 1 DANK
+      deposit : 1e18, // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
       voteQuorum : 50, // percent
     },
@@ -45,7 +45,7 @@ let parameters = {
       challengePeriodDuration : 600, // seconds
       commitPeriodDuration : 600, // seconds
       revealPeriodDuration : 600, // seconds
-      deposit : 1e18, // 1e18 = 1 DANK
+      deposit : 1e18, // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
       voteQuorum : 50 // percent
     },

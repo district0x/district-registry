@@ -1,21 +1,20 @@
 (ns district-registry.server.graphql-resolvers
   (:require
-   [bignumber.core :as bn]
-   [cljs-web3.core :as web3-core]
-   [cljs-web3.eth :as web3-eth]
-   [cljs.nodejs :as nodejs]
-   [clojure.pprint :refer [pprint]]
-   [clojure.string :as str]
-   [district-registry.server.db :as district-db]
-   [district.graphql-utils :as graphql-utils]
-   [district.server.config :refer [config]]
-   [district.server.db :as db]
-   [district.server.smart-contracts :as smart-contracts]
-   [district.server.web3 :as web3]
-   [district.shared.error-handling :refer [try-catch-throw]]
-   [honeysql.core :as sql]
-   [honeysql.helpers :as sqlh]
-   [taoensso.timbre :as log]))
+    [bignumber.core :as bn]
+    [cljs-web3.eth :as web3-eth]
+    [cljs.nodejs :as nodejs]
+    [clojure.pprint :refer [pprint]]
+    [district-registry.server.utils :as server-utils]
+    [district.graphql-utils :as graphql-utils]
+    [district.parsers :as parsers]
+    [district.server.config :refer [config]]
+    [district.server.db :as db]
+    [district.server.smart-contracts :as smart-contracts]
+    [district.server.web3 :as web3]
+    [district.shared.error-handling :refer [try-catch-throw]]
+    [honeysql.core :as sql]
+    [honeysql.helpers :as sqlh]
+    [taoensso.timbre :as log]))
 
 (def whitelisted-config-keys [:ipfs])
 
@@ -41,8 +40,6 @@
     (map graphql-utils/gql-name->kw)
     set))
 
-(defn- last-block-timestamp []
-  (->> (web3-eth/block-number @web3/web3) (web3-eth/get-block @web3/web3) :timestamp))
 
 (defn paged-query
   "Execute a paged query.
@@ -105,8 +102,8 @@
   (log/debug "search-districts-query-resolver" args)
   (try-catch-throw
     (let [statuses-set (when statuses (set statuses))
-          now (last-block-timestamp)
-          page-start-idx (when after (js/parseInt after))
+          now (server-utils/now-in-seconds)
+          page-start-idx (when after (parsers/parse-int after))
           page-size first
           query (cond-> {:select [:re.* :d.*]
                          :from [[:reg-entries :re]]
@@ -208,7 +205,7 @@
     :else        (enum :vote-option/neither)))
 
 (defn reg-entry->status-resolver [reg-entry]
-  (enum (reg-entry-status (last-block-timestamp) reg-entry)))
+  (enum (reg-entry-status (server-utils/now-in-seconds) reg-entry)))
 
 (defn reg-entry->votes-total-resolver [{:keys [:challenge/votes-against :challenge/votes-for] :as reg-entry}]
   (log/debug "challenge->votes-total-resolver args" reg-entry)
@@ -217,7 +214,7 @@
 (defn vote->reward-resolver [{:keys [:reg-entry/address :challenge/reward-pool :vote/option] :as vote}]
   (log/debug "vote->reward-resolver args" vote)
   (try-catch-throw
-    (let [now (last-block-timestamp)
+    (let [now (server-utils/now-in-seconds)
           status (reg-entry-status now vote)
           {:keys [:votes/include :votes/exclude] :as sql-query} (db/get {:select [[{:select [:%count.*]
                                                                                     :from [:votes]
@@ -257,10 +254,7 @@
 (defn challenge->votes-total [{:keys [:challenge/votes-include :challenge/votes-exclude] :as challenge}]
   (log/debug "challenge->votes-total args" {:challenge challenge})
   (try-catch-throw
-    (.toString
-      (bn/+
-        (bn/number votes-include)
-        (bn/number votes-exclude)))))
+    (str (bn/+ votes-include votes-exclude))))
 
 (defn district-list->items-resolver [district-list]
   (:items district-list))
@@ -289,10 +283,7 @@
   {:reg-entry/challenges reg-entry->challenges
    :reg-entry/status reg-entry->status-resolver})
 
-(defn- get-stake [{:as district
-                   :keys [:reg-entry/address]}
-                  {:as args
-                   :keys [:staker]}]
+(defn- get-stake [{:keys [:reg-entry/address]} {:keys [:staker]}]
   (db/get {:select [:*]
            :from [:stakes]
            :where [:and

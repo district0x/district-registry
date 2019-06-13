@@ -1,6 +1,5 @@
 scalar Date
 scalar Keyword
-scalar BigNumber
 
 type Query {
   district(regEntry_address: ID!): District
@@ -62,7 +61,7 @@ interface RegEntry {
   regEntry_version: Int
   regEntry_status: RegEntryStatus
   regEntry_creator: ID
-  regEntry_deposit: BigNumber
+  regEntry_deposit: Int
   regEntry_createdOn: Date
   regEntry_challengePeriodEnd: Date
   regEntry_challenges: [Challenge]
@@ -72,12 +71,12 @@ type Challenge {
   challenge_challenger: ID
   challenge_comment: String
   challenge_createdOn: Date
-  challenge_rewardPool: BigNumber
+  challenge_rewardPool: Int
   challenge_commitPeriodEnd: Date
   challenge_revealPeriodEnd: Date
-  challenge_votesInclude: BigNumber
-  challenge_votesExclude: BigNumber
-  challenge_votesTotal: BigNumber
+  challenge_votesInclude: Int
+  challenge_votesExclude: Int
+  challenge_votesTotal: Int
   challenge_claimedRewardOn: Date
   challenge_vote(voter: ID): Vote
 }
@@ -91,10 +90,10 @@ enum VoteOption {
 type Vote {
   vote_secretHash: String
   vote_option: VoteOption
-  vote_amount: BigNumber
+  vote_amount: Int
   vote_revealedOn: Date
   vote_claimedRewardOn: Date
-  vote_reward: BigNumber
+  vote_reward: Int
 }
 
 type District implements RegEntry {
@@ -102,7 +101,7 @@ type District implements RegEntry {
   regEntry_version: Int
   regEntry_status: RegEntryStatus
   regEntry_creator: ID
-  regEntry_deposit: BigNumber
+  regEntry_deposit: Int
   regEntry_createdOn: Date
   regEntry_challengePeriodEnd: Date
   regEntry_challenges: [Challenge]
@@ -115,10 +114,10 @@ type District implements RegEntry {
   district_logoImageHash: String
   district_backgroundImageHash: String
   district_dntWeight: Int
-  district_dntStaked: BigNumber
-  district_totalSupply: BigNumber
-  district_dntStakedFor(staker: ID): BigNumber
-  district_balanceOf(staker: ID): BigNumber
+  district_dntStaked: Int
+  district_totalSupply: Int
+  district_dntStakedFor(staker: ID): Int
+  district_balanceOf(staker: ID): Int
 }
 
 type DistrictList {
@@ -133,15 +132,15 @@ type ParamChange implements RegEntry {
   regEntry_version: Int
   regEntry_status: RegEntryStatus
   regEntry_creator: ID
-  regEntry_deposit: BigNumber
+  regEntry_deposit: Int
   regEntry_createdOn: Date
   regEntry_challengePeriodEnd: Date
   regEntry_challenges: [Challenge]
 
   paramChange_db: String
   paramChange_key: String
-  paramChange_value: BigNumber
-  paramChange_originalValue: BigNumber
+  paramChange_value: Int
+  paramChange_originalValue: Int
   paramChange_appliedOn: Date
 }
 
@@ -161,6 +160,7 @@ type Param {
 type Config {
   ipfs: Ipfs
 }
+
 type Ipfs {
   host: String
   endpoint: String

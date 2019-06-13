@@ -20,6 +20,7 @@
                  [district0x/district-encryption "1.0.0"]
                  [district0x/district-format "1.0.5"]
                  [district0x/district-graphql-utils "1.0.8"]
+                 [district0x/district-parsers "1.0.0"]
                  [district0x/district-sendgrid "1.0.0"]
                  [district0x/district-server-config "1.0.1"]
                  [district0x/district-server-db "1.0.3"]
@@ -36,6 +37,7 @@
                  [district0x/district-ui-component-notification "1.0.0"]
                  [district0x/district-ui-component-tx-button "1.0.0"]
                  [district0x/district-ui-graphql "1.0.9"]
+                 [district0x/district-ui-ipfs "1.0.0"]
                  [district0x/district-ui-logging "1.0.1"]
                  [district0x/district-ui-notification "1.0.1"]
                  [district0x/district-ui-now "1.0.1"]
@@ -145,7 +147,6 @@
                                    :output-dir "dev-server"
                                    :target :nodejs
                                    :optimizations :none
-                                   :closure-defines {goog.DEBUG true}
                                    :static-fns true
                                    :fn-invoke-direct true
                                    :anon-fn-naming-policy :mapped
@@ -159,7 +160,6 @@
                                    :asset-path "/js/compiled/out"
                                    :source-map-timestamp true
                                    :preloads [print.foo.preloads.devtools]
-                                   :closure-defines {goog.DEBUG true}
                                    :external-config {:devtools/config {:features-to-install :all}}}}
                        {:id "server"
                         :source-paths ["src"]
@@ -169,14 +169,12 @@
                                    :target :nodejs
                                    :optimizations :simple
                                    :source-map "server/district-registry.js.map"
-                                   :closure-defines {goog.DEBUG false}
                                    :pretty-print false}}
                        {:id "ui"
                         :source-paths ["src"]
                         :compiler {:main "district-registry.ui.core"
                                    :output-to "resources/public/js/compiled/app.js"
                                    :optimizations :advanced
-                                   :closure-defines {goog.DEBUG false}
                                    :pretty-print false
                                    :pseudo-names false}}
                        {:id "server-tests"

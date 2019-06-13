@@ -142,6 +142,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
     return getChallenge(currentChallengeIndex());
   }
 
+
   /**
    * @dev Commits encrypted vote to challenged entry
    * Locks voter's tokens in this contract. Returns when vote is revealed
@@ -152,7 +153,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * @param _amount Amount of tokens to vote with
    * @param _secretHash Encrypted vote option with salt. sha3(voteOption, salt)
    */
-  function commitVote(
+  function commitVoteForChallenge(
     uint _challengeIndex,
     address _voter,
     uint _amount,
@@ -172,6 +173,10 @@ contract RegistryEntry is ApproveAndCallFallBack {
     );
   }
 
+  function commitVote(address _voter, uint _amount, bytes32 _secretHash) external {
+    this.commitVoteForChallenge(currentChallengeIndex(), _voter, _amount, _secretHash);
+  }
+
   /**
    * @dev Reveals previously committed vote
    * Returns registryToken back to the voter
@@ -180,7 +185,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * @param _voteOption Vote option voter previously voted with
    * @param _salt Salt with which user previously encrypted his vote option
    */
-  function revealVote(
+  function revealVoteForChallenge(
     uint _challengeIndex,
     Challenge.VoteOption _voteOption,
     string _salt
@@ -203,6 +208,10 @@ contract RegistryEntry is ApproveAndCallFallBack {
     );
   }
 
+  function revealVote(Challenge.VoteOption _voteOption, string _salt) external {
+    this.revealVoteForChallenge(currentChallengeIndex(), _voteOption, _salt);
+  }
+
   /**
    * @dev Refunds vote deposit after reveal period
    * Can be called by anybody, to claim voter's reward to him
@@ -210,13 +219,17 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * Can't be called twice for the same vote
    * @param _voter Address of a voter
    */
-  function reclaimVoteAmount(uint _challengeIndex, address _voter)
+  function reclaimVoteAmountForChallenge(uint _challengeIndex, address _voter)
     external
     notEmergency {
     Challenge challenge = getChallenge(_challengeIndex);
     uint amount = challenge.reclaimVoteAmount(_voter);
     require(registryToken.transfer(_voter, amount));
     registry.fireVoteAmountClaimedEvent(version, _challengeIndex, _voter);
+  }
+
+  function reclaimVoteAmount(address _voter) external {
+    this.reclaimVoteAmountForChallenge(currentChallengeIndex(), _voter);
   }
 
   /**
@@ -226,7 +239,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * Can be called by anybody, to claim voter's reward to him
    * @param _voter Address of a voter
    */
-  function claimVoteReward(uint _challengeIndex, address _voter)
+  function claimVoteRewardForChallenge(uint _challengeIndex, address _voter)
     external
     notEmergency
   {
@@ -240,12 +253,16 @@ contract RegistryEntry is ApproveAndCallFallBack {
     registry.fireVoteRewardClaimedEvent(version, _challengeIndex, _voter, reward);
   }
 
+  function claimVoteReward(address _voter) external {
+    this.claimVoteRewardForChallenge(currentChallengeIndex(), _voter);
+  }
+
   /**
    * @dev Claims challenger's reward after reveal period
    * Challenger has reward only if winning option is Exclude
    * Can be called by anybody, to claim challenger's reward to him/her
    */
-  function claimChallengeReward(uint _challengeIndex)
+  function claimChallengeRewardForChallenge(uint _challengeIndex)
     external
     notEmergency
   {
@@ -257,6 +274,10 @@ contract RegistryEntry is ApproveAndCallFallBack {
       challenge.challenger(),
       challenge.challengeReward(deposit)
     );
+  }
+
+  function claimChallengeReward() external {
+    this.claimChallengeRewardForChallenge(currentChallengeIndex());
   }
 
   /**

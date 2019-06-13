@@ -1,19 +1,19 @@
 (ns district-registry.ui.home.page
   (:require
-   [bignumber.core :as bn]
-   [cljs-web3.core :as web3]
-   [clojure.pprint :refer [pprint]]
-   [district-registry.ui.components.app-layout :refer [app-layout]]
-   [district-registry.ui.components.nav :as nav]
-   [district-registry.ui.components.stake :as stake]
-   [district-registry.ui.contract.district :as district]
-   [district.format :as format]
-   [district.ui.component.page :refer [page]]
-   [district.ui.graphql.subs :as gql]
-   [district.ui.router.subs :as router-subs]
-   [district.ui.web3-accounts.subs :as account-subs]
-   [re-frame.core :refer [subscribe dispatch]]
-   [reagent.core :as r]))
+    [bignumber.core :as bn]
+    [cljs-web3.core :as web3]
+    [clojure.pprint :refer [pprint]]
+    [district-registry.ui.components.app-layout :refer [app-layout]]
+    [district-registry.ui.components.nav :as nav]
+    [district-registry.ui.components.stake :as stake]
+    [district-registry.ui.contract.district :as district]
+    [district.format :as format]
+    [district.ui.component.page :refer [page]]
+    [district.ui.graphql.subs :as gql]
+    [district.ui.router.subs :as router-subs]
+    [district.ui.web3-accounts.subs :as account-subs]
+    [re-frame.core :refer [subscribe dispatch]]
+    [reagent.core :as r]))
 
 (defn build-query [active-account route-query]
   [:search-districts
@@ -24,8 +24,8 @@
                                :reg-entry.status/commit-period
                                :reg-entry.status/reveal-period
                                :reg-entry.status/whitelisted]
-                "challenged"  [:reg-entry.status/commit-period
-                               :reg-entry.status/reveal-period]
+                "challenged" [:reg-entry.status/commit-period
+                              :reg-entry.status/reveal-period]
                 "blacklisted" [:reg-entry.status/blacklisted])
     :first 100}
    [:total-count
@@ -53,6 +53,7 @@
              [:district/dnt-staked-for {:staker active-account}]
              [:district/balance-of {:staker active-account}]]]]])
 
+
 (defn district-image [image-hash]
   (when image-hash
     (let [gateway (subscribe [::gql/query
@@ -62,8 +63,8 @@
         (if-let [url (-> @gateway :config :ipfs :gateway)]
           [:img.district-image {:src (str (format/ensure-trailing-slash url) image-hash)}])))))
 
-(defn district-tile [{:as district
-                      :keys [:district/background-image-hash
+
+(defn district-tile [{:keys [:district/background-image-hash
                              :district/balance-of
                              :district/description
                              :district/dnt-staked
@@ -96,7 +97,8 @@
        [stake/stake-form address]]
       [:div.arrow-blob
        (nav/a {:route [:route/detail {:address address}]}
-         [:span.arr.icon-arrow-right])]]]))
+              [:span.arr.icon-arrow-right])]]]))
+
 
 (defn loader []
   (let [mounted? (r/atom false)]
@@ -122,6 +124,7 @@
            [:img.base {:src "/images/svg/fan-base.svg"}]
            [:div.wheel [:img {:src "/images/svg/fan-spokes.svg"}]]]]]]])))
 
+
 (defn district-tiles [active-account route-query]
   (let [q (subscribe [::gql/query
                       {:queries [(build-query active-account route-query)]}
@@ -130,7 +133,7 @@
         result (:search-districts @q)
         districts (:items result)]
     (cond
-      (nil? result) [loader]
+      (:graphql/loading? @q) [loader]
       (empty? districts) [:div.no-districts
                           [:h2 "No districts found"]]
       :else [:div.grid.spaced
@@ -140,6 +143,7 @@
                       ^{:key address} [district-tile district]))
                doall)])))
 
+
 (defmethod page :route/home []
   (let [active-account (subscribe [::account-subs/active-account])
         route-query (subscribe [::router-subs/active-page-query])
@@ -147,7 +151,6 @@
         order-by (or (:order-by @route-query) "created-on")
         order-by-kw (keyword "districts.order-by" order-by)
         order-by-kw->str {:districts.order-by/created-on "Creation Date"
-                          :districts.order-by/total-supply "Total Supply"
                           :districts.order-by/dnt-staked "DNT Staked"}
         select-menu-open? (r/atom false)]
     (fn []
@@ -162,14 +165,14 @@
            [:li {:class (when (= status "in-registry") "on")}
             (nav/a {:route [:route/home {} (assoc @route-query :status "in-registry")]
                     :class "cta-btn"}
-              "In Registry")]
+                   "In Registry")]
            [:li {:class (when (= status "challenged") "on")}
             (nav/a {:class "cta-btn"
                     :route [:route/home {} (assoc @route-query :status "challenged")]}
-              "Challenged")]
+                   "Challenged")]
            [:li {:class (when (= status "blacklisted") "on")}
             (nav/a {:route [:route/home {} (assoc @route-query :status "blacklisted")]}
-              "Blacklisted")]]]
+                   "Blacklisted")]]]
          [:p
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat aute irure dolor in reprehenderit."]]]
        [:section#registry-grid
@@ -187,7 +190,7 @@
               (map (fn [k]
                      [:li {:key k}
                       (nav/a {:route [:route/home {} (assoc @route-query :order-by (name k))]}
-                        (order-by-kw->str k))]))
+                             (order-by-kw->str k))]))
               doall)]]]
          [district-tiles @active-account (assoc @route-query
                                            :status status

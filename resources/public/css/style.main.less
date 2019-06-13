@@ -725,7 +725,6 @@ form {
     }
     .row {
       p {
-        padding-right: 20px;
       }
       .form-btns {
         margin-top: 18px;
@@ -805,6 +804,7 @@ form {
 #registry-grid {
   padding-top: 30px;
   padding-bottom: 50px;
+  min-height: 800px;
   .no-districts {
     text-align: center;
     min-height: calc(100vh - 300px);
@@ -846,7 +846,7 @@ form {
     overflow: hidden;
   }
   .box-text {
-    padding: 60px 40px 40px;
+    padding: 50px 40px 40px;
     position: relative;
     .inner {
       .center-max(435px);
@@ -863,7 +863,7 @@ form {
     align-items: center;
     justify-content: center;
     img {
-      width: 90%;
+      width: 65%;
     }
   }
   .box-cta {
@@ -1002,7 +1002,7 @@ form {
 
 /*! - PAGE: 3 DETAILS */
 
-.stake-input {
+.dnt-input {
   border-bottom: 1px solid @blue;
 }
 
@@ -1440,6 +1440,7 @@ form {
 
   #registry-grid {
     padding-bottom: 30px;
+    min-height: 0;
     .select-menu {
       display: none;
     }
@@ -1535,7 +1536,7 @@ form {
   margin-bottom: 30px;
 }
 
-.district-description {
+.district-description, .challenge-comment {
   font: 400 16px/1.68 'proxima-soft', sans-serif;
   white-space: pre-line;
 }
@@ -1602,7 +1603,7 @@ input[type="file"] {
   opacity: 0;
 }
 .fade-in.visible {
-  .transition(opacity, 1s, ease-in);
+  .transition(opacity, 0.3s, ease-in);
   opacity: 1;
 }
 
@@ -1692,6 +1693,7 @@ input[type="file"] {
     .spinning;
   }
 }
+
 
 @-webkit-keyframes spin {
   0% {

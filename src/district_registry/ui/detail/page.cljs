@@ -1,35 +1,34 @@
 (ns district-registry.ui.detail.page
   (:require
-   [bignumber.core :as bn]
-   [cljsjs.bignumber]
-   [cljs-web3.core :as web3]
-   [clojure.pprint :refer [pprint]]
-   [clojure.string :as str]
-   [clojure.walk :as walk]
-   [district-registry.ui.components.app-layout :refer [app-layout]]
-   [district-registry.ui.components.stake :as stake]
-   [district-registry.ui.contract.registry-entry :as reg-entry]
-   [district-registry.ui.events :as events]
-   [district-registry.ui.not-found.page :as not-found]
-   [district-registry.ui.spec :as spec]
-   [district-registry.ui.utils :as ui-utils]
-   [district.format :as format]
-   [district.graphql-utils :as graphql-utils]
-   [district.ui.component.form.input :as inputs]
-   [district.ui.component.page :refer [page]]
-   [district.ui.component.tx-button :as tx-button]
-   [district.ui.graphql.subs :as gql]
-   [district.ui.now.subs :as now-subs]
-   [district.ui.router.subs :as router-subs]
-   [district.ui.web3-account-balances.subs :as account-balances-subs]
-   [district.ui.web3-accounts.subs :as account-subs]
-   [district.ui.web3-tx-id.subs :as tx-id-subs]
-   [re-frame.core :refer [dispatch subscribe]]
-   [reagent.core :as r]
-   [reagent.ratom :as ratom]))
+    [bignumber.core :as bn]
+    [cljsjs.bignumber]
+    [clojure.pprint :refer [pprint]]
+    [clojure.string :as str]
+    [district-registry.ui.components.app-layout :refer [app-layout]]
+    [district-registry.ui.components.stake :as stake]
+    [district-registry.ui.contract.registry-entry :as reg-entry]
+    [district-registry.ui.events :as events]
+    [district-registry.ui.not-found.page :as not-found]
+    [district-registry.ui.spec :as spec]
+    [district-registry.ui.utils :as ui-utils]
+    [district.format :as format]
+    [district.graphql-utils :as gql-utils]
+    [district.parsers :as parsers]
+    [district.ui.component.form.input :as inputs]
+    [district.ui.component.page :refer [page]]
+    [district.ui.component.tx-button :refer [tx-button]]
+    [district.ui.graphql.subs :as gql]
+    [district.ui.now.subs :as now-subs]
+    [district.ui.router.subs :as router-subs]
+    [district.ui.web3-account-balances.subs :as account-balances-subs]
+    [district.ui.web3-accounts.subs :as account-subs]
+    [district.ui.web3-tx-id.subs :as tx-id-subs]
+    [district.web3-utils :as web3-utils]
+    [re-frame.core :refer [dispatch subscribe]]
+    [reagent.core :as r]
+    [reagent.ratom :as ratom]))
 
-(defn build-query [{:as props
-                    :keys [district active-account]}]
+(defn build-query [{:keys [:district :active-account]}]
   [:district {:reg-entry/address district}
    [:reg-entry/address
     :reg-entry/version
@@ -69,13 +68,13 @@
     [:district/dnt-staked-for {:staker active-account}]
     [:district/balance-of {:staker active-account}]]])
 
+
 (defn normalize-status [status]
-  (case status
-    ("regEntry_status_challengePeriod"
-     "regEntry_status_whitelisted")  :in-registry
-    ("regEntry_status_commitPeriod"
-     "regEntry_status_revealPeriod") :challenged
-    "regEntry_status_blacklisted"    :blacklisted))
+  (case (gql-utils/gql-name->kw status)
+    (:reg-entry.status/challenge-period :reg-entry.status/whitelisted) :in-registry
+    (:reg-entry.status/commit-period :reg-entry.status/reveal-period) :challenged
+    :reg-entry.status/blacklisted :blacklisted))
+
 
 (defn district-background [image-hash]
   (when image-hash
@@ -85,8 +84,7 @@
           [:div.background-image {:style {:background-image (str "url('" (format/ensure-trailing-slash url) image-hash "')")}}
            [:img {:src "/images/district-bg-mask.png"}]])))))
 
-(defn info-section [{:as district
-                     :keys [:district/name
+(defn info-section [{:keys [:district/name
                             :district/description
                             :district/background-image-hash
                             :district/logo-image-hash
@@ -109,9 +107,9 @@
          [:a {:href url} url]]
         [:div.title-icons
          [:div.title-icon
-          [:a {:href github-url}
+          [:a {:href github-url :target :_blank}
            [:img {:src "/images/icon-fc-github@2x.png"}]]]
-         [:div.title-icon ; TODO Aragon link
+         [:div.title-icon                                   ; TODO Aragon link
           [:img {:src "/images/icon-fc-bird@2x.png"}]]]]
        [:ul.details-list
         [:li (str "Status: " (-> status
@@ -119,18 +117,14 @@
                                cljs.core/name
                                str/capitalize))]
         [:li (str "Added: " (-> created-on
-                              graphql-utils/gql-date->date
+                              gql-utils/gql-date->date
                               format/format-local-date))]
         [:li (str "Staked total: " (-> dnt-staked
-                                     .toString
-                                     js/BigNumber.
-                                     (web3/from-wei :ether)
+                                     web3-utils/wei->eth-number
                                      format/format-dnt))]
         [:li (str "Voting tokens issued: " (-> total-supply
-                                             .toString
-                                             js/BigNumber.
-                                             (web3/from-wei :ether)
-                                             (.toFormat 2)))]]
+                                             web3-utils/wei->eth-number
+                                             format/format-number))]]
        [:nav.social
         [:ul
          [:li
@@ -145,143 +139,136 @@
        [district-background background-image-hash]]]
      [:pre.district-description description]]]])
 
-(defn stake-section [{:as district
-                      :keys [:reg-entry/address
-                             :reg-entry/status
-                             :district/dnt-weight]}]
-  (when (not=
-          (normalize-status status)
-          :blacklisted)
-    [:div
-     [:h2 "Stake"]
-     [:p
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
-     [:h3 "Voting Token Issuance Curve"]
-     [:img.spacer {:src (str "/images/curve-graph-" dnt-weight "-l.svg")}]
-     [:div.stake
-      [:div.row.spaced
-       [stake/stake-info address]
-       [stake/stake-form address]]]]))
+(defn stake-section [{:keys [:reg-entry/address :reg-entry/status :district/dnt-weight]}]
+  [:div
+   [:h2 "Stake"]
+   [:p
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+   [:h3 "Voting Token Issuance Curve"]
+   [:img.spacer {:src (str "/images/curve-graph-" dnt-weight "-l.svg")}]
+   [:div.stake
+    [:div.row.spaced
+     [stake/stake-info address]
+     [stake/stake-form address]]]])
 
-(defn challenge-section [{:as district
-                          :keys [:reg-entry/address
-                                 :reg-entry/status
-                                 :reg-entry/deposit]}]
+(defn challenge-section []
   (let [form-data (r/atom {:challenge/comment nil})
         errors (ratom/reaction {:local (when-not (spec/check ::spec/challenge-comment (:challenge/comment @form-data))
-                                         {:challenge/comment "Comment shouldn't be empty."})})
-        tx-id (str address "challenges")
-        tx-pending? (subscribe [::tx-id-subs/tx-pending? {::reg-entry/approve-and-create-challenge tx-id}])
-        tx-success? (subscribe [::tx-id-subs/tx-success? {::reg-entry/approve-and-create-challenge tx-id}])]
-    (when (= (normalize-status status) :in-registry)
-      (fn []
-        [:div
-         [:div.h-line]
-         [:h2 "Challenge"]
-         [:p
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
-         [:form.challenge
-          [inputs/textarea-input {:form-data form-data
-                                  :id :challenge/comment
-                                  :errors errors}]
-          [:div.form-btns
-           [:p (format/format-token deposit {:token "DNT"})]
-           [tx-button/tx-button {:class "cta-btn"
-                                 :primary true
-                                 :disabled (-> @errors :local boolean)
-                                 :pending? @tx-pending?
-                                 :pending-text "Challenging..."
-                                 :on-click (fn [e]
-                                             (.preventDefault e)
-                                             (dispatch [::events/add-challenge {:send-tx/id tx-id
-                                                                                :reg-entry/address address
-                                                                                :comment (:challenge/comment @form-data)
-                                                                                :deposit deposit}]))}
-            "Challenge"]]]]))))
+                                         {:challenge/comment "Comment shouldn't be empty."})})]
+    (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/deposit]}]
+      (when (= (normalize-status status) :in-registry)
+        (let [tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:approve-and-create-challenge {:reg-entry/address address}}])]
+          [:div
+           [:div.h-line]
+           [:h2 "Challenge"]
+           [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+           [:form.challenge
+            [inputs/textarea-input {:form-data form-data
+                                    :id :challenge/comment
+                                    :errors errors}]
+            [:div.form-btns
+             [:p (format/format-dnt (web3-utils/wei->eth-number deposit))]
+             [tx-button
+              {:class "cta-btn"
+               :primary true
+               :disabled (-> @errors :local boolean)
+               :pending? tx-pending?
+               :pending-text "Challenging..."
+               :on-click (fn [e]
+                           (js-invoke e "preventDefault")
+                           (dispatch [::events/add-challenge
+                                      {:reg-entry/address address
+                                       :comment (:challenge/comment @form-data)
+                                       :deposit deposit}]))}
+              "Challenge"]]]])))))
 
-(defn remaining-time [to-time]
+
+(defn format-remaining-time [to-time]
   (let [time-remaining (subscribe [::now-subs/time-remaining to-time])
         {:keys [:days :hours :minutes :seconds]} @time-remaining]
-    (str (format/pluralize days "day") " " (format/pluralize hours "hour"))))
+    (when-not (every? zero? [days hours minutes seconds])
+      (str (format/pluralize days "day") " " (format/pluralize hours "hour")
+           " " minutes " min. " seconds " sec."))))
 
-(defn vote-commit-section [{:as district
-                            :keys [:reg-entry/address
-                                   :reg-entry/status
-                                   :reg-entry/challenges]}]
 
-  (when (= "regEntry_status_commitPeriod" status)
-    (let [{:as challenge
-           :keys [:challenge/commit-period-end]} (last challenges)
-          balance-dnt (subscribe [::account-balances-subs/active-account-balance :DNT])
-          form-data (r/atom {:vote/amount nil})
-          errors (ratom/reaction {:local (let [amount (:vote/amount @form-data)]
-                                           {})})
-          tx-id address
-          tx-pending? (subscribe [::tx-id-subs/tx-pending? {::reg-entry/approve-and-commit-vote tx-id}])
-          tx-success? (subscribe [::tx-id-subs/tx-success? {::reg-entry/approve-and-commit-vote tx-id}])
-          disabled? (fn []
-                      (let [amount (:vote/amount @form-data)]
-                        (or
-                          (not amount)
-                          (bn/> (web3/to-wei (js/BigNumber. amount) :ether) @balance-dnt))))
-          vote (fn [option]
-                 (dispatch [::reg-entry/approve-and-commit-vote
-                            {:send-tx/id tx-id
-                             :reg-entry/address address
-                             :vote/option option
-                             :vote/amount (-> @form-data :vote/amount js/BigNumber. (web3/to-wei :ether))}]))]
-      (fn []
-        [:div
-         [:div.h-line]
-         [:h2 "Vote"]
-         [:p
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
-         [:form.voting
-          [:div.row.spaced
-           [:p.challenge-comment (str "\"" (-> challenges last :challenge/comment) "\"")]]
-          [:div.row.spaced
-           [:b (str "Voting period ends in " (remaining-time (ui-utils/gql-date->date commit-period-end)) ".")]
-           [:div.form-btns
-            [:div.cta-btns
-             [inputs/pending-button
-              {:class "cta-btn"
-               :pending? @tx-pending?
-               :disabled (disabled?)
-               :pending-text "Voting..."
-               :on-click #(vote :vote.option/include)}
-              "Vote For"]
-             [inputs/pending-button
-              {:class "cta-btn"
-               :pending? @tx-pending?
-               :disabled (disabled?)
-               :pending-text "Voting..."
-               :on-click #(vote :vote.option/exclude)}
-              "Vote Against"]]
-            [:fieldset
-             [inputs/amount-input {:style {:text-align :right}
-                                   :form-data form-data
-                                   :id :vote/amount
-                                   :placeholder "DNT"
-                                   :errors errors}]]]
-           [:div
-            [:p (str "You can vote with up to "
-                  (-> @balance-dnt
-                    (web3/from-wei :ether)
-                    (.toFormat 2))
-                  " DNT.")]
-            [:p "Tokens will be returned to you after revealing your vote."]]]]]))))
+(defn- dispatch-vote [e option address form-data]
+  (js-invoke e "preventDefault")
+  (dispatch [::reg-entry/approve-and-commit-vote
+             {:reg-entry/address address
+              :vote/option option
+              :vote/amount (-> form-data :vote/amount parsers/parse-float web3-utils/eth->wei)}]))
 
-(defn vote-reveal-section [{:as district
-                            :keys [:reg-entry/address
-                                   :reg-entry/status
-                                   :reg-entry/challenges]}]
-  (when (= "regEntry_status_revealPeriod" status)
-    (let [{:as challenge
-           :keys [:challenge/reveal-period-end :challenge/vote]} (last challenges)
-          tx-id address
-          tx-pending? (subscribe [::tx-id-subs/tx-pending? {::reg-entry/reveal-vote tx-id}])
-          tx-success? (subscribe [::tx-id-subs/tx-success? {::reg-entry/reveal-vote tx-id}])]
-      (fn []
+
+(defn- vote-button-disabled? [form-data balance-dnt]
+  (let [amount (parsers/parse-float (:vote/amount form-data))]
+    (or
+      (not amount)
+      (bn/> (web3-utils/eth->wei amount) balance-dnt))))
+
+
+(defn vote-commit-section []
+  (let [balance-dnt (subscribe [::account-balances-subs/active-account-balance :DNT])
+        form-data (r/atom {:vote/amount ""})
+        errors (ratom/reaction {:local {}})]
+    (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges]}]
+      (when (= :reg-entry.status/commit-period (gql-utils/gql-name->kw status))
+        (let [{:keys [:challenge/commit-period-end]} (last challenges)
+              tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:approve-and-commit-vote {:reg-entry/address address}}])
+              remaining-time (format-remaining-time (ui-utils/gql-date->date commit-period-end))]
+          [:div
+           [:div.h-line]
+           [:h2 "Vote"]
+           [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+           [:form.voting
+            [:div.row.spaced
+             [:pre.challenge-comment (str "\"" (-> challenges last :challenge/comment) "\"")]]
+            [:div.row.spaced
+             [:b "Voting period "
+              (if remaining-time
+                (str "ends in " remaining-time)
+                "ended.")]
+             [:div.form-btns
+              [:div.cta-btns
+               [tx-button
+                {:class "cta-btn"
+                 :pending? tx-pending?
+                 :disabled (vote-button-disabled? @form-data @balance-dnt)
+                 :pending-text "Voting..."
+                 :on-click #(dispatch-vote % :vote.option/include address @form-data)}
+                "Vote For"]
+               [tx-button
+                {:class "cta-btn"
+                 :pending? tx-pending?
+                 :disabled (vote-button-disabled? @form-data @balance-dnt)
+                 :pending-text "Voting..."
+                 :on-click #(dispatch-vote % :vote.option/exclude address @form-data)}
+                "Vote Against"]]
+              [:fieldset
+               [inputs/amount-input
+                {:class "dnt-input"
+                 :form-data form-data
+                 :id :vote/amount
+                 :errors errors
+                 :type :number
+                 :disabled (nil? remaining-time)}]
+               [:span.cur "DNT"]]]
+             [:div
+              [:p "You can vote with up to "
+               (-> @balance-dnt
+                 web3-utils/wei->eth-number
+                 format/format-dnt)
+               "."
+               [:br]
+               "Tokens will be returned to you after revealing your vote."]]]]])))))
+
+
+(defn vote-reveal-section []
+  (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges]}]
+    (when (= :reg-entry.status/reveal-period (gql-utils/gql-name->kw status))
+      (let [{:keys [:challenge/reveal-period-end :challenge/vote]} (last challenges)
+            tx-pending? (subscribe [::tx-id-subs/tx-pending? {:reveal-vote {:reg-entry/address address}}])
+            tx-success? (subscribe [::tx-id-subs/tx-success? {:reveal-vote {:reg-entry/address address}}])
+            remaining-time (format-remaining-time (ui-utils/gql-date->date reveal-period-end))]
         [:div
          [:div.h-line]
          [:h2 "Reveal"]
@@ -289,25 +276,24 @@
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
          [:form.voting
           [:div.row.spaced
-           [:p (str "Reveal period will last " (remaining-time (ui-utils/gql-date->date reveal-period-end)) ".")]
-           [tx-button/tx-button {:class "cta-btn"
-                                 :primary true
-                                 :disabled @tx-success?
-                                 :pending? @tx-pending?
-                                 :pending-text "Revealing..."
-                                 :on-click #(dispatch [::reg-entry/reveal-vote
-                                                       {:send-tx/id tx-id
-                                                        :reg-entry/address address}
-                                                       vote])}
+           [:p (str "Reveal period " (if remaining-time
+                                       (str "ends in " remaining-time)
+                                       "ended."))]
+           [tx-button
+            {:class "cta-btn"
+             :primary true
+             :disabled (or @tx-success? (not remaining-time))
+             :pending? @tx-pending?
+             :pending-text "Revealing..."
+             :on-click #(dispatch [::reg-entry/reveal-vote {:reg-entry/address address}])}
             "Reveal My Vote"]]]]))))
 
-(defn main [{:as props
-             :keys [district active-account]}]
+
+(defn main [props]
   (let [query (subscribe [::gql/query
                           {:queries [(build-query props)]}
-                          {:refetch-on #{::reg-entry/approve-and-create-challenge-success
-                                         ::tx-id-subs/tx-success?}}])
-        {:keys [district config]} @query]
+                          {:refetch-on #{::reg-entry/approve-and-create-challenge-success}}])
+        {:keys [district]} @query]
     (cond
       (nil? district) nil
       (-> district :reg-entry/address nil?) [not-found/not-found]

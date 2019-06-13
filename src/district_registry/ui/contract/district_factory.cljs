@@ -7,29 +7,30 @@
    [district.ui.smart-contracts.queries :as contract-queries]
    [district.ui.web3-accounts.queries :as account-queries]
    [district.ui.web3-tx.events :as tx-events]
-   [goog.string :as gstring]
    [print.foo :refer [look] :include-macros true]
    [re-frame.core :as re-frame]))
 
+(def interceptors [re-frame/trim-v])
+
 (re-frame/reg-event-fx
   ::approve-and-create-district
-  (fn [{:keys [db]} [_ data {:keys [Name Hash Size]}]]
-    (let [tx-id (str (random-uuid))
-          active-account (account-queries/active-account db)
+  interceptors
+  (fn [{:keys [:db]} [{:keys [:deposit :dnt-weight :tx-id]} {:keys [Name Hash Size]}]]
+    (let [active-account (account-queries/active-account db)
           extra-data (web3-eth/contract-get-data (contract-queries/instance db :district-factory)
                        :create-district
                        active-account
                        Hash
-                       (bn/number (:dnt-weight data)))]
+                       (bn/number dnt-weight))]
       {:dispatch [::tx-events/send-tx
                   {:instance (contract-queries/instance db :DNT)
                    :fn :approve-and-call
                    :args [(contract-queries/contract-address db :district-factory)
-                          (:deposit data)
+                          deposit
                           extra-data]
                    :tx-opts {:from active-account
-                             :gas 6000000}
-                   :tx-id {:district/create-district tx-id}
+                             :gas 7000000}
+                   :tx-id {:approve-and-create-district tx-id}
                    :on-tx-success [::approve-and-create-district-success]
                    :on-tx-hash-error [::logging/error [::create-district]]
                    :on-tx-error [::logging/error [::create-district]]}]})))

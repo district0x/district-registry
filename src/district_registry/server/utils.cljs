@@ -15,29 +15,29 @@
   (js/Promise.
     (fn [resolve reject]
       (log/info (str "Downloading: " "/ipfs/" meta-hash) ::get-ipfs-meta)
-      (ipfs-files/fget (str "/ipfs/" meta-hash)
-                       {:req-opts {:compress false}}
-                       (fn [err content]
-                         (cond
-                           err
-                           (let [err-txt "Error when retrieving metadata from ipfs"]
-                             (log/error err-txt (merge {:meta-hash meta-hash
-                                                        :connection conn
-                                                        :error err})
-                                        ::get-ipfs-meta)
-                             (reject (str err-txt " : " err)))
+      (ifiles/fget (str "/ipfs/" meta-hash)
+                   {:req-opts {:compress false}}
+                   (fn [err content]
+                     (cond
+                       err
+                       (let [err-txt "Error when retrieving metadata from ipfs"]
+                         (log/error err-txt (merge {:meta-hash meta-hash
+                                                    :connection conn
+                                                    :error err})
+                                    ::get-ipfs-meta)
+                         (reject (str err-txt " : " err)))
 
-                           (empty? content)
-                           (let [err-txt "Empty ipfs content"]
-                             (log/error err-txt {:meta-hash meta-hash
-                                                 :connection conn} ::get-ipfs-meta)
-                             (reject err-txt))
+                       (empty? content)
+                       (let [err-txt "Empty ipfs content"]
+                         (log/error err-txt {:meta-hash meta-hash
+                                             :connection conn} ::get-ipfs-meta)
+                         (reject err-txt))
 
-                           :else (-> (re-find #".+(\{.+\})" content)
-                                   second
-                                   js/JSON.parse
-                                   (js->clj :keywordize-keys true)
-                                   resolve)))))))
+                       :else (-> (re-find #".+(\{.+\})" content)
+                               second
+                               js/JSON.parse
+                               (js->clj :keywordize-keys true)
+                               resolve)))))))
 
 
 (defn now-in-seconds []

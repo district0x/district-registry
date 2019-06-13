@@ -228,7 +228,7 @@ async function deploy_StakeBankFactory(deployer, opts) {
 
   const powerFactory = await PowerFactory.deployed();
   linkBytecode(StakeBankFactory, powerFactoryPlaceholder, powerFactory.address);
-  await deployer.deploy(StakeBankFactory, Object.assign({}, opts, {gas: 4.5e6}));
+  await deployer.deploy(StakeBankFactory, Object.assign({}, opts, {gas: 4.9e6}));
   const stakeBankFactory = await StakeBankFactory.deployed();
 
   assignContract(stakeBankFactory, "StakeBankFactory", "stake-bank-factory");
@@ -260,7 +260,7 @@ async function deploy_District(deployer, opts) {
   linkBytecode(District, challengeFactoryPlaceholder, challengeFactory.address);
   linkBytecode(District, stakeBankFactoryPlaceholder, stakeBankFactory.address);
 
-  await deployer.deploy(District, Object.assign({}, opts, {gas: 4.5e6}));
+  await deployer.deploy(District, Object.assign({}, opts, {gas: 4.9e6}));
   const district = await District.deployed();
 
   assignContract(district, "District", "district");
@@ -278,7 +278,7 @@ async function deploy_ParamChange(deployer, opts) {
   linkBytecode(ParamChange, registryPlaceholder, paramChangeRegistryForwarder.address);
   linkBytecode(ParamChange, challengeFactoryPlaceholder, challengeFactory.address);
 
-  await deployer.deploy(ParamChange, Object.assign({}, opts, {gas: 4.2e6}));
+  await deployer.deploy(ParamChange, Object.assign({}, opts, {gas: 4.9e6}));
   const paramChange = await ParamChange.deployed();
 
   assignContract(paramChange, "ParamChange", "param-change");

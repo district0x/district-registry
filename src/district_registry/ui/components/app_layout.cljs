@@ -4,7 +4,7 @@
    [district-registry.ui.subs :as dr-subs]
    [district-registry.ui.utils :as dr-utils]
    [district.ui.component.active-account :refer [active-account]]
-   [district.ui.component.active-account-balance :refer [active-account-balance] :as account-balances]
+   [district.ui.component.active-account-balance :refer [active-account-balance]]
    [district.ui.component.form.input :as inputs :refer [text-input*]]
    [district.ui.router.events]
    [district.ui.router.subs :as router-subs]
