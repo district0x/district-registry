@@ -30,12 +30,22 @@
     [district.ui.web3]
     [district.ui.window-size]
     [mount.core :as mount]
-    [print.foo :include-macros true]))
+    [print.foo :include-macros true]
+    [re-frame.core :as re-frame]))
 
 (defn dev-setup! []
   (when (:debug? config/config-map)
     (s/check-asserts true)
     (enable-console-print!)))
+
+(def interceptors [re-frame/trim-v])
+
+(re-frame/reg-event-fx
+  ::init
+  [(re-frame/inject-cofx :store) interceptors]
+  (fn [{:keys [:db :store]}]
+    {:db (assoc db :district-registry.ui.core/votes (:district-registry.ui.core/votes store))}))
+
 
 (defn ^:export init []
   (dev-setup!)
@@ -54,4 +64,5 @@
 
     (js/console.log "Entire config:" (clj->js full-config))
     (-> (mount/with-args full-config)
-      (mount/start))))
+      (mount/start))
+    (re-frame/dispatch-sync [::init])))

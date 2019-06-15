@@ -12,7 +12,8 @@
     [district.ui.smart-contracts.queries :as contract-queries]
     [district.ui.web3-accounts.queries :as account-queries]
     [district.ui.web3-tx.events :as tx-events]
-    [district0x.re-frame.spec-interceptors :as spec-interceptors]
+    [district.ui.web3.queries :as web3-queries]
+    [district.web3-utils :as web3-utils]
     [goog.string :as gstring]
     [print.foo :refer [look] :include-macros true]
     [re-frame.core :as re-frame]))
@@ -50,8 +51,8 @@
 
 (re-frame/reg-event-fx
   ::approve-and-create-challenge-success
-  interceptors
   (constantly nil))
+
 
 (re-frame/reg-event-fx
   ::approve-and-commit-vote
@@ -64,7 +65,8 @@
                                                  :commit-vote
                                                  active-account
                                                  amount
-                                                 secret-hash)]
+                                                 secret-hash)
+          store-votes-args [[:district-registry.ui.core/votes active-account address] {:option option :salt salt}]]
       {:dispatch [::tx-events/send-tx {:instance (contract-queries/instance db :DNT)
                                        :fn :approve-and-call
                                        :args [address
@@ -74,28 +76,41 @@
                                                  :gas 6000000}
                                        :tx-id {:approve-and-commit-vote {:reg-entry/address address}}
                                        :on-tx-success-n [[::logging/success [::approve-and-commit-vote]]
-                                                         [::notification-events/show "Voted"]]
+                                                         [::notification-events/show "Voted"]
+                                                         [::approve-and-commit-vote-success]]
                                        :on-tx-hash-error [::logging/error {:approve-and-commit-vote {:reg-entry/address address}}]
                                        :on-tx-error [::logging/error {:approve-and-commit-vote {:reg-entry/address address}}]}]
-       :store (assoc-in store [:votes active-account address] {:option option :salt salt})})))
+       :store (apply assoc-in store store-votes-args)
+       :db (apply assoc-in db store-votes-args)})))
+
+
+(re-frame/reg-event-fx
+  ::approve-and-commit-vote-success
+  (constantly nil))
 
 
 (re-frame/reg-event-fx
   ::reveal-vote
   [(re-frame/inject-cofx :store) interceptors]
-  (fn [{:keys [db store]} [{:keys [:reg-entry/address]}]]
+  (fn [{:keys [:db :store]} [{:keys [:reg-entry/address]}]]
     (let [active-account (account-queries/active-account db)
-          {:keys [option salt]} (get-in store [:votes active-account address])]
+          {:keys [option salt]} (get-in store [:district-registry.ui.core/votes active-account address])]
       {:dispatch [::tx-events/send-tx {:instance (contract-queries/instance db :district address)
                                        :fn :reveal-vote
-                                       :args [(reg-entry/vote-option->num option) salt]
+                                       :args (print.foo/look [(reg-entry/vote-option->num option) salt])
                                        :tx-opts {:from active-account
                                                  :gas 6000000}
                                        :tx-id {:reveal-vote {:reg-entry/address address}}
                                        :on-tx-success-n [[::logging/success [::reveal-vote]]
-                                                         [::notification-events/show "Voted"]]
+                                                         [::notification-events/show "Voted"]
+                                                         [::reveal-vote-success]]
                                        :on-tx-hash-error [::logging/error [::reveal-vote]]
                                        :on-tx-error [::logging/error [::reveal-vote]]}]})))
+
+
+(re-frame/reg-event-fx
+  ::reveal-vote-success
+  (constantly nil))
 
 
 (re-frame/reg-event-fx
@@ -110,9 +125,15 @@
                                                  :gas 6000000}
                                        :tx-id {}
                                        :on-tx-success-n [[::logging/success [::claim-vote-reward]]
-                                                         [::notification-events/show (gstring/format "Succesfully claimed reward from %s" from)]]
+                                                         [::notification-events/show (gstring/format "Succesfully claimed reward from %s" from)]
+                                                         [::claim-vote-reward-success]]
                                        :on-tx-hash-error [::logging/error [::claim-vote-reward]]
                                        :on-tx-error [::logging/error [::claim-vote-reward]]}]})))
+
+
+(re-frame/reg-event-fx
+  ::claim-vote-reward-success
+  (constantly nil))
 
 
 (re-frame/reg-event-fx
@@ -127,6 +148,12 @@
                                                  :gas 6000000}
                                        :tx-id {}
                                        :on-tx-success-n [[::logging/success [::reclaim-vote-amount]]
-                                                         [::notification-events/show "Succesfully reclaimed vote amount"]]
+                                                         [::notification-events/show "Succesfully reclaimed vote amount"]
+                                                         [::reclaim-vote-amount-success]]
                                        :on-tx-hash-error [::logging/error [::reclaim-vote-amount]]
                                        :on-tx-error [::logging/error [::reclaim-vote-amount]]}]})))
+
+
+(re-frame/reg-event-fx
+  ::reclaim-vote-amount-success
+  (constantly nil))

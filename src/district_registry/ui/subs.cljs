@@ -1,8 +1,9 @@
 (ns district-registry.ui.subs
   (:require
-   [re-frame.core :as re-frame]))
+    [district.ui.web3-accounts.queries :as account-queries]
+    [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
-  ::active-page
-  (fn [db _]
-    (::active-page db)))
+  ::vote
+  (fn [db [_ reg-entry-address]]
+    (get-in db [:district-registry.ui.core/votes (account-queries/active-account db) reg-entry-address])))

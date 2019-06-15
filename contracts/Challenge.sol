@@ -316,7 +316,7 @@ contract Challenge is Ownable {
     returns (uint)
   {
     require(isVoteRevealPeriodActive());
-    require(keccak256(abi.encodePacked(uint(_voteOption), _salt)) == votes[_voter].secretHash);
+    require(hashVote(_voteOption, _salt) == votes[_voter].secretHash);
     require(!isVoteRevealed(_voter));
     votes[_voter].revealedOn = now;
     uint amount = votes[_voter].amount;
@@ -369,6 +369,14 @@ contract Challenge is Ownable {
     require(!isChallengeRewardClaimed());
     require(!isWinningOptionInclude());
     claimedRewardOn = now;
+  }
+
+  function secretHash(address _voter) public view returns(bytes32) {
+    return votes[_voter].secretHash;
+  }
+
+  function hashVote(VoteOption _voteOption, string _salt) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(uint(_voteOption), _salt));
   }
 
 }

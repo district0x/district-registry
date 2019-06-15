@@ -14,7 +14,8 @@
    [print.foo :refer [look] :include-macros true]
    [re-frame.core :refer [subscribe dispatch]]
    [reagent.core :as r]
-   [reagent.ratom :refer [reaction]]))
+   [reagent.ratom :refer [reaction]])
+  (:require-macros [district-registry.shared.utils :refer [get-environment]]))
 
 (defn param-search-query [param]
   [:search-param-changes {:key (graphql-utils/kw->gql-name param)
@@ -37,10 +38,19 @@
     (= type "image/jpeg")))
 
 
+(def default-form-data
+  (merge {:dnt-weight 1000000}
+         (when (= "dev" (get-environment))
+           {:name "Name Bazaar"
+            :url "https://namebazaar.io/"
+            :github-url "https://github.com/district0x/name-bazaar"
+            :description "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, masuada non rutrum ut, ornare ac orci. Lorem ipsum dolor sit amet, consectetur adipiscing. Lorem augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non."})))
+
+
 (defmethod page :route/submit []
   (let [deposit-query (subscribe [::gql/query {:queries [(param-search-query :deposit)]}])
         tx-id (random-uuid)
-        form-data (r/atom {:dnt-weight 1000000 :tx-id tx-id})
+        form-data (r/atom (merge default-form-data {:tx-id tx-id}))
         dnt-weight-on-change (fn [weight]
                                #(swap! form-data assoc :dnt-weight weight))
         tx-pending? (subscribe [::tx-id-subs/tx-pending? {:approve-and-create-district tx-id}])]

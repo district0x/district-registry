@@ -153,13 +153,13 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * @param _amount Amount of tokens to vote with
    * @param _secretHash Encrypted vote option with salt. sha3(voteOption, salt)
    */
-  function commitVoteForChallenge(
+  function _commitVoteForChallenge(
     uint _challengeIndex,
     address _voter,
     uint _amount,
     bytes32 _secretHash
   )
-    external
+    internal
     notEmergency
   {
     require(registryToken.transferFrom(_voter, this, _amount));
@@ -173,8 +173,12 @@ contract RegistryEntry is ApproveAndCallFallBack {
     );
   }
 
+  function commitVoteForChallenge(uint _challengeIndex, address _voter, uint _amount, bytes32 _secretHash) external {
+    _commitVoteForChallenge(_challengeIndex, _voter, _amount, _secretHash);
+  }
+
   function commitVote(address _voter, uint _amount, bytes32 _secretHash) external {
-    this.commitVoteForChallenge(currentChallengeIndex(), _voter, _amount, _secretHash);
+    _commitVoteForChallenge(currentChallengeIndex(), _voter, _amount, _secretHash);
   }
 
   /**
@@ -185,12 +189,12 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * @param _voteOption Vote option voter previously voted with
    * @param _salt Salt with which user previously encrypted his vote option
    */
-  function revealVoteForChallenge(
+  function _revealVoteForChallenge(
     uint _challengeIndex,
     Challenge.VoteOption _voteOption,
     string _salt
   )
-    external
+    internal
     notEmergency
   {
     address _voter = msg.sender;
@@ -208,8 +212,18 @@ contract RegistryEntry is ApproveAndCallFallBack {
     );
   }
 
+  function revealVoteForChallenge(
+    uint _challengeIndex,
+    Challenge.VoteOption _voteOption,
+    string _salt
+  )
+  external
+  {
+    _revealVoteForChallenge(_challengeIndex, _voteOption, _salt);
+  }
+
   function revealVote(Challenge.VoteOption _voteOption, string _salt) external {
-    this.revealVoteForChallenge(currentChallengeIndex(), _voteOption, _salt);
+    _revealVoteForChallenge(currentChallengeIndex(), _voteOption, _salt);
   }
 
   /**
@@ -219,8 +233,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * Can't be called twice for the same vote
    * @param _voter Address of a voter
    */
-  function reclaimVoteAmountForChallenge(uint _challengeIndex, address _voter)
-    external
+  function _reclaimVoteAmountForChallenge(uint _challengeIndex, address _voter)
+    internal
     notEmergency {
     Challenge challenge = getChallenge(_challengeIndex);
     uint amount = challenge.reclaimVoteAmount(_voter);
@@ -228,8 +242,12 @@ contract RegistryEntry is ApproveAndCallFallBack {
     registry.fireVoteAmountClaimedEvent(version, _challengeIndex, _voter);
   }
 
+  function reclaimVoteAmountForChallenge(uint _challengeIndex, address _voter) external {
+    _reclaimVoteAmountForChallenge(_challengeIndex, _voter);
+  }
+
   function reclaimVoteAmount(address _voter) external {
-    this.reclaimVoteAmountForChallenge(currentChallengeIndex(), _voter);
+    _reclaimVoteAmountForChallenge(currentChallengeIndex(), _voter);
   }
 
   /**
@@ -239,11 +257,10 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * Can be called by anybody, to claim voter's reward to him
    * @param _voter Address of a voter
    */
-  function claimVoteRewardForChallenge(uint _challengeIndex, address _voter)
-    external
+  function _claimVoteRewardForChallenge(uint _challengeIndex, address _voter)
+    internal
     notEmergency
   {
-
     /* if (_voter == 0x0) { */
     /*   _voter = msg.sender; */
     /* } */
@@ -253,8 +270,12 @@ contract RegistryEntry is ApproveAndCallFallBack {
     registry.fireVoteRewardClaimedEvent(version, _challengeIndex, _voter, reward);
   }
 
+  function claimVoteRewardForChallenge(uint _challengeIndex, address _voter) external {
+    _claimVoteRewardForChallenge(_challengeIndex, _voter);
+  }
+
   function claimVoteReward(address _voter) external {
-    this.claimVoteRewardForChallenge(currentChallengeIndex(), _voter);
+    _claimVoteRewardForChallenge(currentChallengeIndex(), _voter);
   }
 
   /**
@@ -262,8 +283,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * Challenger has reward only if winning option is Exclude
    * Can be called by anybody, to claim challenger's reward to him/her
    */
-  function claimChallengeRewardForChallenge(uint _challengeIndex)
-    external
+  function _claimChallengeRewardForChallenge(uint _challengeIndex)
+    internal
     notEmergency
   {
     Challenge challenge = getChallenge(_challengeIndex);
@@ -276,8 +297,12 @@ contract RegistryEntry is ApproveAndCallFallBack {
     );
   }
 
+  function claimChallengeRewardForChallenge(uint _challengeIndex) external {
+    _claimChallengeRewardForChallenge(_challengeIndex);
+  }
+
   function claimChallengeReward() external {
-    this.claimChallengeRewardForChallenge(currentChallengeIndex());
+    _claimChallengeRewardForChallenge(currentChallengeIndex());
   }
 
   /**
@@ -301,5 +326,15 @@ contract RegistryEntry is ApproveAndCallFallBack {
     _amount;
     _token;
     require(address(this).call(_data));
+  }
+
+  function hashVote(Challenge.VoteOption _voteOption, string _salt) public view returns (bytes32) {
+    Challenge challenge = currentChallenge();
+    return challenge.hashVote(_voteOption, _salt);
+  }
+
+  function secretHash(address _voter) public view returns(bytes32) {
+    Challenge challenge = currentChallenge();
+    return challenge.secretHash(_voter);
   }
 }

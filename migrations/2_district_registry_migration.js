@@ -260,7 +260,7 @@ async function deploy_District(deployer, opts) {
   linkBytecode(District, challengeFactoryPlaceholder, challengeFactory.address);
   linkBytecode(District, stakeBankFactoryPlaceholder, stakeBankFactory.address);
 
-  await deployer.deploy(District, Object.assign({}, opts, {gas: 4.9e6}));
+  await deployer.deploy(District, Object.assign({}, opts, {gas: 5.5e6}));
   const district = await District.deployed();
 
   assignContract(district, "District", "district");

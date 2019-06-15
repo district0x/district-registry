@@ -1,9 +1,10 @@
 (ns district-registry.server.contract.district
   (:require
-   [district.server.smart-contracts :refer [contract-call instance contract-address]]
+   [cljs-web3.eth :as web3-eth]
    [district-registry.server.contract.dnt :as dnt]
    [district-registry.shared.contract.district :refer [parse-load-district parse-load-stake]]
-   [cljs-web3.eth :as web3-eth]))
+   [district-registry.shared.contract.registry-entry :as reg-entry]
+   [district.server.smart-contracts :refer [contract-call instance contract-address]]))
 
 (defn mint [contract-addr & [amount opts]]
   (contract-call [:district contract-addr] :mint [(or amount 0)] (merge {:gas 6000000} opts)))
@@ -36,3 +37,9 @@
 
 (defn balance-of [contract-addr owner]
   (contract-call (instance :district contract-addr) :balance-of [owner]))
+
+(defn hash-vote [contract-addr vote-option salt]
+  (contract-call (instance :district contract-addr) :hash-vote [(reg-entry/vote-option->num vote-option) salt]))
+
+(defn secret-hash [contract-addr voter]
+  (contract-call (instance :district contract-addr) :secret-hash [voter]))

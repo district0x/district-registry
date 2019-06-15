@@ -10,6 +10,7 @@
     [district-registry.ui.events :as events]
     [district-registry.ui.not-found.page :as not-found]
     [district-registry.ui.spec :as spec]
+    [district-registry.ui.subs :as district-registry-subs]
     [district-registry.ui.utils :as ui-utils]
     [district.format :as format]
     [district.graphql-utils :as gql-utils]
@@ -26,7 +27,8 @@
     [district.web3-utils :as web3-utils]
     [re-frame.core :refer [dispatch subscribe]]
     [reagent.core :as r]
-    [reagent.ratom :as ratom]))
+    [reagent.ratom :as ratom]
+    [medley.core :as medley]))
 
 (defn build-query [{:keys [:district :active-account]}]
   [:district {:reg-entry/address district}
@@ -199,101 +201,125 @@
               :vote/amount (-> form-data :vote/amount parsers/parse-float web3-utils/eth->wei)}]))
 
 
-(defn- vote-button-disabled? [form-data balance-dnt]
+(defn- vote-button-disabled? [form-data balance-dnt voted?]
   (let [amount (parsers/parse-float (:vote/amount form-data))]
     (or
       (not amount)
-      (bn/> (web3-utils/eth->wei amount) balance-dnt))))
+      (bn/> (web3-utils/eth->wei amount) balance-dnt)
+      voted?)))
 
 
 (defn vote-commit-section []
   (let [balance-dnt (subscribe [::account-balances-subs/active-account-balance :DNT])
         form-data (r/atom {:vote/amount ""})
         errors (ratom/reaction {:local {}})]
-    (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges]}]
-      (when (= :reg-entry.status/commit-period (gql-utils/gql-name->kw status))
-        (let [{:keys [:challenge/commit-period-end]} (last challenges)
-              tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:approve-and-commit-vote {:reg-entry/address address}}])
-              remaining-time (format-remaining-time (ui-utils/gql-date->date commit-period-end))]
-          [:div
-           [:div.h-line]
-           [:h2 "Vote"]
-           [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
-           [:form.voting
-            [:div.row.spaced
-             [:pre.challenge-comment (str "\"" (-> challenges last :challenge/comment) "\"")]]
-            [:div.row.spaced
-             [:b "Voting period "
-              (if remaining-time
-                (str "ends in " remaining-time)
-                "ended.")]
-             [:div.form-btns
-              [:div.cta-btns
+    (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges]}
+         {:keys [:challenge/commit-period-end]}]
+      (let [tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:approve-and-commit-vote {:reg-entry/address address}}])
+            remaining-time (format-remaining-time (ui-utils/gql-date->date commit-period-end))
+            {:keys [:challenge/vote]} (last challenges)
+            voted? (pos? (:vote/amount vote))]
+        [:div
+         [:h2 "Vote"]
+         [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+         [:form.voting
+          [:div.row.spaced
+           [:pre.challenge-comment (str "\"" (-> challenges last :challenge/comment) "\"")]]
+          [:div.row.spaced
+           [:b "Voting period "
+            (if remaining-time
+              (str "ends in " remaining-time)
+              "has finished.")]
+           [:div.form-btns
+            [:div.cta-btns
+             [tx-button
+              {:class "cta-btn"
+               :pending? tx-pending?
+               :disabled (vote-button-disabled? @form-data @balance-dnt voted?)
+               :pending-text "Voting..."
+               :on-click #(dispatch-vote % :vote-option/include address @form-data)}
+              (if voted?
+                "Voted"
+                "Vote For")]
+             (when-not voted?
                [tx-button
                 {:class "cta-btn"
                  :pending? tx-pending?
-                 :disabled (vote-button-disabled? @form-data @balance-dnt)
+                 :disabled (vote-button-disabled? @form-data @balance-dnt voted?)
                  :pending-text "Voting..."
-                 :on-click #(dispatch-vote % :vote.option/include address @form-data)}
-                "Vote For"]
-               [tx-button
-                {:class "cta-btn"
-                 :pending? tx-pending?
-                 :disabled (vote-button-disabled? @form-data @balance-dnt)
-                 :pending-text "Voting..."
-                 :on-click #(dispatch-vote % :vote.option/exclude address @form-data)}
-                "Vote Against"]]
-              [:fieldset
-               [inputs/amount-input
-                {:class "dnt-input"
-                 :form-data form-data
-                 :id :vote/amount
-                 :errors errors
-                 :type :number
-                 :disabled (nil? remaining-time)}]
-               [:span.cur "DNT"]]]
-             [:div
-              [:p "You can vote with up to "
-               (-> @balance-dnt
-                 web3-utils/wei->eth-number
-                 format/format-dnt)
-               "."
-               [:br]
-               "Tokens will be returned to you after revealing your vote."]]]]])))))
+                 :on-click #(dispatch-vote % :vote-option/exclude address @form-data)}
+                "Vote Against"])]
+            [:fieldset
+             [inputs/amount-input
+              {:class "dnt-input"
+               :form-data form-data
+               :id :vote/amount
+               :errors errors
+               :type :number
+               :disabled (or (nil? remaining-time) voted?)}]
+             [:span.cur "DNT"]]]
+           [:div
+            [:p "You can vote with up to "
+             (-> @balance-dnt
+               web3-utils/wei->eth-number
+               format/format-dnt)
+             "."
+             [:br]
+             "Tokens will be returned to you after revealing your vote."]]]]]))))
 
 
 (defn vote-reveal-section []
   (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges]}]
-    (when (= :reg-entry.status/reveal-period (gql-utils/gql-name->kw status))
-      (let [{:keys [:challenge/reveal-period-end :challenge/vote]} (last challenges)
-            tx-pending? (subscribe [::tx-id-subs/tx-pending? {:reveal-vote {:reg-entry/address address}}])
-            tx-success? (subscribe [::tx-id-subs/tx-success? {:reveal-vote {:reg-entry/address address}}])
-            remaining-time (format-remaining-time (ui-utils/gql-date->date reveal-period-end))]
-        [:div
-         [:div.h-line]
-         [:h2 "Reveal"]
-         [:p
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
-         [:form.voting
-          [:div.row.spaced
-           [:p (str "Reveal period " (if remaining-time
-                                       (str "ends in " remaining-time)
-                                       "ended."))]
-           [tx-button
-            {:class "cta-btn"
-             :primary true
-             :disabled (or @tx-success? (not remaining-time))
-             :pending? @tx-pending?
-             :pending-text "Revealing..."
-             :on-click #(dispatch [::reg-entry/reveal-vote {:reg-entry/address address}])}
-            "Reveal My Vote"]]]]))))
+    (let [{:keys [:challenge/reveal-period-end :challenge/vote]} (last challenges)
+          tx-pending? (subscribe [::tx-id-subs/tx-pending? {:reveal-vote {:reg-entry/address address}}])
+          remaining-time (format-remaining-time (ui-utils/gql-date->date reveal-period-end))
+          no-vote? (and (:vote/option vote)
+                        (= :vote-option/neither (gql-utils/gql-name->kw (:vote/option vote))))
+          stored-vote @(subscribe [::district-registry-subs/vote address])]
+      [:div
+       [:h2 "Reveal"]
+       [:p
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+       [:form.voting
+        [:div.row.spaced
+         [:p [:b (str "Reveal period " (if remaining-time
+                                         (str "ends in " remaining-time)
+                                         "has finished."))]]
+         [tx-button
+          {:class "cta-btn"
+           :primary true
+           :disabled (or (not remaining-time)
+                         (boolean (:vote/revealed-on vote))
+                         no-vote?
+                         (and (not no-vote?) (not stored-vote)))
+           :pending? @tx-pending?
+           :pending-text "Revealing..."
+           :on-click (fn [e]
+                       (js-invoke e "preventDefault")
+                       (dispatch [::reg-entry/reveal-vote {:reg-entry/address address}]))}
+          (cond
+            (:vote/revealed-on vote) "Revealed"
+            no-vote? "You haven't voted"
+            (and (not no-vote?) (not stored-vote)) "Secret not found in your browser"
+            :else "Reveal My Vote")]]]])))
+
+
+(defn vote-results-section []
+  (fn []
+    [:div "Vote Results"]))
 
 
 (defn main [props]
   (let [query (subscribe [::gql/query
                           {:queries [(build-query props)]}
-                          {:refetch-on #{::reg-entry/approve-and-create-challenge-success}}])
-        {:keys [district]} @query]
+                          {:refetch-on #{::reg-entry/approve-and-create-challenge-success
+                                         ::reg-entry/approve-and-commit-vote-success
+                                         ::reg-entry/reveal-vote-success
+                                         ::reg-entry/reclaim-vote-amount-success
+                                         ::reg-entry/claim-vote-reward-success}}])
+        {:keys [:district]} @query
+        {:keys [:reg-entry/challenges :reg-entry/status]} district
+        reversed-challenges (reverse challenges)]
     (cond
       (nil? district) nil
       (-> district :reg-entry/address nil?) [not-found/not-found]
@@ -304,9 +330,26 @@
                [:div.body-text
                 [:div.container
                  [stake-section district]
-                 [challenge-section district]
-                 [vote-commit-section district]
-                 [vote-reveal-section district]]]]]])))
+                 [challenge-section district]]]]
+              (when (seq challenges)
+                [:div.box-wrap.challenges
+                 [:div.body-text
+                  (for [[i challenge] (medley/indexed reversed-challenges)]
+                    (let [current-challenge? (= challenge (first reversed-challenges))]
+                      [:div.container.challenge
+                       {:key i}
+                       (cond
+                         (and current-challenge?
+                              (= :reg-entry.status/commit-period (gql-utils/gql-name->kw status)))
+                         [vote-commit-section district challenge]
+
+                         (and current-challenge?
+                              (= :reg-entry.status/reveal-period (gql-utils/gql-name->kw status)))
+                         [vote-reveal-section district challenge]
+
+                         :else
+                         [vote-results-section district challenge])]))]])]])))
+
 
 (defmethod page :route/detail [& x]
   (let [params (subscribe [::router-subs/active-page-params])

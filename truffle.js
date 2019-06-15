@@ -13,7 +13,7 @@ let parameters = {
   "qa" : {
     districtRegistryDb : {
       challengePeriodDuration : 600, // seconds (10 minutes)
-      commitPeriodDuration : 600, // seconds
+      commitPeriodDuration : 60, // seconds
       revealPeriodDuration : 600, // seconds
       deposit : 1e18, // 1e18 = 1 DNT
       challengeDispensation : 50, // percent

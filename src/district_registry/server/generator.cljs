@@ -148,7 +148,7 @@
         {:index 0
          :amount (web3/to-wei 100 :ether)
          :salt "abc"
-         :vote-option :vote.option/include}
+         :vote-option :vote-option/include}
         {:from (first accounts)}))
 
     (prn "commit vote"
@@ -157,7 +157,7 @@
         {:index 0
          :amount (web3/to-wei 20 :ether)
          :salt "abc"
-         :vote-option :vote.option/exclude}
+         :vote-option :vote-option/exclude}
         {:from (last accounts)}))
 
     (prn "staked"
@@ -173,7 +173,7 @@
       (registry-entry/reveal-vote
         reg-entry
         {:index 0
-         :vote-option :vote.option/include
+         :vote-option :vote-option/include
          :salt "abc"}
         {:from (first accounts)}))
 
@@ -181,7 +181,7 @@
       (registry-entry/reveal-vote
         reg-entry
         {:index 0
-         :vote-option :vote.option/exclude
+         :vote-option :vote-option/exclude
          :salt "abc"}
         {:from (last accounts)}))
 
@@ -208,7 +208,7 @@
         {:index 1
          :amount (web3/to-wei 100 :ether)
          :salt "abc"
-         :vote-option :vote.option/exclude}
+         :vote-option :vote-option/exclude}
         {:from (last accounts)}))
 
 
@@ -219,7 +219,7 @@
       (registry-entry/reveal-vote
         reg-entry
         {:index 1
-         :vote-option :vote.option/exclude
+         :vote-option :vote-option/exclude
          :salt "abc"}
         {:from (last accounts)}))
 
