@@ -139,28 +139,41 @@
                         {:reg-entry/address registry-entry
                          :challenge/index index}
                         [:*])
-            challenge' (update challenge
-                               (case option
-                                 1 :challenge/votes-include
-                                 2 :challenge/votes-exclude)
-                               (fnil + 0)
-                               (:vote/amount vote'))]
+            challenge' (-> challenge
+                         (update (case option
+                                   1 :challenge/votes-include
+                                   2 :challenge/votes-exclude)
+                                 +
+                                 (:vote/amount vote'))
+                         (update :challenge/votes-total + (:vote/amount vote')))]
         (db/update-challenge! challenge')
         (db/update-vote! vote')))))
 
 
 (defn vote-reward-claimed-event [_ {:keys [:args]}]
   (try-catch
-    (let [{:keys [:registry-entry :index :voter]} args]
-      (let [voter (web3-utils/uint->address voter)
-            vote (registry-entry/load-vote registry-entry (bn/number index) voter)]
-        (db/update-vote! vote)))))
+    (let [{:keys [:registry-entry :index :timestamp :version :voter]} args]
+      (db/update-vote! {:reg-entry/address registry-entry
+                        :vote/voter voter
+                        :challenge/index (bn/number index)
+                        :vote/claimed-reward-on timestamp}))))
+
+
+(defn vote-amount-claimed-event [_ {:keys [:args]}]
+  (try-catch
+    (let [{:keys [:registry-entry :index :timestamp :version :voter]} args]
+      (db/update-vote! {:reg-entry/address registry-entry
+                        :vote/voter voter
+                        :challenge/index (bn/number index)
+                        :vote/reclaimed-amount-on timestamp}))))
 
 
 (defn challenge-reward-claimed-event [_ {:keys [:args]}]
   (try-catch
-    (let [{:keys [:index :registry-entry]} args]
-      (db/update-challenge! (registry-entry/load-challenge registry-entry (bn/number index))))))
+    (let [{:keys [:registry-entry :index :timestamp :version :challenger :amount]} args]
+      (db/update-challenge! {:reg-entry/address registry-entry
+                             :challenge/index (bn/number index)
+                             :challenge/claimed-reward-on timestamp}))))
 
 
 (defn stake-changed-event [_ {:keys [:args]}]
@@ -222,6 +235,7 @@
            :district-registry/vote-committed-event vote-committed-event
            :district-registry/vote-revealed-event vote-revealed-event
            :district-registry/vote-reward-claimed-event vote-reward-claimed-event
+           :district-registry/vote-amount-claimed-event vote-amount-claimed-event
            :district-registry/challenge-reward-claimed-event challenge-reward-claimed-event
            :district-registry/stake-changed-event stake-changed-event}
 

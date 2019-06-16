@@ -73,8 +73,9 @@
    [:challenge/comment :string]
    [:challenge/commit-period-end :unsigned :integer default-nil]
    [:challenge/reveal-period-end :unsigned :integer default-nil]
-   [:challenge/votes-include :BIG :INT default-nil]
-   [:challenge/votes-exclude :BIG :INT default-nil]
+   [:challenge/votes-include :BIG :INT default-zero]
+   [:challenge/votes-exclude :BIG :INT default-zero]
+   [:challenge/votes-total :BIG :INT default-zero]
    [:challenge/claimed-reward-on :unsigned :integer default-nil]
    [(sql/call :primary-key :challenge/index :reg-entry/address)]
    [(sql/call :foreign-key :reg-entry/address) (sql/call :references :reg-entries :reg-entry/address)]])
@@ -88,6 +89,7 @@
    [:vote/created-on :unsigned :integer default-nil]
    [:vote/revealed-on :unsigned :integer default-nil]
    [:vote/claimed-reward-on :unsigned :integer default-nil]
+   [:vote/reclaimed-amount-on :unsigned :integer default-nil]
    [(sql/call :primary-key :vote/voter :challenge/index :reg-entry/address)]
    [(sql/call :foreign-key :reg-entry/address) (sql/call :references :reg-entries :reg-entry/address)]])
 

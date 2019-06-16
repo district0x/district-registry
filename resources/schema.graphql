@@ -61,7 +61,7 @@ interface RegEntry {
   regEntry_version: Int
   regEntry_status: RegEntryStatus
   regEntry_creator: ID
-  regEntry_deposit: Int
+  regEntry_deposit: Float
   regEntry_createdOn: Date
   regEntry_challengePeriodEnd: Date
   regEntry_challenges: [Challenge]
@@ -71,13 +71,14 @@ type Challenge {
   challenge_challenger: ID
   challenge_comment: String
   challenge_createdOn: Date
-  challenge_rewardPool: Int
+  challenge_rewardPool: Float
   challenge_commitPeriodEnd: Date
   challenge_revealPeriodEnd: Date
-  challenge_votesInclude: Int
-  challenge_votesExclude: Int
-  challenge_votesTotal: Int
+  challenge_votesInclude: Float
+  challenge_votesExclude: Float
+  challenge_votesTotal: Float
   challenge_claimedRewardOn: Date
+  challenge_winningVoteOption: VoteOption
   challenge_vote(voter: ID): Vote
 }
 
@@ -90,10 +91,11 @@ enum VoteOption {
 type Vote {
   vote_secretHash: String
   vote_option: VoteOption
-  vote_amount: Int
+  vote_amount: Float
   vote_revealedOn: Date
   vote_claimedRewardOn: Date
-  vote_reward: Int
+  vote_reclaimedVotesOn: Date
+  vote_reward: Float
 }
 
 type District implements RegEntry {
@@ -101,7 +103,7 @@ type District implements RegEntry {
   regEntry_version: Int
   regEntry_status: RegEntryStatus
   regEntry_creator: ID
-  regEntry_deposit: Int
+  regEntry_deposit: Float
   regEntry_createdOn: Date
   regEntry_challengePeriodEnd: Date
   regEntry_challenges: [Challenge]
@@ -114,10 +116,10 @@ type District implements RegEntry {
   district_logoImageHash: String
   district_backgroundImageHash: String
   district_dntWeight: Int
-  district_dntStaked: Int
-  district_totalSupply: Int
-  district_dntStakedFor(staker: ID): Int
-  district_balanceOf(staker: ID): Int
+  district_dntStaked: Float
+  district_totalSupply: Float
+  district_dntStakedFor(staker: ID): Float
+  district_balanceOf(staker: ID): Float
 }
 
 type DistrictList {
@@ -132,15 +134,15 @@ type ParamChange implements RegEntry {
   regEntry_version: Int
   regEntry_status: RegEntryStatus
   regEntry_creator: ID
-  regEntry_deposit: Int
+  regEntry_deposit: Float
   regEntry_createdOn: Date
   regEntry_challengePeriodEnd: Date
   regEntry_challenges: [Challenge]
 
   paramChange_db: String
   paramChange_key: String
-  paramChange_value: Int
-  paramChange_originalValue: Int
+  paramChange_value: Float
+  paramChange_originalValue: Float
   paramChange_appliedOn: Date
 }
 
@@ -166,3 +168,4 @@ type Ipfs {
   endpoint: String
   gateway: String
 }
+

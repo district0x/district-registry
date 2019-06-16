@@ -11,7 +11,6 @@
     [district-registry.ui.not-found.page :as not-found]
     [district-registry.ui.spec :as spec]
     [district-registry.ui.subs :as district-registry-subs]
-    [district-registry.ui.utils :as ui-utils]
     [district.format :as format]
     [district.graphql-utils :as gql-utils]
     [district.parsers :as parsers]
@@ -25,10 +24,14 @@
     [district.ui.web3-accounts.subs :as account-subs]
     [district.ui.web3-tx-id.subs :as tx-id-subs]
     [district.web3-utils :as web3-utils]
+    [goog.string :as gstring]
     [re-frame.core :refer [dispatch subscribe]]
     [reagent.core :as r]
     [reagent.ratom :as ratom]
     [medley.core :as medley]))
+
+(def format-dnt (comp format/format-dnt web3-utils/wei->eth-number))
+(def format-date (comp format/format-local-date gql-utils/gql-date->date))
 
 (defn build-query [{:keys [:district :active-account]}]
   [:district {:reg-entry/address district}
@@ -50,6 +53,7 @@
       :challenge/votes-exclude
       :challenge/votes-total
       :challenge/claimed-reward-on
+      :challenge/winning-vote-option
       [:challenge/vote {:voter active-account}
        [:vote/secret-hash
         :vote/option
@@ -118,15 +122,9 @@
                                normalize-status
                                cljs.core/name
                                str/capitalize))]
-        [:li (str "Added: " (-> created-on
-                              gql-utils/gql-date->date
-                              format/format-local-date))]
-        [:li (str "Staked total: " (-> dnt-staked
-                                     web3-utils/wei->eth-number
-                                     format/format-dnt))]
-        [:li (str "Voting tokens issued: " (-> total-supply
-                                             web3-utils/wei->eth-number
-                                             format/format-number))]]
+        [:li (str "Added: " (format-date created-on))]
+        [:li (str "Staked total: " (format-dnt dnt-staked))]
+        [:li (str "Voting tokens issued: " (format-dnt total-supply))]]
        [:nav.social
         [:ul
          [:li
@@ -209,27 +207,36 @@
       voted?)))
 
 
+(defn- challenger-comment [{:keys [:challenge/challenger :challenge/comment]}]
+  [:div.row.spaced
+   [:a.challenger-address
+    {:href (format/etherscan-addr-url challenger)
+     :target :_blank}
+    "Challenger (" (subs challenger 0 7) "...):"]
+   [:pre.challenge-comment (str "\"" comment "\"")]])
+
+
 (defn vote-commit-section []
   (let [balance-dnt (subscribe [::account-balances-subs/active-account-balance :DNT])
         form-data (r/atom {:vote/amount ""})
         errors (ratom/reaction {:local {}})]
     (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges]}
-         {:keys [:challenge/commit-period-end]}]
+         {:keys [:challenge/commit-period-end :challenge/comment] :as challange}]
       (let [tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:approve-and-commit-vote {:reg-entry/address address}}])
-            remaining-time (format-remaining-time (ui-utils/gql-date->date commit-period-end))
+            remaining-time (format-remaining-time (gql-utils/gql-date->date commit-period-end))
             {:keys [:challenge/vote]} (last challenges)
             voted? (pos? (:vote/amount vote))]
         [:div
          [:h2 "Vote"]
          [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
          [:form.voting
+          [challenger-comment challange]
           [:div.row.spaced
-           [:pre.challenge-comment (str "\"" (-> challenges last :challenge/comment) "\"")]]
-          [:div.row.spaced
-           [:b "Voting period "
-            (if remaining-time
-              (str "ends in " remaining-time)
-              "has finished.")]
+           [:p [:b.remaining-time
+                "Voting period "
+                (if remaining-time
+                  (str "ends in " remaining-time)
+                  "has finished.")]]
            [:div.form-btns
             [:div.cta-btns
              [tx-button
@@ -269,17 +276,17 @@
 
 
 (defn vote-reveal-section []
-  (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges]}]
-    (let [{:keys [:challenge/reveal-period-end :challenge/vote]} (last challenges)
-          tx-pending? (subscribe [::tx-id-subs/tx-pending? {:reveal-vote {:reg-entry/address address}}])
-          remaining-time (format-remaining-time (ui-utils/gql-date->date reveal-period-end))
+  (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges]}
+       {:keys [:challenge/comment :challenge/reveal-period-end :challenge/vote] :as challenge}]
+    (let [tx-pending? (subscribe [::tx-id-subs/tx-pending? {:reveal-vote {:reg-entry/address address}}])
+          remaining-time (format-remaining-time (gql-utils/gql-date->date reveal-period-end))
           no-vote? (and (:vote/option vote)
                         (= :vote-option/neither (gql-utils/gql-name->kw (:vote/option vote))))
           stored-vote @(subscribe [::district-registry-subs/vote address])]
       [:div
        [:h2 "Reveal"]
-       [:p
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+       [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+       [challenger-comment challenge]
        [:form.voting
         [:div.row.spaced
          [:p [:b (str "Reveal period " (if remaining-time
@@ -303,10 +310,71 @@
             (and (not no-vote?) (not stored-vote)) "Secret not found in your browser"
             :else "Reveal My Vote")]]]])))
 
+(defn- vote-reward-line [reward]
+  (when reward
+   [:span "Your vote reward: " (format-dnt reward) [:br]]))
+
+
+(defn- calculate-challenge-reward [deposit reward-pool]
+  (+ deposit (- deposit reward-pool)))
+
+
+(defn- challenge-reward-line [reward]
+  (when reward
+    [:span "Your challenge reward: " [:b (format-dnt reward)] [:br]]))
+
+
+(defn- total-reward-line [reward]
+  (when reward
+    [:span "Your total reward: " [:b (format-dnt reward)] [:br]]))
+
 
 (defn vote-results-section []
-  (fn []
-    [:div "Vote Results"]))
+  (fn [{:keys [:reg-entry/deposit]}
+       {:keys [:challenge/challenger
+               :challenge/votes-include
+               :challenge/votes-exclude
+               :challenge/votes-total
+               :challenge/vote
+               :challenge/winning-vote-option
+               :challenge/claimed-reward-on
+               :challenge/reveal-period-end
+               :challenge/reward-pool] :as challenge}]
+    (let [{:keys [:vote/option :vote/amount :vote/reward]} vote
+          user-vote-option (gql-utils/gql-name->kw option)
+          winning-vote-option (gql-utils/gql-name->kw winning-vote-option)
+          active-account @(subscribe [::account-subs/active-account])
+          challenge-reward (when (and (= challenger active-account)
+                                      (= winning-vote-option :vote-option/exclude))
+                             (calculate-challenge-reward deposit reward-pool))]
+      #_ (print.foo/look vote)
+      [:div
+       [:h2 "Vote Results"]
+       [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+       [challenger-comment challenge]
+       [:div.row.spaced
+        [:p
+         [:span "Voting finished: " [:b (format-date reveal-period-end)]] [:br]
+         [:span "Voted for inclusion: " [:b (format-dnt votes-include)]] [:br]
+         [:span "Voted for blacklisting: " [:b (format-dnt votes-exclude)]] [:br]
+         (when (contains? #{:vote-option/include :vote-option/exclude} user-vote-option)
+           [:span "You voted: "
+            [:b
+             (gstring/format "%s for %s (%s)"
+                             (format-dnt amount)
+                             (case user-vote-option
+                               :vote-option/include "inclusion"
+                               :vote-option/exclude "blacklisting")
+                             (format/format-percentage
+                               amount
+                               (case user-vote-option
+                                 :vote-option/include votes-include
+                                 :vote-option/exclude votes-exclude)))] [:br]])
+
+         [challenge-reward-line challenge-reward]
+         [vote-reward-line reward]
+         [total-reward-line (when (and challenge-reward reward)
+                              (+ challenge-reward reward))]]]])))
 
 
 (defn main [props]
@@ -338,6 +406,8 @@
                     (let [current-challenge? (= challenge (first reversed-challenges))]
                       [:div.container.challenge
                        {:key i}
+                       (when-not current-challenge?
+                         [:div.h-line])
                        (cond
                          (and current-challenge?
                               (= :reg-entry.status/commit-period (gql-utils/gql-name->kw status)))

@@ -327,14 +327,4 @@ contract RegistryEntry is ApproveAndCallFallBack {
     _token;
     require(address(this).call(_data));
   }
-
-  function hashVote(Challenge.VoteOption _voteOption, string _salt) public view returns (bytes32) {
-    Challenge challenge = currentChallenge();
-    return challenge.hashVote(_voteOption, _salt);
-  }
-
-  function secretHash(address _voter) public view returns(bytes32) {
-    Challenge challenge = currentChallenge();
-    return challenge.secretHash(_voter);
-  }
 }

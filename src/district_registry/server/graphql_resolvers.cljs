@@ -60,6 +60,7 @@
      :end-cursor (str last-idx)
      :has-next-page (not= last-idx total-count)}))
 
+
 (defn district-query-resolver [_ {:keys [:reg-entry/address] :as args}]
   (db/get {:select [:*]
            :from [[:districts :d] [:reg-entries :re]]
@@ -67,36 +68,39 @@
                    [:= :d.reg-entry/address :re.reg-entry/address]
                    [:= :re.reg-entry/address address]]}))
 
+
 (defn reg-entry-status [now {:keys [:reg-entry/address :reg-entry/challenge-period-end]}]
   (let [{:keys [:challenge/index
                 :challenge/commit-period-end
                 :challenge/reveal-period-end
                 :challenge/votes-include
-                :challenge/votes-exclude]} (db/get {:select   [:*]
-                                                    :from     [:challenges]
-                                                    :where    [:= :challenges.reg-entry/address address]
+                :challenge/votes-exclude]} (db/get {:select [:*]
+                                                    :from [:challenges]
+                                                    :where [:= :challenges.reg-entry/address address]
                                                     :order-by [[:challenges.challenge/index :desc]]})]
     (cond
       (and (< now challenge-period-end) (not index)) :reg-entry.status/challenge-period
-      (< now commit-period-end)                      :reg-entry.status/commit-period
-      (< now reveal-period-end)                      :reg-entry.status/reveal-period
+      (< now commit-period-end) :reg-entry.status/commit-period
+      (< now reveal-period-end) :reg-entry.status/reveal-period
       (or
         (< votes-exclude votes-include)
-        (< challenge-period-end now))                :reg-entry.status/whitelisted
-      :else                                          :reg-entry.status/blacklisted)))
+        (< challenge-period-end now)) :reg-entry.status/whitelisted
+      :else :reg-entry.status/blacklisted)))
+
 
 (defn reg-entry-status-sql-clause [now]
-  (sql/call ;; TODO: can we remove aliases here?
+  (sql/call                                                 ;; TODO: can we remove aliases here?
     :case
     [:and
      [:< now :re.reg-entry/challenge-period-end]
-     [:= :c.challenge/index nil]]                             (enum :reg-entry.status/challenge-period)
-    [:< now :c.challenge/commit-period-end]                   (enum :reg-entry.status/commit-period)
-    [:< now :c.challenge/reveal-period-end]                   (enum :reg-entry.status/reveal-period)
+     [:= :c.challenge/index nil]] (enum :reg-entry.status/challenge-period)
+    [:< now :c.challenge/commit-period-end] (enum :reg-entry.status/commit-period)
+    [:< now :c.challenge/reveal-period-end] (enum :reg-entry.status/reveal-period)
     [:or
      [:< :c.challenge/votes-exclude :c.challenge/votes-include]
-     [:< :re.reg-entry/challenge-period-end now]]              (enum :reg-entry.status/whitelisted)
-    :else                                                      (enum :reg-entry.status/blacklisted)))
+     [:< :re.reg-entry/challenge-period-end now]] (enum :reg-entry.status/whitelisted)
+    :else (enum :reg-entry.status/blacklisted)))
+
 
 (defn search-districts-query-resolver [_ {:keys [:statuses :order-by :order-dir :first :after] :as args}]
   (log/debug "search-districts-query-resolver" args)
@@ -112,14 +116,15 @@
                                                        [:= :re.reg-entry/address :c.reg-entry/address]
                                                        [:= :re.reg-entry/current-challenge-index :c.challenge/index]]]}
                   statuses-set (sqlh/merge-where [:in (reg-entry-status-sql-clause now) statuses-set])
-                  order-by     (sqlh/merge-order-by [[(get {:districts.order-by/reveal-period-end :c.challenge/reveal-period-end
-                                                            :districts.order-by/commited-period-end :c.challenge/commit-period-end
-                                                            :districts.order-by/created-on :re.reg-entry/created-on
-                                                            :districts.order-by/dnt-staked :d.district/dnt-staked
-                                                            :districts.order-by/total-supply :d.district/total-supply}
-                                                        (graphql-utils/gql-name->kw order-by))
-                                                      (or (keyword order-dir) :asc)]]))]
+                  order-by (sqlh/merge-order-by [[(get {:districts.order-by/reveal-period-end :c.challenge/reveal-period-end
+                                                        :districts.order-by/commited-period-end :c.challenge/commit-period-end
+                                                        :districts.order-by/created-on :re.reg-entry/created-on
+                                                        :districts.order-by/dnt-staked :d.district/dnt-staked
+                                                        :districts.order-by/total-supply :d.district/total-supply}
+                                                       (graphql-utils/gql-name->kw order-by))
+                                                  (or (keyword order-dir) :asc)]]))]
       (paged-query query page-size page-start-idx))))
+
 
 (defn param-change-query-resolver [_ {:keys [:reg-entry/address] :as args}]
   (log/debug "param-change args" args)
@@ -130,6 +135,7 @@
                              :where [:= address :param-changes.reg-entry/address]})]
       (log/debug "param-change query" sql-query)
       sql-query)))
+
 
 (defn search-param-changes-query-resolver [_ {:keys [:key :db :order-by :order-dir :group-by :first :after]
                                               :or {order-dir :asc}
@@ -146,14 +152,14 @@
                                 db (sqlh/merge-where [:= db :param-changes.param-change/db])
                                 order-by (sqlh/merge-where [:not= nil :param-changes.param-change/applied-on])
                                 order-by (sqlh/merge-order-by [[(get {:param-changes.order-by/applied-on :param-changes.param-change/applied-on}
-                                                                  (graphql-utils/gql-name->kw order-by))
+                                                                     (graphql-utils/gql-name->kw order-by))
                                                                 order-dir]])
                                 group-by (merge {:group-by [(get {:param-changes.group-by/key :param-changes.param-change/key}
-                                                              (graphql-utils/gql-name->kw group-by))]}))
+                                                                 (graphql-utils/gql-name->kw group-by))]}))
           param-changes-result (paged-query param-changes-query
-                                 first
-                                 (when after
-                                   (js/parseInt after)))]
+                                            first
+                                            (when after
+                                              (parsers/parse-int after)))]
 
       (if-not (= 0 (:total-count param-changes-result))
         param-changes-result
@@ -167,16 +173,17 @@
                                       :where [:and [:= key :initial-params.initial-param/key]
                                               [:= db :initial-params.initial-param/db]]}]
             (paged-query initial-params-query
-              first
-              (when after
-                (js/parseInt after)))))))))
+                         first
+                         (when after
+                           (parsers/parse-int after)))))))))
+
 
 (defn param-query-resolver [_ {:keys [:db :key] :as args}]
   (log/debug "param-query-resolver" args)
   (try-catch-throw
     (let [sql-query (db/get {:select [[:param-change/db :param/db]
                                       [:param-change/key :param/key]
-                                      [:param-change/value :param/value] ]
+                                      [:param-change/value :param/value]]
                              :from [:param-changes]
                              :where [:and [:= db :param-changes.param-change/db]
                                      [:= key :param-changes.param-change/key]]
@@ -185,12 +192,13 @@
       (log/debug "param-query-resolver" sql-query)
       sql-query)))
 
+
 (defn params-query-resolver [_ {:keys [:db :keys] :as args}]
   (log/debug "params-query-resolver" args)
   (try-catch-throw
     (let [sql-query (db/all {:select [[:param-change/db :param/db]
                                       [:param-change/key :param/key]
-                                      [:param-change/value :param/value] ]
+                                      [:param-change/value :param/value]]
                              :from [:param-changes]
                              :where [:and [:= db :param-changes.param-change/db]
                                      [:in :param-changes.param-change/key keys]]
@@ -198,47 +206,57 @@
       (log/debug "params-query-resolver" sql-query)
       sql-query)))
 
+
 (defn vote->option-resolver [{:keys [:vote/option] :as vote}]
   (cond
     (= 1 option) (enum :vote-option/include)
     (= 0 option) (enum :vote-option/exclude)
-    :else        (enum :vote-option/neither)))
+    :else (enum :vote-option/neither)))
+
 
 (defn reg-entry->status-resolver [reg-entry]
   (enum (reg-entry-status (server-utils/now-in-seconds) reg-entry)))
 
-(defn reg-entry->votes-total-resolver [{:keys [:challenge/votes-against :challenge/votes-for] :as reg-entry}]
-  (log/debug "challenge->votes-total-resolver args" reg-entry)
-  (+ votes-against votes-for))
 
 (defn vote->reward-resolver [{:keys [:reg-entry/address :challenge/reward-pool :vote/option] :as vote}]
   (log/debug "vote->reward-resolver args" vote)
   (try-catch-throw
     (let [now (server-utils/now-in-seconds)
           status (reg-entry-status now vote)
-          {:keys [:votes/include :votes/exclude] :as sql-query} (db/get {:select [[{:select [:%count.*]
-                                                                                    :from [:votes]
-                                                                                    :where [:and
-                                                                                            [:= address :votes.reg-entry/address]
-                                                                                            [:= 1 :votes.vote/option]]}
-                                                                                   :votes/exclude]
-                                                                                  [{:select [:%count.*]
-                                                                                    :from [:votes]
-                                                                                    :where [:and
-                                                                                            [:= address :votes.reg-entry/address]
-                                                                                            [:= 2 :votes.vote/option]]}
-                                                                                   :votes/include]]})]
+          {:keys [:votes/include :votes/exclude] :as sql-query}
+          (db/get {:select [[{:select [:%count.*]
+                              :from [:votes]
+                              :where [:and
+                                      [:= address :votes.reg-entry/address]
+                                      [:= 1 :votes.vote/option]]}
+                             :votes/exclude]
+                            [{:select [:%count.*]
+                              :from [:votes]
+                              :where [:and
+                                      [:= address :votes.reg-entry/address]
+                                      [:= 2 :votes.vote/option]]}
+                             :votes/include]]})]
       (log/debug "vote->reward-resolver query" sql-query)
       (cond
         (and (= :reg-entry.status/whitelisted status)
-          (= option 1))
+             (= option 1))
         (/ reward-pool include)
 
         (and (= :reg-entry.status/blacklisted status)
-          (= option 0))
+             (= option 0))
         (/ reward-pool exclude)
 
         :else nil))))
+
+
+(defn challenge->winning-vote-option-resolver [{:keys [:challenge/votes-include :challenge/votes-exclude]}]
+  (log/debug "challenge->winning-vote-option-resolver" {:challenge/votes-include votes-include :challenge/votes-exclude votes-exclude})
+  (try-catch-throw
+    (graphql-utils/kw->gql-name
+      (if (>= votes-exclude votes-include)
+        :vote-option/exclude
+        :vote-option/include))))
+
 
 (defn challenge->vote [{:keys [:reg-entry/address :challenge/index] :as challenge} {:keys [:voter]}]
   (log/debug "challenge->vote args" {:challenge challenge :voter voter})
@@ -251,16 +269,14 @@
                      [:= :votes.reg-entry/address address]
                      [:= :votes.challenge/index index]]})))
 
-(defn challenge->votes-total [{:keys [:challenge/votes-include :challenge/votes-exclude] :as challenge}]
-  (log/debug "challenge->votes-total args" {:challenge challenge})
-  (try-catch-throw
-    (str (bn/+ votes-include votes-exclude))))
 
 (defn district-list->items-resolver [district-list]
   (:items district-list))
 
+
 (defn param-change-list->items-resolver [param-change-list]
   (:items param-change-list))
+
 
 (defn reg-entry->challenges [{:keys [:reg-entry/address] :as reg-entry}]
   (log/debug "reg-entry->challenges" {:reg-entry reg-entry})
@@ -279,9 +295,11 @@
    :param param-query-resolver
    :params params-query-resolver})
 
+
 (def RegEntry
   {:reg-entry/challenges reg-entry->challenges
    :reg-entry/status reg-entry->status-resolver})
+
 
 (defn- get-stake [{:keys [:reg-entry/address]} {:keys [:staker]}]
   (db/get {:select [:*]
@@ -289,6 +307,7 @@
            :where [:and
                    [:= :stakes.reg-entry/address address]
                    [:= :stakes.stake/staker staker]]}))
+
 
 (def District
   (assoc RegEntry
@@ -302,7 +321,7 @@
 
 (def Challenge
   {:challenge/vote challenge->vote
-   :challenge/votes-total challenge->votes-total})
+   :challenge/winning-vote-option challenge->winning-vote-option-resolver})
 
 (def Vote
   {:vote/option vote->option-resolver

@@ -95,13 +95,13 @@
           dnt-staked-for (web3-utils/wei->eth-number dnt-staked-for)
           dnt-staked (web3-utils/wei->eth-number dnt-staked)]
       [:p
-       (str "Staked Total: " (or (-> dnt-staked format/format-dnt)
+       (str "Staked total: " (or (-> dnt-staked format/format-dnt)
                                  "0 DNT"))
        [:br]
        (str "You staked: " (or (-> dnt-staked-for format/format-dnt)
                                "0 DNT"))
        [:br]
-       (str "Owning "
+       (str "You own: "
             (or (format/format-number balance-of)
                 0)
             (when (pos? balance-of)

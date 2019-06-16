@@ -12,9 +12,9 @@ const smartContractsPaths = {
 let parameters = {
   "qa" : {
     districtRegistryDb : {
-      challengePeriodDuration : 600, // seconds (10 minutes)
+      challengePeriodDuration : 0,
       commitPeriodDuration : 60, // seconds
-      revealPeriodDuration : 600, // seconds
+      revealPeriodDuration : 60, // seconds
       deposit : 1e18, // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
       voteQuorum : 50, // percent
@@ -33,7 +33,7 @@ let parameters = {
     DNT: "0x0abdace70d3790235af448c88547603b945604ea",
     MiniMeTokenFactory: "0xa7dd95d9978dde794eae5233889f1ffebcdc9914",
     districtRegistryDb : {
-      challengePeriodDuration : 600, // seconds (10 minutes)
+      challengePeriodDuration : 0,
       commitPeriodDuration : 600, // seconds
       revealPeriodDuration : 600, // seconds
       deposit : 1e18, // 1e18 = 1 DNT

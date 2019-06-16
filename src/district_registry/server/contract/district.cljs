@@ -2,28 +2,15 @@
   (:require
    [cljs-web3.eth :as web3-eth]
    [district-registry.server.contract.dnt :as dnt]
-   [district-registry.shared.contract.district :refer [parse-load-district parse-load-stake]]
-   [district-registry.shared.contract.registry-entry :as reg-entry]
    [district.server.smart-contracts :refer [contract-call instance contract-address]]))
 
 (defn mint [contract-addr & [amount opts]]
   (contract-call [:district contract-addr] :mint [(or amount 0)] (merge {:gas 6000000} opts)))
 
-(defn load-district [contract-addr]
-  (parse-load-district
-    contract-addr
-    (contract-call (instance :district contract-addr) :load-district)))
-
-(defn load-stake [contract-addr staker-addr]
-  (parse-load-stake
-    contract-addr
-    staker-addr
-    (contract-call (instance :district contract-addr) :load-stake [staker-addr])))
-
 (defn transfer-deposit [contract-addr & [opts]]
   (contract-call (instance :district contract-addr) :transfer-deposit (merge {:gas 300000} opts)))
 
-(defn ^:private stake-data [{:keys [amount staker]}]
+(defn- stake-data [{:keys [amount staker]}]
   (web3-eth/contract-get-data (instance :district) :stake-for staker amount))
 
 (defn approve-and-stake [{:keys [amount district] :as args} & [opts]]
@@ -37,9 +24,3 @@
 
 (defn balance-of [contract-addr owner]
   (contract-call (instance :district contract-addr) :balance-of [owner]))
-
-(defn hash-vote [contract-addr vote-option salt]
-  (contract-call (instance :district contract-addr) :hash-vote [(reg-entry/vote-option->num vote-option) salt]))
-
-(defn secret-hash [contract-addr voter]
-  (contract-call (instance :district contract-addr) :secret-hash [voter]))

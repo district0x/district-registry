@@ -48,24 +48,6 @@
                     :field-resolver (utils/build-default-field-resolver graphql-utils/gql-name->kw)}))
 
 
-(defn redeploy
-  "Redeploy smart contracts with truffle"
-  []
-  (log/warn "Redeploying contracts, please be patient..." ::redeploy)
-  (let [child (spawn "truffle migrate --network ganache --f 2 --to 3 --reset" (clj->js {:stdio "inherit" :shell true}))]
-    (-> child
-      (.on "disconnect" (fn []
-                          (log/warn "Parent process has disconnected" ::redeploy)))
-      (.on "exit" (fn [code signal]
-                    (log/info "Truffle migrate process exited" {:code code
-                                                                :signal signal} ::redeploy)))
-      (.on "error" (fn [err]
-                     (log/error "Truffle migrate process error" {:error err} ::redeploy)))
-
-      (.on "close" (fn []
-                     (log/info "Finished redploying contracts" ::redeploy))))))
-
-
 (defn resync []
   (mount/stop #'district-registry.server.db/district-registry-db
               #'district-registry.server.syncer/syncer)
@@ -127,9 +109,6 @@
       (println "#######" (str/upper-case t) "#######")
       (select [:*] :from [(keyword t)])
       (println "\n\n"))))
-
-
-(comment (redeploy))
 
 (comment (print-db))
 

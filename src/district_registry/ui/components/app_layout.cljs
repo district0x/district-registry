@@ -2,7 +2,6 @@
   (:require
    [district-registry.ui.components.nav :as nav]
    [district-registry.ui.subs :as dr-subs]
-   [district-registry.ui.utils :as dr-utils]
    [district.ui.component.active-account :refer [active-account]]
    [district.ui.component.active-account-balance :refer [active-account-balance]]
    [district.ui.component.form.input :as inputs :refer [text-input*]]
