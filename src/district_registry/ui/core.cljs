@@ -8,6 +8,7 @@
     [district-registry.ui.config :as config]
     [district-registry.ui.detail.page]
     [district-registry.ui.home.page]
+    [district-registry.ui.my-activity.page]
     [district-registry.ui.not-found.page]
     [district-registry.ui.submit.page]
     [district.cljs-utils :as cljs-utils]
@@ -53,8 +54,7 @@
                       config/config-map
                       {:smart-contracts {:format :truffle-json}
                        :web3-account-balances {:for-contracts [:ETH :DNT]}
-                       :web3-tx-log {:open-on-tx-hash? true
-                                     :tx-costs-currencies [:USD]}
+                       :web3-tx-log {:tx-costs-currencies [:USD]}
                        :reagent-render {:id "app"
                                         :component-var #'router}
                        :router {:routes routes

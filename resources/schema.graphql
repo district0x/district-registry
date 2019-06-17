@@ -68,6 +68,7 @@ interface RegEntry {
 }
 
 type Challenge {
+  challenge_index: ID
   challenge_challenger: ID
   challenge_comment: String
   challenge_createdOn: Date

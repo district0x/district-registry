@@ -5,6 +5,7 @@ import "./ChallengeFactory.sol";
 import "./Registry.sol";
 import "./math/SafeMath.sol";
 import "minimetoken/contracts/MiniMeToken.sol";
+import "./utils/AddressUtils.sol";
 
 /**
  * @title Contract created with each submission to a TCR
@@ -41,9 +42,9 @@ contract RegistryEntry is ApproveAndCallFallBack {
   }
 
   function isChallengePeriodActive()
-    internal
-    constant
-    returns (bool) {
+  internal
+  constant
+  returns (bool) {
     return now <= challengePeriodEnd;
   }
 
@@ -61,7 +62,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
     address _creator,
     uint _version
   )
-    public
+  public
   {
     require(challengePeriodEnd == 0);
     deposit = registry.db().getUIntValue(registry.depositKey());
@@ -85,10 +86,10 @@ contract RegistryEntry is ApproveAndCallFallBack {
     address _challenger,
     bytes _challengeMetaHash
   )
-    public
-    notEmergency
+  public
+  notEmergency
   {
-    require (_challenger != 0x0);
+    require(_challenger != 0x0);
     require(isChallengeable());
     require(registryToken.transferFrom(_challenger, address(this), deposit));
 
@@ -97,10 +98,10 @@ contract RegistryEntry is ApproveAndCallFallBack {
     uint commitPeriodEnd = now.add(commitDuration);
     uint revealPeriodEnd = commitPeriodEnd.add(revealDuration);
     uint rewardPool = ((100 - registry.db()
-                        .getUIntValue(
-                          registry.challengeDispensationKey()
-                        )
-                       ).mul(deposit)) / 100;
+    .getUIntValue(
+      registry.challengeDispensationKey()
+    )
+    ).mul(deposit)) / 100;
     uint voteQuorum = registry.db().getUIntValue(registry.voteQuorumKey());
 
     address challenge = challengeFactory.createChallenge(
@@ -159,8 +160,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
     uint _amount,
     bytes32 _secretHash
   )
-    internal
-    notEmergency
+  internal
+  notEmergency
   {
     require(registryToken.transferFrom(_voter, this, _amount));
     Challenge challenge = getChallenge(_challengeIndex);
@@ -194,8 +195,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
     Challenge.VoteOption _voteOption,
     string _salt
   )
-    internal
-    notEmergency
+  internal
+  notEmergency
   {
     address _voter = msg.sender;
 
@@ -208,7 +209,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
       version,
       _challengeIndex,
       _voter,
-      uint(_voteOption)
+      uint(_voteOption),
+      amount
     );
   }
 
@@ -226,83 +228,37 @@ contract RegistryEntry is ApproveAndCallFallBack {
     _revealVoteForChallenge(currentChallengeIndex(), _voteOption, _salt);
   }
 
-  /**
-   * @dev Refunds vote deposit after reveal period
-   * Can be called by anybody, to claim voter's reward to him
-   * Can't be called if vote was revealed
-   * Can't be called twice for the same vote
-   * @param _voter Address of a voter
-   */
-  function _reclaimVoteAmountForChallenge(uint _challengeIndex, address _voter)
-    internal
-    notEmergency {
-    Challenge challenge = getChallenge(_challengeIndex);
-    uint amount = challenge.reclaimVoteAmount(_voter);
-    require(registryToken.transfer(_voter, amount));
-    registry.fireVoteAmountClaimedEvent(version, _challengeIndex, _voter);
-  }
-
-  function reclaimVoteAmountForChallenge(uint _challengeIndex, address _voter) external {
-    _reclaimVoteAmountForChallenge(_challengeIndex, _voter);
-  }
-
-  function reclaimVoteAmount(address _voter) external {
-    _reclaimVoteAmountForChallenge(currentChallengeIndex(), _voter);
-  }
-
-  /**
-   * @dev Claims vote reward after reveal period
-   * Voter has reward only if voted for winning option
-   * Voter has reward only when revealed the vote
-   * Can be called by anybody, to claim voter's reward to him
-   * @param _voter Address of a voter
-   */
-  function _claimVoteRewardForChallenge(uint _challengeIndex, address _voter)
-    internal
-    notEmergency
-  {
-    /* if (_voter == 0x0) { */
-    /*   _voter = msg.sender; */
-    /* } */
-    Challenge challenge = getChallenge(_challengeIndex);
-    uint reward = challenge.claimVoteReward(_voter);
-    require(registryToken.transfer(_voter, reward));
-    registry.fireVoteRewardClaimedEvent(version, _challengeIndex, _voter, reward);
-  }
-
-  function claimVoteRewardForChallenge(uint _challengeIndex, address _voter) external {
-    _claimVoteRewardForChallenge(_challengeIndex, _voter);
-  }
-
-  function claimVoteReward(address _voter) external {
-    _claimVoteRewardForChallenge(currentChallengeIndex(), _voter);
-  }
-
-  /**
-   * @dev Claims challenger's reward after reveal period
-   * Challenger has reward only if winning option is Exclude
-   * Can be called by anybody, to claim challenger's reward to him/her
-   */
-  function _claimChallengeRewardForChallenge(uint _challengeIndex)
+  function _claimRewardForChallenge(uint _challengeIndex, address _user)
     internal
     notEmergency
   {
     Challenge challenge = getChallenge(_challengeIndex);
-    require(registryToken.transfer(challenge.challenger(), challenge.challengeReward(deposit)));
-    registry.fireChallengeRewardClaimedEvent(
-      version,
-      _challengeIndex,
-      challenge.challenger(),
-      challenge.challengeReward(deposit)
-    );
+
+    uint challengeReward = challenge.safeClaimChallengeReward(_user, deposit);
+    if (challengeReward > 0) {
+      require(registryToken.transfer(challenge.challenger(), challengeReward));
+      registry.fireChallengeRewardClaimedEvent(version, _challengeIndex, challenge.challenger(), challengeReward);
+    }
+
+    uint voteReward = challenge.safeClaimVoteReward(_user);
+    if (voteReward > 0) {
+      require(registryToken.transfer(_user, voteReward));
+      registry.fireVoteRewardClaimedEvent(version, _challengeIndex, _user, voteReward);
+    } else {
+      uint reclaimableVotes = challenge.safeReclaimVotes(_user);
+      if (reclaimableVotes > 0) {
+        require(registryToken.transfer(_user, reclaimableVotes));
+        registry.fireVotesReclaimedEvent(version, _challengeIndex, _user, reclaimableVotes);
+      }
+    }
   }
 
-  function claimChallengeRewardForChallenge(uint _challengeIndex) external {
-    _claimChallengeRewardForChallenge(_challengeIndex);
+  function claimRewardForChallenge(uint _challengeIndex, address  _user) external {
+    _claimRewardForChallenge(_challengeIndex, _user);
   }
 
-  function claimChallengeReward() external {
-    _claimChallengeRewardForChallenge(currentChallengeIndex());
+  function claimReward(address _user) external {
+    _claimRewardForChallenge(currentChallengeIndex(), _user);
   }
 
   /**
@@ -320,7 +276,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
     address _token,
     bytes _data
   )
-    public
+  public
   {
     _from;
     _amount;

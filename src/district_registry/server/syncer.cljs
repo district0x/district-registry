@@ -159,13 +159,13 @@
                         :vote/claimed-reward-on timestamp}))))
 
 
-(defn vote-amount-claimed-event [_ {:keys [:args]}]
+(defn votes-reclaimed-event [_ {:keys [:args]}]
   (try-catch
     (let [{:keys [:registry-entry :index :timestamp :version :voter]} args]
       (db/update-vote! {:reg-entry/address registry-entry
                         :vote/voter voter
                         :challenge/index (bn/number index)
-                        :vote/reclaimed-amount-on timestamp}))))
+                        :vote/reclaimed-votes-on timestamp}))))
 
 
 (defn challenge-reward-claimed-event [_ {:keys [:args]}]
@@ -235,7 +235,7 @@
            :district-registry/vote-committed-event vote-committed-event
            :district-registry/vote-revealed-event vote-revealed-event
            :district-registry/vote-reward-claimed-event vote-reward-claimed-event
-           :district-registry/vote-amount-claimed-event vote-amount-claimed-event
+           :district-registry/votes-reclaimed-event votes-reclaimed-event
            :district-registry/challenge-reward-claimed-event challenge-reward-claimed-event
            :district-registry/stake-changed-event stake-changed-event}
 

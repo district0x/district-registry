@@ -20,7 +20,6 @@
    :web3 {:url "http://localhost:8549"}
    :web3-tx {:disable-loading-recommended-gas-prices? true}
    :web3-tx-log {:disable-using-localstorage? true
-                 :open-on-tx-hash? true
                  :tx-costs-currencies [:USD]
                  :etherscan-url "https://ropsten.etherscan.io"}
    :graphql {:schema graphql-schema
@@ -41,7 +40,6 @@
    :web3-balances {:contracts (select-keys smart-contracts-qa/smart-contracts [:DNT])}
    :web3 {:url "https://ropsten.district0x.io"}
    :web3-tx-log {:disable-using-localstorage? false
-                 :open-on-tx-hash? true
                  :tx-costs-currencies [:USD]
                  :etherscan-url "https://ropsten.etherscan.io"}
    :graphql {:schema graphql-schema

@@ -114,46 +114,23 @@
 
 
 (re-frame/reg-event-fx
-  ::claim-vote-reward
+  ::claim-reward
   interceptors
-  (fn [{:keys [:db]} [{:keys [:reg-entry/address :from]}]]
+  (fn [{:keys [:db]} [{:keys [:reg-entry/address :challenge/index]}]]
     (let [active-account (account-queries/active-account db)]
       {:dispatch [::tx-events/send-tx {:instance (contract-queries/instance db :district address)
-                                       :fn :claim-vote-reward
-                                       :args [from]
+                                       :fn :claim-reward-for-challenge
+                                       :args [index active-account]
                                        :tx-opts {:from active-account
                                                  :gas 6000000}
-                                       :tx-id {}
-                                       :on-tx-success-n [[::logging/success [::claim-vote-reward]]
-                                                         [::notification-events/show (gstring/format "Succesfully claimed reward from %s" from)]
-                                                         [::claim-vote-reward-success]]
-                                       :on-tx-hash-error [::logging/error [::claim-vote-reward]]
-                                       :on-tx-error [::logging/error [::claim-vote-reward]]}]})))
+                                       :tx-id {:claim-reward {:reg-entry/address address :challenge/index index}}
+                                       :on-tx-success-n [[::logging/success [::claim-reward]]
+                                                         [::notification-events/show "Succesfully claimed rewards"]
+                                                         [::claim-reward-success]]
+                                       :on-tx-hash-error [::logging/error [::claim-reward]]
+                                       :on-tx-error [::logging/error [::claim-reward]]}]})))
 
 
 (re-frame/reg-event-fx
-  ::claim-vote-reward-success
-  (constantly nil))
-
-
-(re-frame/reg-event-fx
-  ::reclaim-vote-amount
-  interceptors
-  (fn [{:keys [:db]} [{:keys [:send-tx/id :reg-entry/address] :as args}]]
-    (let [active-account (account-queries/active-account db)]
-      {:dispatch [::tx-events/send-tx {:instance (contract-queries/instance db :district address)
-                                       :fn :reclaim-vote-amount
-                                       :args [active-account]
-                                       :tx-opts {:from active-account
-                                                 :gas 6000000}
-                                       :tx-id {}
-                                       :on-tx-success-n [[::logging/success [::reclaim-vote-amount]]
-                                                         [::notification-events/show "Succesfully reclaimed vote amount"]
-                                                         [::reclaim-vote-amount-success]]
-                                       :on-tx-hash-error [::logging/error [::reclaim-vote-amount]]
-                                       :on-tx-error [::logging/error [::reclaim-vote-amount]]}]})))
-
-
-(re-frame/reg-event-fx
-  ::reclaim-vote-amount-success
+  ::claim-reward-success
   (constantly nil))

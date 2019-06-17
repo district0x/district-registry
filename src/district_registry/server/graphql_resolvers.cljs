@@ -210,7 +210,7 @@
 (defn vote->option-resolver [{:keys [:vote/option] :as vote}]
   (cond
     (= 1 option) (enum :vote-option/include)
-    (= 0 option) (enum :vote-option/exclude)
+    (= 2 option) (enum :vote-option/exclude)
     :else (enum :vote-option/neither)))
 
 
@@ -218,24 +218,32 @@
   (enum (reg-entry-status (server-utils/now-in-seconds) reg-entry)))
 
 
-(defn vote->reward-resolver [{:keys [:reg-entry/address :challenge/reward-pool :vote/option] :as vote}]
+(defn vote->reward-resolver [{:keys [:reg-entry/address :challenge/index :vote/option] :as vote}]
   (log/debug "vote->reward-resolver args" vote)
   (try-catch-throw
     (let [now (server-utils/now-in-seconds)
           status (reg-entry-status now vote)
-          {:keys [:votes/include :votes/exclude] :as sql-query}
-          (db/get {:select [[{:select [:%count.*]
-                              :from [:votes]
+          {:keys [:votes/include :votes/exclude :challenge/reward-pool] :as sql-query}
+          (db/get {:select [[{:select [:challenge/reward-pool]
+                              :from [:challenges]
                               :where [:and
-                                      [:= address :votes.reg-entry/address]
-                                      [:= 1 :votes.vote/option]]}
-                             :votes/exclude]
+                                      [:= address :challenges.reg-entry/address]
+                                      [:= index :challenges.challenge/index]]}
+                             :challenge/reward-pool]
                             [{:select [:%count.*]
                               :from [:votes]
                               :where [:and
                                       [:= address :votes.reg-entry/address]
+                                      [:= index :votes.challenge/index]
+                                      [:= 1 :votes.vote/option]]}
+                             :votes/include]
+                            [{:select [:%count.*]
+                              :from [:votes]
+                              :where [:and
+                                      [:= address :votes.reg-entry/address]
+                                      [:= index :votes.challenge/index]
                                       [:= 2 :votes.vote/option]]}
-                             :votes/include]]})]
+                             :votes/exclude]]})]
       (log/debug "vote->reward-resolver query" sql-query)
       (cond
         (and (= :reg-entry.status/whitelisted status)
@@ -243,7 +251,7 @@
         (/ reward-pool include)
 
         (and (= :reg-entry.status/blacklisted status)
-             (= option 0))
+             (= option 2))
         (/ reward-pool exclude)
 
         :else nil))))

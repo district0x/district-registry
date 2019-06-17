@@ -10,7 +10,7 @@
    :district-registry/challenge-created-event [:district-registry-fwd :ChallengeCreatedEvent {} {:from-block 0 :to-block "latest"}]
    :district-registry/vote-committed-event [:district-registry-fwd :VoteCommittedEvent {} {:from-block 0 :to-block "latest"}]
    :district-registry/vote-revealed-event [:district-registry-fwd :VoteRevealedEvent {} {:from-block 0 :to-block "latest"}]
-   :district-registry/vote-amount-claimed-event [:district-registry-fwd :VoteAmountClaimedEvent {} {:from-block 0 :to-block "latest"}]
+   :district-registry/votes-reclaimed-event [:district-registry-fwd :VotesReclaimedEvent {} {:from-block 0 :to-block "latest"}]
    :district-registry/vote-reward-claimed-event [:district-registry-fwd :VoteRewardClaimedEvent {} {:from-block 0 :to-block "latest"}]
    :district-registry/challenge-reward-claimed-event [:district-registry-fwd :ChallengeRewardClaimedEvent {} {:from-block 0 :to-block "latest"}]
    :district-registry/stake-changed-event [:district-registry-fwd :DistrictStakeChangedEvent {} {:from-block 0 :to-block "latest"}]})

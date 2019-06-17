@@ -34,9 +34,10 @@
        {:token-code :DNT
         :contract :DNT
         :locale "en-US"}]]
-     [:div.select-menu
-      [:div.select-choice.cta-btn
-       [:div.select-text [active-account]]]]]]])
+     [nav/a {:route [:route/my-activity]}
+      [:div.select-menu
+       [:div.select-choice.cta-btn
+        [:div.select-text [active-account]]]]]]]])
 
 (defn footer []
   [:footer#globalFooter
@@ -87,6 +88,7 @@
                    :route/detail "page-details"
                    :route/home "page-registry"
                    :route/submit "page-submit"
+                   :route/my-activity "page-my-activity"
                    :route/not-found "not-found")}
        [header (:name @active-page)]
        (into [:div#page-content]

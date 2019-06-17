@@ -20,9 +20,9 @@ contract Registry is DSAuth {
   event ChallengeRewardClaimedEvent(address registryEntry, uint version, uint index, address challenger, uint amount);
   event DistrictConstructedEvent(address registryEntry, uint version, address creator, bytes metaHash, uint deposit, uint challengePeriodEnd, uint32 dntWeight);
   event DistrictStakeChangedEvent(address registryEntry, uint version, uint dntStaked, uint totalSupply, address staker, uint stakerDntStaked, uint stakerTokens);
-  event VoteAmountClaimedEvent(address registryEntry, uint version, uint index, address voter);
+  event VotesReclaimedEvent(address registryEntry, uint version, uint index, address voter, uint amount);
   event VoteCommittedEvent(address registryEntry, uint version, uint index, address voter, uint amount);
-  event VoteRevealedEvent(address registryEntry, uint version, uint index, address voter, uint option);
+  event VoteRevealedEvent(address registryEntry, uint version, uint index, address voter, uint option, uint amount);
   event VoteRewardClaimedEvent(address registryEntry, uint version, uint index, address voter, uint amount);
 
   bytes32 public constant challengeDispensationKey = keccak256("challengeDispensation");
@@ -180,18 +180,18 @@ contract Registry is DSAuth {
     emit VoteCommittedEvent(msg.sender, version, index, voter, amount);
   }
 
-  function fireVoteRevealedEvent(uint version, uint index, address voter, uint option)
+  function fireVoteRevealedEvent(uint version, uint index, address voter, uint option, uint amount)
     public
     onlyRegistryEntry
   {
-    emit VoteRevealedEvent(msg.sender, version, index, voter, option);
+    emit VoteRevealedEvent(msg.sender, version, index, voter, option, amount);
   }
 
-  function fireVoteAmountClaimedEvent(uint version, uint index, address voter)
+  function fireVotesReclaimedEvent(uint version, uint index, address voter, uint amount)
     public
     onlyRegistryEntry
   {
-    emit VoteAmountClaimedEvent(msg.sender, version, index, voter);
+    emit VotesReclaimedEvent(msg.sender, version, index, voter, amount);
   }
 
   function fireVoteRewardClaimedEvent(uint version, uint index, address voter, uint amount)

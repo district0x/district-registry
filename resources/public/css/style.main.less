@@ -356,7 +356,7 @@ form {
     color: @bcblue;
     width: 100%;
     height: 38px;
-    padding: 11px 10px 12px 20px;
+    padding: 10px 10px 12px 20px;
     text-align: left;
     overflow: visible;
     position: relative;
@@ -1089,10 +1089,28 @@ form {
     }
   }
 
+  .donut-chart {
+    margin-top: 20px;
+    margin-right: 40px;
+  }
+
+  form.voting {
+    .remaining-time {
+      min-width: 300px;
+      display: block;
+    }
+  }
+
   form.challenge {
     textarea {
       height: 120px;
     }
+  }
+}
+
+#page-my-activity {
+  .box-wrap {
+    padding-top: 115px;
   }
 }
 
@@ -1162,7 +1180,7 @@ form {
     }
   }
 
-  #page-details .box-wrap {
+  #page-details .box-wrap, #page-my-activity .box-wrap {
     padding-top: 30px;
     &.overview {
       padding-top: 75px;
@@ -1378,6 +1396,11 @@ form {
       }
     }
   }
+  #page-my-activity {
+    .box-wrap {
+      padding-top: 30px;
+    }
+  }
 }
 
 /*! - mq: 550 */
@@ -1535,6 +1558,11 @@ form {
     }
     .title-icons {
       margin-bottom: 5px;
+    }
+    .donut-chart {
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 60px;
     }
   }
 }

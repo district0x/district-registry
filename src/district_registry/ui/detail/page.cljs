@@ -5,6 +5,7 @@
     [clojure.pprint :refer [pprint]]
     [clojure.string :as str]
     [district-registry.ui.components.app-layout :refer [app-layout]]
+    [district-registry.ui.components.donut-chart :refer [donut-chart]]
     [district-registry.ui.components.stake :as stake]
     [district-registry.ui.contract.registry-entry :as reg-entry]
     [district-registry.ui.events :as events]
@@ -25,10 +26,10 @@
     [district.ui.web3-tx-id.subs :as tx-id-subs]
     [district.web3-utils :as web3-utils]
     [goog.string :as gstring]
+    [medley.core :as medley]
     [re-frame.core :refer [dispatch subscribe]]
     [reagent.core :as r]
-    [reagent.ratom :as ratom]
-    [medley.core :as medley]))
+    [reagent.ratom :as ratom]))
 
 (def format-dnt (comp format/format-dnt web3-utils/wei->eth-number))
 (def format-date (comp format/format-local-date gql-utils/gql-date->date))
@@ -43,7 +44,8 @@
     :reg-entry/created-on
     :reg-entry/challenge-period-end
     [:reg-entry/challenges
-     [:challenge/challenger
+     [:challenge/index
+      :challenge/challenger
       :challenge/comment
       :challenge/created-on
       :challenge/reward-pool
@@ -60,6 +62,7 @@
         :vote/amount
         :vote/revealed-on
         :vote/claimed-reward-on
+        :vote/reclaimed-votes-on
         :vote/reward]]]]
     :district/meta-hash
     :district/name
@@ -89,6 +92,7 @@
         (if-let [url (-> @gateway :config :ipfs :gateway)]
           [:div.background-image {:style {:background-image (str "url('" (format/ensure-trailing-slash url) image-hash "')")}}
            [:img {:src "/images/district-bg-mask.png"}]])))))
+
 
 (defn info-section [{:keys [:district/name
                             :district/description
@@ -139,6 +143,7 @@
        [district-background background-image-hash]]]
      [:pre.district-description description]]]])
 
+
 (defn stake-section [{:keys [:reg-entry/address :reg-entry/status :district/dnt-weight]}]
   [:div
    [:h2 "Stake"]
@@ -150,6 +155,7 @@
     [:div.row.spaced
      [stake/stake-info address]
      [stake/stake-form address]]]])
+
 
 (defn challenge-section []
   (let [form-data (r/atom {:challenge/comment nil})
@@ -280,8 +286,7 @@
        {:keys [:challenge/comment :challenge/reveal-period-end :challenge/vote] :as challenge}]
     (let [tx-pending? (subscribe [::tx-id-subs/tx-pending? {:reveal-vote {:reg-entry/address address}}])
           remaining-time (format-remaining-time (gql-utils/gql-date->date reveal-period-end))
-          no-vote? (and (:vote/option vote)
-                        (= :vote-option/neither (gql-utils/gql-name->kw (:vote/option vote))))
+          no-vote? (not (pos? (:vote/amount vote)))
           stored-vote @(subscribe [::district-registry-subs/vote address])]
       [:div
        [:h2 "Reveal"]
@@ -311,8 +316,8 @@
             :else "Reveal My Vote")]]]])))
 
 (defn- vote-reward-line [reward]
-  (when reward
-   [:span "Your vote reward: " (format-dnt reward) [:br]]))
+  (when (print.foo/look reward)
+    [:span "Your vote reward: " [:b (format-dnt reward)] [:br]]))
 
 
 (defn- calculate-challenge-reward [deposit reward-pool]
@@ -329,9 +334,40 @@
     [:span "Your total reward: " [:b (format-dnt reward)] [:br]]))
 
 
+(defn claim-reward-button [{:keys [:reg-entry/address :challenge/index :vote/revealed-on :vote/reclaimed-votes-on :vote/amount] :as args}]
+  (let [voted? (pos? amount)
+        revealed? (boolean revealed-on)
+        votes-reclaimed? (boolean reclaimed-votes-on)
+        reward-claimed? (boolean (or (:challenge/claimed-reward-on args)
+                                     (:vote/claimed-reward-on args)))
+        has-reward-to-claim? (and (or (pos? (:challenge/reward args))
+                                      (pos? (:vote/reward args)))
+                                  (not reward-claimed?))
+        has-votes-to-reclaim? (and voted?
+                                   (not revealed?)
+                                   (not votes-reclaimed?))]
+    [tx-button
+     {:class "cta-btn"
+      :disabled (and (not has-reward-to-claim?)
+                     (not has-votes-to-reclaim?))
+      :pending? @(subscribe [::tx-id-subs/tx-pending? {:claim-reward {:reg-entry/address address :challenge/index index}}])
+      :pending-text "Claiming..."
+      :on-click (fn [e]
+                  (js-invoke e "preventDefault")
+                  (dispatch [::reg-entry/claim-reward {:reg-entry/address address :challenge/index index}]))}
+     (cond
+       has-reward-to-claim? "Claim Reward"
+       has-votes-to-reclaim? "Reclaim Votes"
+       reward-claimed? "Reward Claimed"
+       votes-reclaimed? "Votes Reclaimed"
+       voted? "You have no reward"
+       :else "You haven't voted")]))
+
+
 (defn vote-results-section []
-  (fn [{:keys [:reg-entry/deposit]}
-       {:keys [:challenge/challenger
+  (fn [{:keys [:reg-entry/address :reg-entry/deposit]}
+       {:keys [:challenge/index
+               :challenge/challenger
                :challenge/votes-include
                :challenge/votes-exclude
                :challenge/votes-total
@@ -340,41 +376,63 @@
                :challenge/claimed-reward-on
                :challenge/reveal-period-end
                :challenge/reward-pool] :as challenge}]
-    (let [{:keys [:vote/option :vote/amount :vote/reward]} vote
+    (let [{:keys [:vote/option :vote/amount :vote/reward :vote/claimed-reward-on :vote/reclaimed-votes-on :vote/revealed-on]} vote
           user-vote-option (gql-utils/gql-name->kw option)
           winning-vote-option (gql-utils/gql-name->kw winning-vote-option)
           active-account @(subscribe [::account-subs/active-account])
           challenge-reward (when (and (= challenger active-account)
                                       (= winning-vote-option :vote-option/exclude))
                              (calculate-challenge-reward deposit reward-pool))]
-      #_ (print.foo/look vote)
       [:div
        [:h2 "Vote Results"]
        [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
        [challenger-comment challenge]
        [:div.row.spaced
-        [:p
-         [:span "Voting finished: " [:b (format-date reveal-period-end)]] [:br]
-         [:span "Voted for inclusion: " [:b (format-dnt votes-include)]] [:br]
-         [:span "Voted for blacklisting: " [:b (format-dnt votes-exclude)]] [:br]
-         (when (contains? #{:vote-option/include :vote-option/exclude} user-vote-option)
-           [:span "You voted: "
-            [:b
-             (gstring/format "%s for %s (%s)"
-                             (format-dnt amount)
-                             (case user-vote-option
-                               :vote-option/include "inclusion"
-                               :vote-option/exclude "blacklisting")
-                             (format/format-percentage
-                               amount
-                               (case user-vote-option
-                                 :vote-option/include votes-include
-                                 :vote-option/exclude votes-exclude)))] [:br]])
+        [:div
+         [:p
+          [:span "Voting finished: " [:b (format-date reveal-period-end)]] [:br]
+          [:span "Voted for inclusion: "
+           [:b (gstring/format "%s (%s)"
+                               (format-dnt votes-include)
+                               (format/format-percentage votes-include votes-total))]] [:br]
+          [:span "Voted for blacklisting: "
+           [:b
+            (gstring/format "%s (%s)"
+                            (format-dnt votes-exclude)
+                            (format/format-percentage votes-exclude votes-total))]] [:br]
+          (when (contains? #{:vote-option/include :vote-option/exclude} user-vote-option)
+            [:span "You voted: "
+             [:b
+              (gstring/format "%s for %s (%s)"
+                              (format-dnt amount)
+                              (case user-vote-option
+                                :vote-option/include "inclusion"
+                                :vote-option/exclude "blacklisting")
+                              (format/format-percentage
+                                amount
+                                (case user-vote-option
+                                  :vote-option/include votes-include
+                                  :vote-option/exclude votes-exclude)))] [:br]])
 
-         [challenge-reward-line challenge-reward]
-         [vote-reward-line reward]
-         [total-reward-line (when (and challenge-reward reward)
-                              (+ challenge-reward reward))]]]])))
+          [challenge-reward-line challenge-reward]
+          [vote-reward-line reward]
+          [total-reward-line (when (and challenge-reward reward)
+                               (+ challenge-reward reward))]]
+         [:form
+          [claim-reward-button
+           {:reg-entry/address address
+            :challenge/index index
+            :challenge/reward challenge-reward
+            :challenge/claimed-reward-on (:challenge/claimed-reward-on challenge)
+            :vote/reward reward
+            :vote/claimed-reward-on claimed-reward-on
+            :vote/reclaimed-votes-on reclaimed-votes-on
+            :vote/revealed-on revealed-on
+            :vote/amount amount}]]]
+        [donut-chart {:reg-entry/address address
+                      :challenge/index index
+                      :challenge/votes-include votes-include
+                      :challenge/votes-exclude votes-exclude}]]])))
 
 
 (defn main [props]
@@ -383,8 +441,8 @@
                           {:refetch-on #{::reg-entry/approve-and-create-challenge-success
                                          ::reg-entry/approve-and-commit-vote-success
                                          ::reg-entry/reveal-vote-success
-                                         ::reg-entry/reclaim-vote-amount-success
-                                         ::reg-entry/claim-vote-reward-success}}])
+                                         ::reg-entry/reclaim-votes-success
+                                         ::reg-entry/claim-reward-success}}])
         {:keys [:district]} @query
         {:keys [:reg-entry/challenges :reg-entry/status]} district
         reversed-challenges (reverse challenges)]

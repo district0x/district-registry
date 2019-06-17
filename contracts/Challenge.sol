@@ -21,7 +21,7 @@ contract Challenge is Ownable {
     uint amount;
     uint revealedOn;
     uint claimedRewardOn;
-    uint reclaimedVoteAmountOn;
+    uint reclaimedVotesOn;
   }
 
   address public challenger;
@@ -83,11 +83,11 @@ contract Challenge is Ownable {
     return votes[_voter].claimedRewardOn > 0;
   }
 
-  function isVoteAmountReclaimed(address _voter)
+  function areVotesReclaimed(address _voter)
     public
     constant
     returns (bool) {
-    return votes[_voter].reclaimedVoteAmountOn > 0;
+    return votes[_voter].reclaimedVotesOn > 0;
   }
 
   function isChallengeRewardClaimed()
@@ -204,6 +204,7 @@ contract Challenge is Ownable {
 
   /**
    * @dev Returns token reward amount belonging to a voter for voting for a winning option
+   * Staked DNT is automatically counted as voting for inclusion
    * @param _voter Address of a voter
    *
    * @return Amount of tokens
@@ -330,43 +331,55 @@ contract Challenge is Ownable {
     return amount;
   }
 
-  function reclaimVoteAmount(address _voter)
+  function safeReclaimVotes(address _voter)
     external
     onlyOwner
     returns (uint)
   {
-    require(isVoteRevealPeriodOver());
-    require(!isVoteRevealed(_voter));
-    require(!isVoteAmountReclaimed(_voter));
-    votes[_voter].reclaimedVoteAmountOn = now;
-    uint amount = votes[_voter].amount;
+    uint amount = 0;
+    if (isVoteRevealPeriodOver() &&
+        !isVoteRevealed(_voter) &&
+        !areVotesReclaimed(_voter)
+    ) {
+      votes[_voter].reclaimedVotesOn = now;
+      amount = votes[_voter].amount;
+    }
     return amount;
   }
 
-  function claimVoteReward(address _voter)
+  function safeClaimVoteReward(address _voter)
     external
     onlyOwner
     returns (uint)
   {
-    require(isVoteRevealPeriodOver());
-    require(!isVoteRewardClaimed(_voter));
-    require(isVoteRevealed(_voter));
-    require(votedWinningVoteOption(_voter));
-    uint reward = voteReward(_voter);
-    require(reward > 0);
-    votes[_voter].claimedRewardOn = now;
+    uint reward = 0;
+    if (isVoteRevealPeriodOver() &&
+      !isVoteRewardClaimed(_voter) &&
+      isVoteRevealed(_voter) &&
+      votedWinningVoteOption(_voter)
+    ) {
+      reward = voteReward(_voter);
+      if (reward > 0) {
+        votes[_voter].claimedRewardOn = now;
+      }
+    }
     return reward;
   }
 
-  function claimChallengeReward(uint _challengeIndex)
+  function safeClaimChallengeReward(address _user, uint deposit)
     external
     onlyOwner
+    returns (uint)
   {
-    // TODO Finish up this function
-    _challengeIndex;
-    require(isVoteRevealPeriodOver());
-    require(!isChallengeRewardClaimed());
-    require(!isWinningOptionInclude());
-    claimedRewardOn = now;
+    uint reward = 0;
+    if (isVoteRevealPeriodOver() &&
+      !isChallengeRewardClaimed() &&
+      !isWinningOptionInclude() &&
+      challenger == _user
+    ) {
+      claimedRewardOn = now;
+      reward = challengeReward(deposit);
+    }
+    return reward;
   }
 }

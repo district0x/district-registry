@@ -85,11 +85,11 @@
    [:challenge/index :unsigned :integer not-nil]
    [:vote/voter address not-nil]
    [:vote/option :unsigned :integer not-nil]
-   [:vote/amount :unsigned :BIG :INT default-nil]
+   [:vote/amount :unsigned :BIG :INT default-zero]
    [:vote/created-on :unsigned :integer default-nil]
    [:vote/revealed-on :unsigned :integer default-nil]
    [:vote/claimed-reward-on :unsigned :integer default-nil]
-   [:vote/reclaimed-amount-on :unsigned :integer default-nil]
+   [:vote/reclaimed-votes-on :unsigned :integer default-nil]
    [(sql/call :primary-key :vote/voter :challenge/index :reg-entry/address)]
    [(sql/call :foreign-key :reg-entry/address) (sql/call :references :reg-entries :reg-entry/address)]])
 
