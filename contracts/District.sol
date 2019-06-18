@@ -51,6 +51,7 @@ contract District is RegistryEntry {
   {
     require(msg.sender == creator);
     metaHash = _metaHash;
+    registry.fireDistrictMetaHashChangedEvent(version, _metaHash);
   }
 
   /// @param _owner The address that's balance is being requested

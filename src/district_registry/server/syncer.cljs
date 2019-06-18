@@ -6,7 +6,6 @@
     [cljs-web3.core :as web3]
     [cljs-web3.eth :as web3-eth]
     [district-registry.server.contract.dnt :as dnt]
-    [district-registry.server.contract.registry-entry :as registry-entry]
     [district-registry.server.db :as db]
     [district-registry.server.ipfs :as ipfs]
     [district-registry.server.utils :as server-utils]
@@ -15,7 +14,6 @@
     [district.server.web3 :refer [web3]]
     [district.server.web3-events :refer [register-callback! unregister-callbacks! register-after-past-events-dispatched-callback!]]
     [district.shared.error-handling :refer [try-catch]]
-    [district.web3-utils :as web3-utils]
     [mount.core :as mount :refer [defstate]]
     [print.foo :refer [look] :include-macros true]
     [taoensso.timbre :as log]))
@@ -33,6 +31,10 @@
 (defn- insert-registry-entry! [registry-entry timestamp]
   (db/insert-registry-entry! (merge registry-entry
                                     {:reg-entry/created-on timestamp})))
+
+
+(defn- transform-district-keys [[k v]]
+  [(keyword "district" (name k)) v])
 
 
 (defn district-constructed-event [_ {:keys [:args]}]
@@ -56,11 +58,21 @@
                  (fn [district-meta]
                    (try-catch
                      (->> district-meta
-                       (map (fn [[k v]]
-                              [(keyword "district" (name k))
-                               v]))
+                       (map transform-district-keys)
                        (into {:reg-entry/address registry-entry})
                        (db/update-district!))))))))))
+
+
+(defn district-meta-hash-changed-event [_ {:keys [:args]}]
+  (try-catch
+    (let [{:keys [:registry-entry :meta-hash]} args]
+      (.then (server-utils/get-ipfs-meta @ipfs/ipfs (web3/to-ascii meta-hash))
+             (fn [district-meta]
+               (try-catch
+                 (->> district-meta
+                   (map transform-district-keys)
+                   (into {:reg-entry/address registry-entry})
+                   (db/update-district!))))))))
 
 
 (defn param-change-constructed-event [_ {:keys [:args]}]
@@ -231,6 +243,7 @@
            :param-change-registry/param-change-applied-event param-change-applied-event
            :district-registry-db/eternal-db-event eternal-db-event
            :district-registry/district-constructed-event district-constructed-event
+           :district-registry/district-meta-hash-changed-event district-meta-hash-changed-event
            :district-registry/challenge-created-event challenge-created-event
            :district-registry/vote-committed-event vote-committed-event
            :district-registry/vote-revealed-event vote-revealed-event

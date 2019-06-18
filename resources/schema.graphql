@@ -60,7 +60,7 @@ interface RegEntry {
   regEntry_address: ID
   regEntry_version: Int
   regEntry_status: RegEntryStatus
-  regEntry_creator: ID
+  regEntry_creator: String
   regEntry_deposit: Float
   regEntry_createdOn: Date
   regEntry_challengePeriodEnd: Date
@@ -68,8 +68,9 @@ interface RegEntry {
 }
 
 type Challenge {
+  regEntry_address: ID
   challenge_index: ID
-  challenge_challenger: ID
+  challenge_challenger: String
   challenge_comment: String
   challenge_createdOn: Date
   challenge_rewardPool: Float
@@ -90,6 +91,9 @@ enum VoteOption {
 }
 
 type Vote {
+  regEntry_address: ID
+  challenge_index: ID
+  vote_voter: ID
   vote_secretHash: String
   vote_option: VoteOption
   vote_amount: Float
@@ -103,7 +107,7 @@ type District implements RegEntry {
   regEntry_address: ID
   regEntry_version: Int
   regEntry_status: RegEntryStatus
-  regEntry_creator: ID
+  regEntry_creator: String
   regEntry_deposit: Float
   regEntry_createdOn: Date
   regEntry_challengePeriodEnd: Date
@@ -117,6 +121,7 @@ type District implements RegEntry {
   district_logoImageHash: String
   district_backgroundImageHash: String
   district_dntWeight: Int
+
   district_dntStaked: Float
   district_totalSupply: Float
   district_dntStakedFor(staker: ID): Float
@@ -134,7 +139,7 @@ type ParamChange implements RegEntry {
   regEntry_address: ID
   regEntry_version: Int
   regEntry_status: RegEntryStatus
-  regEntry_creator: ID
+  regEntry_creator: String
   regEntry_deposit: Float
   regEntry_createdOn: Date
   regEntry_challengePeriodEnd: Date

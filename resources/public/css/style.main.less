@@ -998,6 +998,10 @@ form {
       padding: 18px 51px;
     }
   }
+
+  .save-button {
+    margin-top: 30px;
+  }
 }
 
 /*! - PAGE: 3 DETAILS */
@@ -1069,6 +1073,42 @@ form {
     .details-list {
       list-style: none;
       margin-top: 10px;
+      .status {
+        &:after {
+          content: ' ';
+          background-size: 12px;
+          width: 25px;
+          height: 25px;
+          display: inline-block;
+          border-radius: 100%;
+          background-position: center;
+          background-repeat: no-repeat;
+          margin-left: 8px;
+          position: relative;
+          top: 2px;
+        }
+
+        &.in-registry {
+          &:after {
+            background-color: @green;
+            background-image: url("/images/check.svg");
+          }
+        }
+
+        &.blacklisted {
+          &:after {
+            background-color: @blue;
+            background-image: url("/images/cross.svg");
+          }
+        }
+
+        &.challenged {
+          &:after {
+            background-color: @aqua;
+            background-image: url("/images/hour-glass.svg");
+          }
+        }
+      }
     }
     li {
       .fils(~"22px/1.45");
@@ -1106,11 +1146,142 @@ form {
       height: 120px;
     }
   }
+
+  .edit-district-button {
+    text-align: right;
+  }
 }
 
 #page-my-activity {
   .box-wrap {
     padding-top: 115px;
+  }
+
+  .tx-content {
+    margin-top: 60px;
+  }
+
+  .transaction {
+    display: grid;
+    grid-template-areas:
+      "tx-name tx-name"
+      "tx-created-on tx-status"
+      "tx-gas tx-status"
+      "tx-id tx-status"
+      "tx-sender tx-value";
+    text-overflow: ellipsis;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    position: relative;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid fade(@bcblue, 15%);
+    }
+
+    .tx-name {
+      grid-area: tx-name;
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    .tx-created-on {
+      grid-area: tx-created-on;
+      font-size: 14px;
+    }
+
+    .tx-gas {
+      grid-area: tx-gas;
+      font-size: 14px;
+    }
+
+    .tx-value {
+      grid-area: tx-value;
+      text-align: center;
+    }
+
+    .tx-sender {
+      grid-area: tx-sender;
+      font-size: 14px;
+    }
+
+    .tx-id {
+      grid-area: tx-id;
+      font-size: 14px;
+    }
+
+    .tx-status {
+      grid-area: tx-status;
+      text-align: center;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: bold;
+
+      i.icon {
+        width: 40px;
+        height: 40px;
+        line-height: 20px;
+        border-radius: 100%;
+        display: block;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 20px;
+        margin-bottom: 12px;
+      }
+
+      &.success {
+        color: @green;
+        i.icon {
+          background-color: @green;
+          background-image: url("/images/check.svg");
+        }
+      }
+      &.pending {
+        color: @aqua;
+        i.icon {
+          background-color: @aqua;
+          background-image: url("/images/hour-glass.svg");
+        }
+      }
+      &.error {
+        color: @violet;
+        i.icon {
+          background-color: @violet;
+          background-image: url("/images/cross.svg");
+        }
+      }
+    }
+
+    .tx-remove {
+      background-image: url("/images/cross-black.svg");
+      width: 10px;
+      height: 10px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      cursor: pointer;
+      opacity: 0.1;
+    }
+
+    .tx-created-on, .tx-gas, .tx-value, .tx-sender, .tx-sender a, .tx-id, .tx-id a {
+      color: fade(@bcblue, 50%);
+    }
+
+    .tx-name, .tx-id a, .tx-sender a {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: top;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .tx-id a, .tx-sender a {
+      max-width: 500px;
+    }
   }
 }
 
@@ -1319,6 +1490,10 @@ form {
         .flex(column,
               flex-start,
               flex-start);
+        .btn-wrap {
+          margin-left: auto;
+          margin-right: auto;
+        }
       }
       fieldset {
         .flexorder(1,
@@ -1563,6 +1738,29 @@ form {
       margin-left: auto;
       margin-right: auto;
       margin-top: 60px;
+    }
+  }
+
+  #page-my-activity {
+    .tx-log {
+      .tx-content {
+        margin-top: 20px;
+      }
+
+      .tx-id a, .tx-sender a {
+        max-width: 120px;
+      }
+
+      .tx-status {
+        i.icon {
+          transform: scale(0.7);
+          margin-bottom: 0;
+        }
+      }
+
+      .tx-remove {
+        top: -13px;
+      }
     }
   }
 }
@@ -1839,3 +2037,4 @@ input[type=number] {
     margin-bottom: 5px;
   }
 }
+

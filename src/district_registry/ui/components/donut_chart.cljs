@@ -6,7 +6,8 @@
 (defn donut-chart [{:keys [:reg-entry/address :challenge/index :challenge/votes-include :challenge/votes-exclude]}]
   (r/create-class
     {:reagent-render (fn [{:keys [:reg-entry/address :challenge/index :challenge/votes-include :challenge/votes-exclude]}]
-                       [:div.donut-chart {:id (str "donutchart-" address "-" index)}])
+                       [:div.donut-chart {:id (str "donutchart-" address "-" index)
+                                          :key (str "donutchart-" address "-" index)}])
      :component-did-mount (fn []
                             (let [width 150
                                   height 150
@@ -25,7 +26,7 @@
                                         (.value (fn [d] (aget d "value"))))
                                   color-scale (-> js/d3
                                                 .scaleOrdinal
-                                                (.range (clj->js ["#2c398f" "#7cf8fa"])))]
+                                                (.range (clj->js ["#23fdd8" "#2c398f"])))]
                               (-> js/d3
                                 (.select (str "#donutchart-" address "-" index))
                                 (.append "svg")

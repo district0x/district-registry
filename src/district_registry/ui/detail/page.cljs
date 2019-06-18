@@ -29,7 +29,8 @@
     [medley.core :as medley]
     [re-frame.core :refer [dispatch subscribe]]
     [reagent.core :as r]
-    [reagent.ratom :as ratom]))
+    [reagent.ratom :as ratom]
+    [district-registry.ui.components.nav :as nav]))
 
 (def format-dnt (comp format/format-dnt web3-utils/wei->eth-number))
 (def format-date (comp format/format-local-date gql-utils/gql-date->date))
@@ -94,6 +95,15 @@
            [:img {:src "/images/district-bg-mask.png"}]])))))
 
 
+(defn- edit-district-button [{:keys [:reg-entry/address :reg-entry/creator]}]
+  (let [active-account (subscribe [::account-subs/active-account])]
+    (when (and address creator (= @active-account creator))
+      [:form.edit-district-button
+       [nav/a
+        {:route [:route/edit {:address address}]}
+        [:button.cta-btn "Edit"]]])))
+
+
 (defn info-section [{:keys [:district/name
                             :district/description
                             :district/background-image-hash
@@ -103,45 +113,53 @@
                             :district/total-supply
                             :district/dnt-staked
                             :reg-entry/status
-                            :reg-entry/created-on]}]
-  [:div.box-wrap.overview
-   [:div.back-arrow {:on-click #(dispatch [:district.ui.router.events/navigate :route/home])}
-    [:span.icon-arrow-right]]
-   [:div.body-text
-    [:div.container
-     [:div.overview-details
-      [:div.col.txt
-       [:div.title-wrap.spaced
-        [:div.title-txt
-         [:h1 name]
-         [:a {:href url} url]]
-        [:div.title-icons
-         [:div.title-icon
-          [:a {:href github-url :target :_blank}
-           [:img {:src "/images/icon-fc-github@2x.png"}]]]
-         [:div.title-icon                                   ; TODO Aragon link
-          [:img {:src "/images/icon-fc-bird@2x.png"}]]]]
-       [:ul.details-list
-        [:li (str "Status: " (-> status
-                               normalize-status
-                               cljs.core/name
-                               str/capitalize))]
-        [:li (str "Added: " (format-date created-on))]
-        [:li (str "Staked total: " (format-dnt dnt-staked))]
-        [:li (str "Voting tokens issued: " (format-dnt total-supply))]]
-       [:nav.social
-        [:ul
-         [:li
-          [:a {:target "_blank"
-               :href (str "https://www.facebook.com/sharer/sharer.php?u=" js/window.location.href)}
-           [:span.icon-facebook]]]
-         [:li [:a {:target "_blank"
-                   :href (str "https://twitter.com/home?status=" js/window.location.href)}
-               [:span.icon-twitter]]]]]]
-      ;; TODO: We aren't showing the logo image?
-      [:div.col.img
-       [district-background background-image-hash]]]
-     [:pre.district-description description]]]])
+                            :reg-entry/created-on
+                            :reg-entry/address
+                            :reg-entry/creator]}]
+  (let []
+    [:div.box-wrap.overview
+     [:div.back-arrow {:on-click #(dispatch [:district.ui.router.events/navigate :route/home])}
+      [:span.icon-arrow-right]]
+     [:div.body-text
+      [:div.container
+       [:div.overview-details
+        [:div.col.txt
+         [:div.title-wrap.spaced
+          [:div.title-txt
+           [:h1 name]
+           [:a {:href url} url]]
+          [:div.title-icons
+           [:div.title-icon
+            [:a {:href github-url :target :_blank}
+             [:img {:src "/images/icon-fc-github@2x.png"}]]]
+           [:div.title-icon                                 ; TODO Aragon link
+            [:img {:src "/images/icon-fc-bird@2x.png"}]]]]
+         [:ul.details-list
+          (let [status (-> status
+                         normalize-status
+                         cljs.core/name)]
+            [:li.status
+             {:class status}
+             (str "Status: " (str/capitalize status))])
+          [:li (str "Added: " (format-date created-on))]
+          [:li (str "Staked total: " (format-dnt dnt-staked))]
+          [:li (str "Voting tokens issued: " (format-dnt total-supply))]]
+         [:nav.social
+          [:ul
+           [:li
+            [:a {:target "_blank"
+                 :href (str "https://www.facebook.com/sharer/sharer.php?u=" js/window.location.href)}
+             [:span.icon-facebook]]]
+           [:li [:a {:target "_blank"
+                     :href (str "https://twitter.com/home?status=" js/window.location.href)}
+                 [:span.icon-twitter]]]]]]
+        ;; TODO: We aren't showing the logo image?
+        [:div.col.img
+         [district-background background-image-hash]]]
+       [:pre.district-description description]
+       [edit-district-button
+        {:reg-entry/address address
+         :reg-entry/creator creator}]]]]))
 
 
 (defn stake-section [{:keys [:reg-entry/address :reg-entry/status :district/dnt-weight]}]
@@ -161,7 +179,7 @@
   (let [form-data (r/atom {:challenge/comment nil})
         errors (ratom/reaction {:local (when-not (spec/check ::spec/challenge-comment (:challenge/comment @form-data))
                                          {:challenge/comment "Comment shouldn't be empty."})})]
-    (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/deposit]}]
+    (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/deposit :district/name]}]
       (when (= (normalize-status status) :in-registry)
         (let [tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:approve-and-create-challenge {:reg-entry/address address}}])]
           [:div
@@ -184,6 +202,7 @@
                            (js-invoke e "preventDefault")
                            (dispatch [::events/add-challenge
                                       {:reg-entry/address address
+                                       :district/name name
                                        :comment (:challenge/comment @form-data)
                                        :deposit deposit}]))}
               "Challenge"]]]])))))
@@ -197,10 +216,11 @@
            " " minutes " min. " seconds " sec."))))
 
 
-(defn- dispatch-vote [e option address form-data]
+(defn- dispatch-vote [e option address district-name form-data]
   (js-invoke e "preventDefault")
   (dispatch [::reg-entry/approve-and-commit-vote
              {:reg-entry/address address
+              :district/name district-name
               :vote/option option
               :vote/amount (-> form-data :vote/amount parsers/parse-float web3-utils/eth->wei)}]))
 
@@ -226,7 +246,7 @@
   (let [balance-dnt (subscribe [::account-balances-subs/active-account-balance :DNT])
         form-data (r/atom {:vote/amount ""})
         errors (ratom/reaction {:local {}})]
-    (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges]}
+    (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges :district/name]}
          {:keys [:challenge/commit-period-end :challenge/comment] :as challange}]
       (let [tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:approve-and-commit-vote {:reg-entry/address address}}])
             remaining-time (format-remaining-time (gql-utils/gql-date->date commit-period-end))
@@ -250,7 +270,7 @@
                :pending? tx-pending?
                :disabled (vote-button-disabled? @form-data @balance-dnt voted?)
                :pending-text "Voting..."
-               :on-click #(dispatch-vote % :vote-option/include address @form-data)}
+               :on-click #(dispatch-vote % :vote-option/include address name @form-data)}
               (if voted?
                 "Voted"
                 "Vote For")]
@@ -260,7 +280,7 @@
                  :pending? tx-pending?
                  :disabled (vote-button-disabled? @form-data @balance-dnt voted?)
                  :pending-text "Voting..."
-                 :on-click #(dispatch-vote % :vote-option/exclude address @form-data)}
+                 :on-click #(dispatch-vote % :vote-option/exclude address name @form-data)}
                 "Vote Against"])]
             [:fieldset
              [inputs/amount-input
@@ -282,7 +302,7 @@
 
 
 (defn vote-reveal-section []
-  (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges]}
+  (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges :district/name]}
        {:keys [:challenge/comment :challenge/reveal-period-end :challenge/vote] :as challenge}]
     (let [tx-pending? (subscribe [::tx-id-subs/tx-pending? {:reveal-vote {:reg-entry/address address}}])
           remaining-time (format-remaining-time (gql-utils/gql-date->date reveal-period-end))
@@ -308,7 +328,8 @@
            :pending-text "Revealing..."
            :on-click (fn [e]
                        (js-invoke e "preventDefault")
-                       (dispatch [::reg-entry/reveal-vote {:reg-entry/address address}]))}
+                       (dispatch [::reg-entry/reveal-vote {:reg-entry/address address
+                                                           :district/name name}]))}
           (cond
             (:vote/revealed-on vote) "Revealed"
             no-vote? "You haven't voted"
@@ -316,7 +337,7 @@
             :else "Reveal My Vote")]]]])))
 
 (defn- vote-reward-line [reward]
-  (when (print.foo/look reward)
+  (when reward
     [:span "Your vote reward: " [:b (format-dnt reward)] [:br]]))
 
 
@@ -354,7 +375,9 @@
       :pending-text "Claiming..."
       :on-click (fn [e]
                   (js-invoke e "preventDefault")
-                  (dispatch [::reg-entry/claim-reward {:reg-entry/address address :challenge/index index}]))}
+                  (dispatch [::reg-entry/claim-reward {:reg-entry/address address
+                                                       :challenge/index index
+                                                       :district/name (:district/name args)}]))}
      (cond
        has-reward-to-claim? "Claim Reward"
        has-votes-to-reclaim? "Reclaim Votes"
@@ -365,7 +388,7 @@
 
 
 (defn vote-results-section []
-  (fn [{:keys [:reg-entry/address :reg-entry/deposit]}
+  (fn [{:keys [:reg-entry/address :reg-entry/deposit :district/name]}
        {:keys [:challenge/index
                :challenge/challenger
                :challenge/votes-include
@@ -421,6 +444,7 @@
          [:form
           [claim-reward-button
            {:reg-entry/address address
+            :district/name name
             :challenge/index index
             :challenge/reward challenge-reward
             :challenge/claimed-reward-on (:challenge/claimed-reward-on challenge)
@@ -429,10 +453,12 @@
             :vote/reclaimed-votes-on reclaimed-votes-on
             :vote/revealed-on revealed-on
             :vote/amount amount}]]]
-        [donut-chart {:reg-entry/address address
-                      :challenge/index index
-                      :challenge/votes-include votes-include
-                      :challenge/votes-exclude votes-exclude}]]])))
+        (when (or (pos? votes-include)
+                  (pos? votes-exclude))
+          [donut-chart {:reg-entry/address address
+                        :challenge/index index
+                        :challenge/votes-include votes-include
+                        :challenge/votes-exclude votes-exclude}])]])))
 
 
 (defn main [props]
@@ -443,11 +469,11 @@
                                          ::reg-entry/reveal-vote-success
                                          ::reg-entry/reclaim-votes-success
                                          ::reg-entry/claim-reward-success}}])
-        {:keys [:district]} @query
+        {:keys [:district :graphql/loading?]} @query
         {:keys [:reg-entry/challenges :reg-entry/status]} district
         reversed-challenges (reverse challenges)]
     (cond
-      (nil? district) nil
+      (or (nil? district) loading?) nil
       (-> district :reg-entry/address nil?) [not-found/not-found]
       :else [:section#main
              [:div.container

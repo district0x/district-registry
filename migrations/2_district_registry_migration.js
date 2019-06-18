@@ -178,7 +178,7 @@ async function deploy_DistrictRegistryForwarder(deployer, opts) {
 async function deploy_ParamChangeRegistry(deployer, opts) {
   console.log("Deploying ParamChangeRegistry");
 
-  await deployer.deploy(ParamChangeRegistry, Object.assign({}, opts, {gas: 3.6e6}));
+  await deployer.deploy(ParamChangeRegistry, Object.assign({}, opts, {gas: 3.8e6}));
   const paramChangeRegistry = await ParamChangeRegistry.deployed();
 
   assignContract(paramChangeRegistry, "ParamChangeRegistry", "param-change-registry");

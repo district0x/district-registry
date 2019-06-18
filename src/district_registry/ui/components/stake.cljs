@@ -24,6 +24,7 @@
                              :reg-entry/status
                              :district/total-supply
                              :district/dnt-staked
+                             :district/name
                              [:district/dnt-staked-for {:staker @active-account}]
                              [:district/balance-of {:staker @active-account}]]]]}
                 {:refetch-on #{::district/approve-and-stake-for-success
@@ -35,12 +36,13 @@
         on-change (fn [e]
                     (reset! form-amount (aget e "target" "value")))
         dnt-balance (subscribe [:district.ui.web3-account-balances.subs/active-account-balance :DNT])]
-    (fn [district-address]
-      (let [stake-info @(subscribe-stake-info district-address)
-            stake-tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:approve-and-stake-for {:district district-address}}])
-            unstake-tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:unstake {:district district-address}}])
-            reg-entry-status (-> stake-info :district :reg-entry/status)
-            dnt-staked-for (-> stake-info :district :district/dnt-staked-for)
+    (fn [reg-entry-address]
+      (let [stake-info @(subscribe-stake-info reg-entry-address)
+            stake-tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:approve-and-stake-for {:district reg-entry-address}}])
+            unstake-tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:unstake {:district reg-entry-address}}])
+            district (:district stake-info)
+            reg-entry-status (:reg-entry/status district)
+            dnt-staked-for (:district/dnt-staked-for district)
             parsed-form-amount (parsers/parse-float @form-amount)]
         [:div.box-cta.stake-form
          [:form
@@ -58,10 +60,11 @@
                           :on-click (fn [e]
                                       (js-invoke e "preventDefault")
                                       (dispatch [::district/approve-and-stake-for
-                                                 {:address district-address
-                                                  :dnt (-> @form-amount
-                                                         parsers/parse-float
-                                                         web3-utils/eth->wei)}]))}
+                                                 {:reg-entry/address reg-entry-address
+                                                  :district/name (:district/name district)
+                                                  :amount (-> @form-amount
+                                                            parsers/parse-float
+                                                            web3-utils/eth->wei)}]))}
                "Stake"])
             [tx-button {:class "cta-btn"
                         :disabled (or stake-tx-pending?
@@ -73,10 +76,11 @@
                         :on-click (fn [e]
                                     (js-invoke e "preventDefault")
                                     (dispatch [::district/unstake
-                                               {:address district-address
-                                                :dnt (-> @form-amount
-                                                       parsers/parse-float
-                                                       web3-utils/eth->wei)}]))}
+                                               {:reg-entry/address reg-entry-address
+                                                :district/name (:district/name district)
+                                                :amount (-> @form-amount
+                                                          parsers/parse-float
+                                                          web3-utils/eth->wei)}]))}
              "Unstake"]]
            [:fieldset
             [:input.dnt-input

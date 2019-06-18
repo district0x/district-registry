@@ -1,5 +1,6 @@
 (ns district-registry.ui.core
   (:require
+    [akiroz.re-frame.storage :as storage]
     [cljs.spec.alpha :as s]
     [clojure.string :as str]
     [district-registry.shared.graphql-schema :refer [graphql-schema]]
@@ -7,13 +8,13 @@
     [district-registry.ui.about.page]
     [district-registry.ui.config :as config]
     [district-registry.ui.detail.page]
+    [district-registry.ui.edit.page]
     [district-registry.ui.home.page]
     [district-registry.ui.my-activity.page]
     [district-registry.ui.not-found.page]
     [district-registry.ui.submit.page]
     [district.cljs-utils :as cljs-utils]
     [district.ui.component.router :refer [router]]
-    [district.ui.graphql.events]
     [district.ui.graphql]
     [district.ui.ipfs]
     [district.ui.notification]
@@ -33,6 +34,11 @@
     [mount.core :as mount]
     [print.foo :include-macros true]
     [re-frame.core :as re-frame]))
+
+(storage/reg-co-fx!
+  :district-registry                                        ;; local storage key
+  {:fx :store                                               ;; re-frame fx ID
+   :cofx :store})                                           ;; re-frame cofx ID
 
 (defn dev-setup! []
   (when (:debug? config/config-map)

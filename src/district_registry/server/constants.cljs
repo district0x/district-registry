@@ -7,6 +7,7 @@
    :param-change-registry/param-change-applied-event [:param-change-registry-fwd :ParamChangeAppliedEvent {} {:from-block 0 :to-block "latest"}]
    :district-registry-db/eternal-db-event [:district-registry-db :EternalDbEvent {} {:from-block 0 :to-block "latest"}]
    :district-registry/district-constructed-event [:district-registry-fwd :DistrictConstructedEvent {} {:from-block 0 :to-block "latest"}]
+   :district-registry/district-meta-hash-changed-event [:district-registry-fwd :DistrictMetaHashChangedEvent {} {:from-block 0 :to-block "latest"}]
    :district-registry/challenge-created-event [:district-registry-fwd :ChallengeCreatedEvent {} {:from-block 0 :to-block "latest"}]
    :district-registry/vote-committed-event [:district-registry-fwd :VoteCommittedEvent {} {:from-block 0 :to-block "latest"}]
    :district-registry/vote-revealed-event [:district-registry-fwd :VoteRevealedEvent {} {:from-block 0 :to-block "latest"}]

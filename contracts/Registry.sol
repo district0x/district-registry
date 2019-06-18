@@ -20,6 +20,7 @@ contract Registry is DSAuth {
   event ChallengeRewardClaimedEvent(address registryEntry, uint version, uint index, address challenger, uint amount);
   event DistrictConstructedEvent(address registryEntry, uint version, address creator, bytes metaHash, uint deposit, uint challengePeriodEnd, uint32 dntWeight);
   event DistrictStakeChangedEvent(address registryEntry, uint version, uint dntStaked, uint totalSupply, address staker, uint stakerDntStaked, uint stakerTokens);
+  event DistrictMetaHashChangedEvent(address registryEntry, uint version, bytes metaHash);
   event VotesReclaimedEvent(address registryEntry, uint version, uint index, address voter, uint amount);
   event VoteCommittedEvent(address registryEntry, uint version, uint index, address voter, uint amount);
   event VoteRevealedEvent(address registryEntry, uint version, uint index, address voter, uint option, uint amount);
@@ -156,6 +157,13 @@ contract Registry is DSAuth {
     onlyRegistryEntry
   {
     emit DistrictStakeChangedEvent(msg.sender, version, dntStaked, totalSupply, staker, stakerDntStaked, stakerTokens);
+  }
+
+  function fireDistrictMetaHashChangedEvent(uint version, bytes metahash)
+    public
+    onlyRegistryEntry
+  {
+    emit DistrictMetaHashChangedEvent(msg.sender, version, metahash);
   }
 
   function fireChallengeCreatedEvent(

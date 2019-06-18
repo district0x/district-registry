@@ -15,7 +15,7 @@
 (re-frame/reg-event-fx
   ::approve-and-create-district
   interceptors
-  (fn [{:keys [:db]} [{:keys [:deposit :dnt-weight :tx-id]} {:keys [Name Hash Size]}]]
+  (fn [{:keys [:db]} [{:keys [:name :deposit :dnt-weight :tx-id]} {:keys [Name Hash Size]}]]
     (let [active-account (account-queries/active-account db)
           extra-data (web3-eth/contract-get-data (contract-queries/instance db :district-factory)
                        :create-district
@@ -25,12 +25,10 @@
       {:dispatch [::tx-events/send-tx
                   {:instance (contract-queries/instance db :DNT)
                    :fn :approve-and-call
-                   :args [(contract-queries/contract-address db :district-factory)
-                          deposit
-                          extra-data]
-                   :tx-opts {:from active-account
-                             :gas 7000000}
+                   :args [(contract-queries/contract-address db :district-factory) deposit extra-data]
+                   :tx-opts {:from active-account}
                    :tx-id {:approve-and-create-district tx-id}
+                   :tx-log {:name (str "Submit " name) :related-href {:name :route/home}}
                    :on-tx-success [::approve-and-create-district-success]
                    :on-tx-hash-error [::logging/error [::create-district]]
                    :on-tx-error [::logging/error [::create-district]]}]})))

@@ -88,6 +88,7 @@
                    :route/detail "page-details"
                    :route/home "page-registry"
                    :route/submit "page-submit"
+                   :route/edit "page-submit"
                    :route/my-activity "page-my-activity"
                    :route/not-found "not-found")}
        [header (:name @active-page)]

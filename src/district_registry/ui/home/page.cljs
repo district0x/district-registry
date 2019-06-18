@@ -27,7 +27,7 @@
                 "challenged" [:reg-entry.status/commit-period
                               :reg-entry.status/reveal-period]
                 "blacklisted" [:reg-entry.status/blacklisted])
-    :first 100}
+    :first 1000}
    [:total-count
     :end-cursor
     :has-next-page
