@@ -1,11 +1,11 @@
 pragma solidity ^0.4.24;
 
 import "./Challenge.sol";
-import "./ChallengeFactory.sol";
 import "./Registry.sol";
 import "./math/SafeMath.sol";
 import "minimetoken/contracts/MiniMeToken.sol";
 import "./utils/AddressUtils.sol";
+import "./proxy/Forwarder.sol";
 
 /**
  * @title Contract created with each submission to a TCR
@@ -22,7 +22,6 @@ contract RegistryEntry is ApproveAndCallFallBack {
 
   Registry internal constant registry = Registry(0xfEEDFEEDfeEDFEedFEEdFEEDFeEdfEEdFeEdFEEd);
   MiniMeToken internal constant registryToken = MiniMeToken(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD);
-  ChallengeFactory internal constant challengeFactory = ChallengeFactory(0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC);
 
   enum Status {ChallengePeriod, CommitPeriod, RevealPeriod, Blacklisted, Whitelisted}
 
@@ -104,7 +103,10 @@ contract RegistryEntry is ApproveAndCallFallBack {
     ).mul(deposit)) / 100;
     uint voteQuorum = registry.db().getUIntValue(registry.voteQuorumKey());
 
-    address challenge = challengeFactory.createChallenge(
+    Challenge challenge = Challenge(new Forwarder());
+
+    challenge.construct(
+      msg.sender,
       _challenger,
       _challengeMetaHash,
       challengePeriodEnd,
@@ -114,7 +116,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
       voteQuorum
     );
 
-    challenges.push(challenge);
+    challenges.push(address(challenge));
 
     registry.fireChallengeCreatedEvent(
       version,

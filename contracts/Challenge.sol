@@ -40,7 +40,7 @@ contract Challenge is Ownable {
   int stakeDelta;
   mapping(address => int) stakeDeltas;
 
-  constructor(
+  function construct(
     address _owner,
     address _challenger,
     bytes _metaHash,
@@ -51,6 +51,8 @@ contract Challenge is Ownable {
     uint _voteQuorum
   )
     public {
+    require(owner == address(0));
+    require(_owner != address(0));
     owner = _owner;
     challenger = _challenger;
     metaHash = _metaHash;

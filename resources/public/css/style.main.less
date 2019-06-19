@@ -510,9 +510,12 @@ form {
   }
   .cta-btn {
     font-size: 13px;
-    &.hasIcon {
+    &.has-icon {
       padding: 10px 20px;
       margin-top: 5px;
+      [class^="icon-"], [class*=" icon-"] {
+        margin-left: 7px;
+      }
     }
     .icon {
       font-size: 18px;
@@ -778,7 +781,7 @@ form {
       }
     }
     .cta-btn {
-      width: 156px;
+      width: 166px;
       background-color: #fff;
       color: @blue;
       border: 1px solid @blue;
@@ -1627,18 +1630,18 @@ form {
           margin-left: 0px;
         }
         a:not(.cta-btn) {
-          margin-left: 25px;
+          margin-left: 6px;
           font-size: 12px;
         }
       }
       .cta-btn {
-        width: 110px;
+        width: 122px;
         height: 40px;
         padding: 14px 10px;
         border-radius: 20px 20px 0px 0px;
         border-bottom: none;
         box-shadow: none;
-        font-size: 14px;
+        font-size: 13px;
       }
     }
   }
@@ -2037,4 +2040,3 @@ input[type=number] {
     margin-bottom: 5px;
   }
 }
-

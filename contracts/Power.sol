@@ -9,27 +9,27 @@ pragma solidity ^0.4.18;
  * and to You under the Apache License, Version 2.0. "
  */
 contract Power {
-  string public version = "0.3";
+  string public version;
 
-  uint256 private constant ONE = 1;
-  uint32 private constant MAX_WEIGHT = 1000000;
-  uint8 private constant MIN_PRECISION = 32;
-  uint8 private constant MAX_PRECISION = 127;
+  uint256 private ONE;
+  uint32 private MAX_WEIGHT;
+  uint8 private MIN_PRECISION;
+  uint8 private MAX_PRECISION;
 
   /**
     The values below depend on MAX_PRECISION. If you choose to change it:
     Apply the same change in file 'PrintIntScalingFactors.py', run it and paste the results below.
   */
-  uint256 private constant FIXED_1 = 0x080000000000000000000000000000000;
-  uint256 private constant FIXED_2 = 0x100000000000000000000000000000000;
-  uint256 private constant MAX_NUM = 0x1ffffffffffffffffffffffffffffffff;
+  uint256 private FIXED_1;
+  uint256 private FIXED_2;
+  uint256 private MAX_NUM;
 
   /**
     The values below depend on MAX_PRECISION. If you choose to change it:
     Apply the same change in file 'PrintLn2ScalingFactors.py', run it and paste the results below.
   */
-  uint256 private constant LN2_MANTISSA = 0x2c5c85fdf473de6af278ece600fcbda;
-  uint8   private constant LN2_EXPONENT = 122;
+  uint256 private LN2_MANTISSA;
+  uint8   private LN2_EXPONENT;
 
   /**
     The values below depend on MIN_PRECISION and MAX_PRECISION. If you choose to change either one of them:
@@ -37,7 +37,19 @@ contract Power {
   */
   uint256[128] private maxExpArray;
 
-  constructor() public {
+  function construct() public {
+    require(ONE == 0);
+    version = "0.3";
+    ONE = 1;
+    MAX_WEIGHT = 1000000;
+    MIN_PRECISION = 32;
+    MAX_PRECISION = 127;
+    FIXED_1 = 0x080000000000000000000000000000000;
+    FIXED_2 = 0x100000000000000000000000000000000;
+    MAX_NUM = 0x1ffffffffffffffffffffffffffffffff;
+    LN2_MANTISSA = 0x2c5c85fdf473de6af278ece600fcbda;
+    LN2_EXPONENT = 122;
+
 //  maxExpArray[  0] = 0x6bffffffffffffffffffffffffffffffff;
 //  maxExpArray[  1] = 0x67ffffffffffffffffffffffffffffffff;
 //  maxExpArray[  2] = 0x637fffffffffffffffffffffffffffffff;
@@ -198,7 +210,7 @@ contract Power {
     - The output      is a value between 0 and floor(ln(2 ^ (256 - MAX_PRECISION) - 1) * 2 ^ MAX_PRECISION)
     This functions assumes that the numerator is larger than or equal to the denominator, because the output would be negative otherwise.
   */
-  function ln(uint256 _numerator, uint256 _denominator) internal pure returns (uint256) {
+  function ln(uint256 _numerator, uint256 _denominator) internal view returns (uint256) {
     assert(_numerator <= MAX_NUM);
 
     uint256 res = 0;
@@ -228,7 +240,7 @@ contract Power {
   /**
     Compute the largest integer smaller than or equal to the binary logarithm of the input.
   */
-  function floorLog2(uint256 _n) internal pure returns (uint8) {
+  function floorLog2(uint256 _n) internal view returns (uint8) {
     uint8 res = 0;
     uint256 n = _n;
 
@@ -284,7 +296,7 @@ contract Power {
       The global "maxExpArray" maps each "precision" to "((maximumExponent + 1) << (MAX_PRECISION - precision)) - 1".
       The maximum permitted value for "x" is therefore given by "maxExpArray[precision] >> (MAX_PRECISION - precision)".
   */
-  function fixedExp(uint256 _x, uint8 _precision) internal pure returns (uint256) {
+  function fixedExp(uint256 _x, uint8 _precision) internal view returns (uint256) {
     uint256 xi = _x;
     uint256 res = 0;
 

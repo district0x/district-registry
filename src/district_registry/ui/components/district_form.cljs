@@ -43,6 +43,8 @@
            {:name "Name Bazaar"
             :url "https://namebazaar.io/"
             :github-url "https://github.com/district0x/name-bazaar"
+            :facebook-url "https://www.facebook.com/district0x/"
+            :twitter-url "https://twitter.com/NameBazaar0x"
             :description "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, masuada non rutrum ut, ornare ac orci. Lorem ipsum dolor sit amet, consectetur adipiscing. Lorem augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non."})))
 
 
@@ -86,10 +88,10 @@
     [:p "Lorem ipsum dolor sit amet, consec tetur adipiscing elit, sed do eiusmod."]]])
 
 
-(defn submit-button [{:keys [:deposit :form-data :errors]}]
+(defn submit-button []
   (let [tx-id (random-uuid)
         tx-pending? (subscribe [::tx-id-subs/tx-pending? {:approve-and-create-district tx-id}])]
-    (fn []
+    (fn [{:keys [:deposit :form-data :errors]}]
       [:div.form-btns
        [:p (-> deposit
              web3-utils/wei->eth-number
@@ -111,21 +113,20 @@
 
 (defn save-button [{:keys [:form-data :errors :reg-entry/address]}]
   (let [tx-pending? (subscribe [::tx-id-subs/tx-pending? {:set-meta-hash {:reg-entry/address address}}])]
-   (fn []
-     [:div.form-btns.save-button
-      [tx-button
-       {:class "cta-btn"
-        :disabled (-> errors empty? not)
-        :pending-text "Saving..."
-        :pending? @tx-pending?
-        :on-click (fn [e]
-                    (js-invoke e "preventDefault")
-                    (when (empty? errors)
-                      (dispatch [::events/add-district-logo-image (merge @form-data
-                                                                         {:edit? true
-                                                                          :reg-entry/address (print.foo/look address)})])))
-        :type "submit"}
-       "Save"]])))
+    [:div.form-btns.save-button
+     [tx-button
+      {:class "cta-btn"
+       :disabled (-> errors empty? not)
+       :pending-text "Saving..."
+       :pending? @tx-pending?
+       :on-click (fn [e]
+                   (js-invoke e "preventDefault")
+                   (when (empty? errors)
+                     (dispatch [::events/add-district-logo-image (merge @form-data
+                                                                        {:edit? true
+                                                                         :reg-entry/address address})])))
+       :type "submit"}
+      "Save"]]))
 
 
 (defn district-form [{:keys [:form-data :edit?]}]
@@ -143,6 +144,8 @@
                     :description
                     :url
                     :github-url
+                    :facebook-url
+                    :twitter-url
                     :logo-file-info
                     :background-file-info]} @form-data
             errors (cond-> []
@@ -152,8 +155,16 @@
                      (empty? github-url) (conj "GitHub URL is required")
                      (and (seq url) (not (spec/check ::spec/url url))) (conj "URL is not valid")
                      (and (seq github-url) (not (re-find #"https?://github.com/.+" github-url))) (conj "GitHub URL is not valid")
+                     (and (seq facebook-url) (not (re-find #"https?://(www\.)?facebook.com/.+" facebook-url))) (conj "Facebook URL is not valid")
+                     (and (seq twitter-url) (not (re-find #"https?://twitter.com/.+" twitter-url))) (conj "Twitter URL is not valid")
                      (and (not edit?) (not logo-file-info)) (conj "A logo file is required")
-                     (and (not edit?) (not background-file-info)) (conj "A background file is required"))]
+                     (and (not edit?) (not background-file-info)) (conj "A background file is required")
+                     (< 15000 (count description)) (conj "District description is too long")
+                     (< 100 (count github-url)) (conj "GitHub URL is too long")
+                     (< 100 (count facebook-url)) (conj "Facebook URL is too long")
+                     (< 100 (count twitter-url)) (conj "Twitter URL is too long")
+                     (< 100 (count url)) (conj "URL is too long")
+                     (< 50 (count name)) (conj "District title is too long"))]
         [:section#main
          [:div.container
           [:div.box-wrap
@@ -178,6 +189,12 @@
                 [text-input {:form-data form-data
                              :placeholder "GitHub URL"
                              :id :github-url}]
+                [text-input {:form-data form-data
+                             :placeholder "Facebook URL"
+                             :id :facebook-url}]
+                [text-input {:form-data form-data
+                             :placeholder "Twitter URL"
+                             :id :twitter-url}]
                 [:div.submit-errors
                  (doall
                    (for [e errors]
@@ -221,5 +238,3 @@
                   {:form-data form-data
                    :deposit deposit
                    :errors errors}]]])]]]]]))))
-
-

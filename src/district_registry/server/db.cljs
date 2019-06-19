@@ -37,6 +37,8 @@
    [:district/description :string]
    [:district/url :string]
    [:district/github-url :string]
+   [:district/facebook-url :string]
+   [:district/twitter-url :string]
    [:district/logo-image-hash :string]
    [:district/background-image-hash :string]
    [:district/dnt-weight :unsigned :integer not-nil]

@@ -28,8 +28,8 @@
                        (account-queries/active-account db)
                        amount)
           tx-log-name (gstring/format "Stake %s into %s"
-                                      (print.foo/look (format/format-dnt (web3-utils/wei->eth-number amount)))
-                                      (print.foo/look name))]
+                                      (format/format-dnt (web3-utils/wei->eth-number amount))
+                                      name)]
       {:dispatch [::tx-events/send-tx
                   {:instance (contract-queries/instance db :DNT)
                    :fn :approve-and-call

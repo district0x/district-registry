@@ -140,7 +140,7 @@
     (let [active-account (account-queries/active-account db)
           tx-log-name (str "Edit " name)]
       {:dispatch [::tx-events/send-tx
-                  {:instance (contract-queries/instance db :district (print.foo/look address))
+                  {:instance (contract-queries/instance db :district address)
                    :fn :set-meta-hash
                    :args [Hash]
                    :tx-opts {:from active-account}

@@ -70,6 +70,8 @@
     :district/description
     :district/url
     :district/github-url
+    :district/facebook-url
+    :district/twitter-url
     :district/logo-image-hash
     :district/background-image-hash
     :district/dnt-weight
@@ -104,12 +106,20 @@
         [:button.cta-btn "Edit"]]])))
 
 
+(defn- prettify-url [url]
+  (-> url
+    (str/replace #"https?://" "")
+    (str/replace #"/$" "")))
+
+
 (defn info-section [{:keys [:district/name
                             :district/description
                             :district/background-image-hash
                             :district/logo-image-hash
                             :district/url
                             :district/github-url
+                            :district/facebook-url
+                            :district/twitter-url
                             :district/total-supply
                             :district/dnt-staked
                             :reg-entry/status
@@ -127,13 +137,7 @@
          [:div.title-wrap.spaced
           [:div.title-txt
            [:h1 name]
-           [:a {:href url} url]]
-          [:div.title-icons
-           [:div.title-icon
-            [:a {:href github-url :target :_blank}
-             [:img {:src "/images/icon-fc-github@2x.png"}]]]
-           [:div.title-icon                                 ; TODO Aragon link
-            [:img {:src "/images/icon-fc-bird@2x.png"}]]]]
+           [:a {:href url} (prettify-url url)]]]
          [:ul.details-list
           (let [status (-> status
                          normalize-status
@@ -148,12 +152,22 @@
           [:ul
            [:li
             [:a {:target "_blank"
-                 :href (str "https://www.facebook.com/sharer/sharer.php?u=" js/window.location.href)}
-             [:span.icon-facebook]]]
-           [:li [:a {:target "_blank"
-                     :href (str "https://twitter.com/home?status=" js/window.location.href)}
-                 [:span.icon-twitter]]]]]]
-        ;; TODO: We aren't showing the logo image?
+                 :href github-url}
+             [:span.icon-aragon]]]
+           (when github-url
+             [:li
+              [:a {:target "_blank"
+                   :href github-url}
+               [:span.icon-github]]])
+           (when facebook-url
+            [:li
+             [:a {:target "_blank"
+                  :href facebook-url}
+              [:span.icon-facebook]]])
+           (when twitter-url
+            [:li [:a {:target "_blank"
+                      :href twitter-url}
+                  [:span.icon-twitter]]])]]]
         [:div.col.img
          [district-background background-image-hash]]]
        [:pre.district-description description]

@@ -23,9 +23,8 @@ function requireContract(contract_name, contract_copy_name) {
 const registryPlaceholder = "feedfeedfeedfeedfeedfeedfeedfeedfeedfeed";
 const dntPlaceholder = "deaddeaddeaddeaddeaddeaddeaddeaddeaddead";
 const forwarderTargetPlaceholder = "beefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
-const challengeFactoryPlaceholder = "cccccccccccccccccccccccccccccccccccccccc";
-const stakeBankFactoryPlaceholder = "dddddddddddddddddddddddddddddddddddddddd";
-const powerFactoryPlaceholder = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+const forwarder2TargetPlaceholder = "feebfeebfeebfeebfeebfeebfeebfeebfeebfeeb";
+const minimeTokenFactoryPlaceholder = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
 const zeroAddress = "0x0000000000000000000000000000000000000000";
 const dsGuardANY = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
@@ -39,16 +38,16 @@ let DNT = requireContract("District0xNetworkToken");
 let DistrictFactory = requireContract("DistrictFactory");
 let District = requireContract("District");
 let ParamChangeRegistry = requireContract("ParamChangeRegistry");
+let ParamChangeFactory = requireContract("ParamChangeFactory");
 let ParamChangeRegistryForwarder = requireContract("MutableForwarder", "ParamChangeRegistryForwarder");
 let ParamChangeRegistryDb = requireContract("EternalDb", "ParamChangeRegistryDb");
 let ParamChange = requireContract("ParamChange");
 let DistrictRegistry = requireContract("Registry", "DistrictRegistry");
 let DistrictRegistryForwarder = requireContract("MutableForwarder", "DistrictRegistryForwarder");
 let MiniMeTokenFactory = requireContract("MiniMeTokenFactory");
-let PowerFactory = requireContract("PowerFactory");
-let StakeBankFactory = requireContract("StakeBankFactory");
-let ParamChangeFactory = requireContract("ParamChangeFactory");
-let ChallengeFactory = requireContract("ChallengeFactory");
+let Power = requireContract("Power");
+let StakeBank = requireContract("StakeBank");
+let Challenge = requireContract("Challenge");
 let DistrictRegistryDb = requireContract("EternalDb", "DistrictRegistryDb");
 
 
@@ -213,37 +212,39 @@ async function deploy_ParamChangeRegistryForwarder(deployer, opts) {
 }
 
 
-async function deploy_PowerFactory(deployer, opts) {
-  console.log("Deploying PowerFactory");
+async function deploy_Power(deployer, opts) {
+  console.log("Deploying Power");
 
-  await deployer.deploy(PowerFactory, Object.assign({}, opts, {gas: 2e6}));
-  const powerFactory = await PowerFactory.deployed();
+  await deployer.deploy(Power, Object.assign({}, opts, {gas: 2e6}));
+  const power = await Power.deployed();
 
-  assignContract(powerFactory, "PowerFactory", "power-factory");
+  assignContract(power, "Power", "power");
 }
 
 
-async function deploy_StakeBankFactory(deployer, opts) {
-  console.log("Deploying StakeBankFactory");
+async function deploy_StakeBank(deployer, opts) {
+  console.log("Deploying StakeBank");
 
-  const powerFactory = await PowerFactory.deployed();
-  linkBytecode(StakeBankFactory, powerFactoryPlaceholder, powerFactory.address);
-  await deployer.deploy(StakeBankFactory, Object.assign({}, opts, {gas: 4.9e6}));
-  const stakeBankFactory = await StakeBankFactory.deployed();
+  const power = await Power.deployed();
+  const miniMeTokenFactory = await MiniMeTokenFactory.deployed();
+  linkBytecode(StakeBank, forwarderTargetPlaceholder, power.address);
+  linkBytecode(StakeBank, minimeTokenFactoryPlaceholder, miniMeTokenFactory.address);
+  await deployer.deploy(StakeBank, Object.assign({}, opts, {gas: 4.9e6}));
+  const stakeBank = await StakeBank.deployed();
 
-  assignContract(stakeBankFactory, "StakeBankFactory", "stake-bank-factory");
+  assignContract(stakeBank, "StakeBank", "stake-bank");
 }
 
 
-async function deploy_ChallengeFactory(deployer, opts) {
-  console.log("Deploying ChallengeFactory");
+async function deploy_Challenge(deployer, opts) {
+  console.log("Deploying Challenge");
 
   const dnt = await getDNT();
-  linkBytecode(ChallengeFactory, dntPlaceholder, dnt.address);
-  await deployer.deploy(ChallengeFactory, Object.assign({}, opts, {gas: 2.5e6}));
-  const challengeFactory = await ChallengeFactory.deployed();
+  linkBytecode(Challenge, dntPlaceholder, dnt.address);
+  await deployer.deploy(Challenge, Object.assign({}, opts, {gas: 5e6}));
+  const challenge = await Challenge.deployed();
 
-  assignContract(challengeFactory, "ChallengeFactory", "challenge-factory");
+  assignContract(challenge, "Challenge", "challenge");
 }
 
 
@@ -251,14 +252,14 @@ async function deploy_District(deployer, opts) {
   console.log("Deploying District");
 
   const dnt = await getDNT();
-  const challengeFactory = await ChallengeFactory.deployed();
-  const stakeBankFactory = await StakeBankFactory.deployed();
+  const challenge = await Challenge.deployed();
+  const stakeBank = await StakeBank.deployed();
   const districtRegistryForwarder = await DistrictRegistryForwarder.deployed();
 
   linkBytecode(District, dntPlaceholder, dnt.address);
   linkBytecode(District, registryPlaceholder, districtRegistryForwarder.address);
-  linkBytecode(District, challengeFactoryPlaceholder, challengeFactory.address);
-  linkBytecode(District, stakeBankFactoryPlaceholder, stakeBankFactory.address);
+  linkBytecode(District, forwarderTargetPlaceholder, challenge.address);
+  linkBytecode(District, forwarder2TargetPlaceholder, stakeBank.address);
 
   await deployer.deploy(District, Object.assign({}, opts, {gas: 5.5e6}));
   const district = await District.deployed();
@@ -271,12 +272,12 @@ async function deploy_ParamChange(deployer, opts) {
   console.log("Deploying ParamChange");
 
   const dnt = await getDNT();
-  const challengeFactory = await ChallengeFactory.deployed();
+  const challenge = await Challenge.deployed();
   const paramChangeRegistryForwarder = await ParamChangeRegistryForwarder.deployed();
 
   linkBytecode(ParamChange, dntPlaceholder, dnt.address);
   linkBytecode(ParamChange, registryPlaceholder, paramChangeRegistryForwarder.address);
-  linkBytecode(ParamChange, challengeFactoryPlaceholder, challengeFactory.address);
+  linkBytecode(ParamChange, forwarderTargetPlaceholder, challenge.address);
 
   await deployer.deploy(ParamChange, Object.assign({}, opts, {gas: 4.9e6}));
   const paramChange = await ParamChange.deployed();
@@ -365,9 +366,9 @@ async function deployAll(deployer, opts) {
   await deploy_ParamChangeRegistry(deployer, opts);
   await deploy_ParamChangeRegistryForwarder(deployer, opts);
 
-  await deploy_PowerFactory(deployer, opts);
-  await deploy_StakeBankFactory(deployer, opts);
-  await deploy_ChallengeFactory(deployer, opts);
+  await deploy_Power(deployer, opts);
+  await deploy_StakeBank(deployer, opts);
+  await deploy_Challenge(deployer, opts);
 
   await deploy_District(deployer, opts);
   await deploy_ParamChange(deployer, opts);

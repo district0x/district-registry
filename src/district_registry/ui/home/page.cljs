@@ -144,11 +144,39 @@
                doall)])))
 
 
+(defn- build-total-count-query [status-group]
+  (let [statuses (case status-group
+                   :in-registry [:reg-entry.status/challenge-period
+                                 :reg-entry.status/commit-period
+                                 :reg-entry.status/reveal-period
+                                 :reg-entry.status/whitelisted]
+                   :challenged [:reg-entry.status/commit-period
+                                :reg-entry.status/reveal-period]
+                   :blacklisted [:reg-entry.status/blacklisted])]
+    [:search-districts
+     {:order-by :districts.order-by/created-on
+      :order-dir :desc
+      :statuses statuses
+      :first 0}
+     [:total-count]]))
+
+
+(defn- navigation-item [{:keys [:status :selected-status :route-query]} text]
+  (let [query (subscribe [::gql/query {:queries [(build-total-count-query status)]}])]
+    (fn []
+      [:li {:class (when (= selected-status (name status)) "on")}
+       (nav/a {:route [:route/home {} (assoc route-query :status (name status))]
+               :class (when-not (= status :blacklisted)
+                        "cta-btn")}
+              (str text (when-let [total-count (-> @query :search-districts :total-count)]
+                          (str " (" total-count ")"))))])))
+
+
 (defmethod page :route/home []
   (let [active-account (subscribe [::account-subs/active-account])
         route-query (subscribe [::router-subs/active-page-query])
         status (or (:status @route-query) "in-registry")
-        order-by (or (:order-by @route-query) "created-on")
+        order-by (or (:order-by @route-query) "dnt-staked")
         order-by-kw (keyword "districts.order-by" order-by)
         order-by-kw->str {:districts.order-by/created-on "Creation Date"
                           :districts.order-by/dnt-staked "DNT Staked"}
@@ -162,19 +190,22 @@
         [:div.container
          [:nav.subnav
           [:ul
-           [:li {:class (when (= status "in-registry") "on")}
-            (nav/a {:route [:route/home {} (assoc @route-query :status "in-registry")]
-                    :class "cta-btn"}
-                   "In Registry")]
-           [:li {:class (when (= status "challenged") "on")}
-            (nav/a {:class "cta-btn"
-                    :route [:route/home {} (assoc @route-query :status "challenged")]}
-                   "Challenged")]
-           [:li {:class (when (= status "blacklisted") "on")}
-            (nav/a {:route [:route/home {} (assoc @route-query :status "blacklisted")]}
-                   "Blacklisted")]]]
-         [:p
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat aute irure dolor in reprehenderit."]]]
+           [navigation-item
+            {:status :in-registry
+             :selected-status status
+             :route-query @route-query}
+            "In Registry"]
+           [navigation-item
+            {:status :challenged
+             :selected-status status
+             :route-query @route-query}
+            "Challenged"]
+           [navigation-item
+            {:status :blacklisted
+             :selected-status status
+             :route-query @route-query}
+            "Blacklisted"]]]
+         [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat aute irure dolor in reprehenderit."]]]
        [:section#registry-grid
         [:div.container
          [:div.select-menu {:class (when @select-menu-open? "on")

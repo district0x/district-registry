@@ -16,7 +16,7 @@
       [:div.container
        [tx-log {:header-props {:text [:h1 "My Activity"]}
                 :settings-el [:div]
-                :tx-cost-currency "USD"}]]]]]])
+                :tx-cost-currency :USD}]]]]]])
 
 
 (defmethod page :route/my-activity []

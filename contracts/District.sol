@@ -2,7 +2,8 @@ pragma solidity ^0.4.24;
 
 import "./RegistryEntry.sol";
 import "./StakeBank.sol";
-import "./StakeBankFactory.sol";
+import "./proxy/Forwarder2.sol";
+
 
 /**
  * @title Contract created for each submitted District into the DistrictFactory TCR.
@@ -14,7 +15,6 @@ import "./StakeBankFactory.sol";
 
 contract District is RegistryEntry {
 
-  StakeBankFactory private constant stakeBankFactory = StakeBankFactory(0xDDdDddDdDdddDDddDDddDDDDdDdDDdDDdDDDDDDd);
   StakeBank private stakeBank;
 
   /**
@@ -40,7 +40,8 @@ contract District is RegistryEntry {
     public
   {
     super.construct(_creator, _version);
-    stakeBank = StakeBank(stakeBankFactory.createStakeBank(_dntWeight));
+    stakeBank = StakeBank(new Forwarder2());
+    stakeBank.construct(msg.sender, _dntWeight);
     challengePeriodEnd = ~uint(0);
     metaHash = _metaHash;
     registry.fireDistrictConstructedEvent(version, creator, metaHash, deposit, challengePeriodEnd, _dntWeight);
@@ -71,7 +72,7 @@ contract District is RegistryEntry {
     require(registryToken.transferFrom(_user, address(this), _amount));
     stakeBank.stakeFor(_user, _amount);
     maybeAdjustStakeDelta(_user, int(_amount));
-    registry.fireDistrictStakeChangedEvent(version, stakeBank.totalStaked(), stakeBank.totalSupply(), _user, stakeBank.totalStakedFor(_user), stakeBank.balanceOf(_user));
+    registry.fireDistrictStakeChangedEvent(version, stakeBank.totalStaked(), stakeBank.totalSupply(), _user, stakeBank.totalStakedFor(_user), stakeBank.balanceOf(_user), _amount);
   }
 
   /// @notice Unstakes a certain amount of tokens.
@@ -81,7 +82,7 @@ contract District is RegistryEntry {
   {
     stakeBank.unstake(msg.sender, _amount);
     maybeAdjustStakeDelta(msg.sender, int(_amount) * -1);
-    registry.fireDistrictStakeChangedEvent(version, stakeBank.totalStaked(), stakeBank.totalSupply(), msg.sender, stakeBank.totalStakedFor(msg.sender), stakeBank.balanceOf(msg.sender));
+    registry.fireDistrictStakeChangedEvent(version, stakeBank.totalStaked(), stakeBank.totalSupply(), msg.sender, stakeBank.totalStakedFor(msg.sender), stakeBank.balanceOf(msg.sender), _amount);
   }
 
   function maybeAdjustStakeDelta(

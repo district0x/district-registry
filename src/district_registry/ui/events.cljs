@@ -5,7 +5,8 @@
     [district-registry.ui.contract.district-factory :as district-factory]
     [district-registry.ui.contract.registry-entry :as registry-entry]
     [print.foo :refer [look] :include-macros true]
-    [re-frame.core :as re-frame]))
+    [re-frame.core :as re-frame]
+    [medley.core :as medley]))
 
 (def interceptors [re-frame/trim-v])
 
@@ -56,8 +57,11 @@
   (->> [:name
         :description
         :url
-        :github-url]
+        :github-url
+        :facebook-url
+        :twitter-url]
     (select-keys data)
+    (medley/remove-vals nil?)
     (merge {:logo-image-hash (:Hash logo)
             :background-image-hash (:Hash background)})
     (into (sorted-map))
@@ -69,7 +73,7 @@
   ::add-district-meta
   interceptors
   (fn [_ [{:keys [:edit?] :as data} logo bg-img]]
-    (let [district-meta (print.foo/look (build-district-info-string data logo bg-img))
+    (let [district-meta (build-district-info-string data logo bg-img)
           buffer-data (js/buffer.Buffer.from district-meta)]
       {:ipfs/call {:func "add"
                    :args [buffer-data]

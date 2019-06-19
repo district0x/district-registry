@@ -1,13 +1,15 @@
 pragma solidity ^0.4.24;
 
 import "./Power.sol";
-import "./PowerFactory.sol";
 import "./math/SafeMath.sol";
 import "./ownership/Ownable.sol";
-import "minimetoken/contracts/MiniMeToken.sol";
+import "./minime/MiniMeTokenProxyTarget.sol";
+import "./proxy/Forwarder.sol";
 
-contract StakeBank is Ownable, MiniMeToken {
+contract StakeBank is Ownable, MiniMeTokenProxyTarget {
 
+  MiniMeTokenFactory internal constant minimeTokenFactory = MiniMeTokenFactory(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
+  uint32 public MAX_WEIGHT;
   using SafeMath for uint256;
 
   /**
@@ -27,7 +29,6 @@ contract StakeBank is Ownable, MiniMeToken {
   StakeBankCheckpoint[] private stakeHistory;
   mapping (address => StakeBankCheckpoint[]) private stakesFor;
 
-  PowerFactory private constant powerFactory = PowerFactory(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
   Power private power;
 
   struct StakeBankCheckpoint {
@@ -35,25 +36,30 @@ contract StakeBank is Ownable, MiniMeToken {
     uint256 amount;
   }
 
-  constructor(
+  function construct(
     address _owner,
     uint32 _dntWeight
   )
-    MiniMeToken(
-      this,
+    public
+  {
+    require(MAX_WEIGHT == 0);
+    MAX_WEIGHT = 1000000;
+    super.construct(
+      address(minimeTokenFactory),
       0x0,
       0,
-      "Distric Governance Tokens",
+      "District Voting Token",
       18,
-      "DGT",
+      "DVT",
       false
-    )
-    public {
+    );
+
     require(_dntWeight >= 1 && _dntWeight <= MAX_WEIGHT);
     owner = _owner;
     changeController(_owner);
     dntWeight = _dntWeight;
-    power = Power(powerFactory.createPower());
+    power = Power(new Forwarder());
+    power.construct();
   }
 
   /**
@@ -116,7 +122,7 @@ contract StakeBank is Ownable, MiniMeToken {
     require(amount > 0);
     uint staked = totalStakedFor(user);
     uint minted = balanceOf(user);
-    uint toDestroy = minted.div(staked.div(amount));
+    uint toDestroy = minted.mul(1000000000000000000).div(staked.mul(1000000000000000000).div(amount));
     require(destroyTokens(user, toDestroy));
     updateStakeBankCheckpointAtNow(stakesFor[user], amount, true);
     updateStakeBankCheckpointAtNow(stakeHistory, amount, true);
@@ -189,5 +195,4 @@ contract StakeBank is Ownable, MiniMeToken {
     }
     return history[min].amount;
   }
-  uint32 private constant MAX_WEIGHT = 1000000;
 }

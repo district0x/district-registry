@@ -21,10 +21,10 @@
                                               :district/description
                                               :district/url
                                               :district/github-url
+                                              :district/facebook-url
+                                              :district/twitter-url
                                               :district/logo-image-hash
-                                              :district/background-image-hash
-                                              #_ :district/facebook
-                                              #_ :district/twitter]]]}])
+                                              :district/background-image-hash]]]}])
             {:keys [:reg-entry/address
                     :district/name
                     :district/description
@@ -32,8 +32,8 @@
                     :district/github-url
                     :district/logo-image-hash
                     :district/background-image-hash
-                    :district/facebook
-                    :district/twitter]} (:district results)]
+                    :district/facebook-url
+                    :district/twitter-url]} (:district results)]
         [app-layout
          (when (seq name)
            [district-form {:edit? true
@@ -42,7 +42,7 @@
                                        :url url
                                        :github-url github-url
                                        :description description
-                                       :facebook facebook
-                                       :twitter twitter
+                                       :facebook-url facebook-url
+                                       :twitter-url twitter-url
                                        :district/logo-image-hash logo-image-hash
                                        :district/background-image-hash background-image-hash}}])]))))
