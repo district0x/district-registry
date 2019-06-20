@@ -77,7 +77,6 @@
    [:challenge/reveal-period-end :unsigned :integer default-nil]
    [:challenge/votes-include :BIG :INT default-zero]
    [:challenge/votes-exclude :BIG :INT default-zero]
-   [:challenge/votes-total :BIG :INT default-zero]
    [:challenge/claimed-reward-on :unsigned :integer default-nil]
    [(sql/call :primary-key :challenge/index :reg-entry/address)]
    [(sql/call :foreign-key :reg-entry/address) (sql/call :references :reg-entries :reg-entry/address)]])
@@ -95,13 +94,28 @@
    [(sql/call :primary-key :vote/voter :challenge/index :reg-entry/address)]
    [(sql/call :foreign-key :reg-entry/address) (sql/call :references :reg-entries :reg-entry/address)]])
 
-(def stakes-columns
+(def stake-balances-columns
   [[:reg-entry/address address not-nil]
-   [:stake/staker address not-nil]
-   [:stake/dnt :unsigned :integer not-nil]
-   [:stake/tokens :unsigned :integer not-nil]
-   [(sql/call :primary-key :reg-entry/address :stake/staker)]
+   [:stake-balance/staker address not-nil]
+   [:stake-balance/dnt :unsigned :integer not-nil]
+   [:stake-balance/voting-token :unsigned :integer not-nil]
+   [(sql/call :primary-key :reg-entry/address :stake-balance/staker)]
    [(sql/call :foreign-key :reg-entry/address) (sql/call :references :districts :reg-entry/address)]])
+
+
+(def stake-history-columns
+  [[:reg-entry/address address not-nil]
+   [:stake-history/staker address not-nil]
+   [:stake-history/staked-on :unsigned :integer not-nil]
+   [:stake-history/dnt-total-staked :BIG :INT not-nil]
+   [:stake-history/voting-token-total-supply :BIG :INT not-nil]
+   [:stake-history/staker-dnt-staked :BIG :INT not-nil]
+   [:stake-history/staker-voting-token-balance :BIG :INT not-nil]
+   [:stake-history/staked-amount :BIG :INT not-nil]
+   [:stake-history/unstake? :unsigned :integer not-nil]
+   [(sql/call :primary-key :reg-entry/address :stake-history/staker :stake-history/staked-on)]
+   [(sql/call :foreign-key :reg-entry/address) (sql/call :references :districts :reg-entry/address)]])
+
 
 (def registry-entry-column-names (map first registry-entries-columns))
 (def districts-column-names (map first districts-columns))
@@ -109,7 +123,8 @@
 (def param-change-column-names (filter keyword? (map first param-changes-columns)))
 (def votes-column-names (map first votes-columns))
 (def challenges-column-names (map first challenges-columns))
-(def stakes-column-names (map first stakes-columns))
+(def stake-balances-column-names (map first stake-balances-columns))
+(def stake-history-column-names (map first stake-history-columns))
 
 (defn- index-name [col-name]
   (keyword (namespace col-name) (str (name col-name) "-index")))
@@ -134,13 +149,16 @@
   (db/run! {:create-table [:votes]
             :with-columns [votes-columns]})
 
-  (db/run! {:create-table [:stakes]
-            :with-columns [stakes-columns]})
+  (db/run! {:create-table [:stake-balances]
+            :with-columns [stake-balances-columns]})
+
+  (db/run! {:create-table [:stake-history]
+            :with-columns [stake-history-columns]})
 
   ::started)
 
 (defn stop []
-  (db/run! {:drop-table [:stakes]})
+  (db/run! {:drop-table [:stake-balances]})
   (db/run! {:drop-table [:votes]})
   (db/run! {:drop-table [:challenges]})
   (db/run! {:drop-table [:param-changes]})
@@ -212,6 +230,8 @@
 (def update-vote! (create-update-fn :votes votes-column-names [:reg-entry/address :challenge/index :vote/voter]))
 (def get-vote (create-get-fn :votes [:reg-entry/address :challenge/index :vote/voter]))
 
-(def insert-stake! (create-insert-fn :stakes stakes-column-names))
-(def insert-or-replace-stake! (create-insert-fn :stakes stakes-column-names {:insert-or-replace? true}))
-(def update-stake! (create-update-fn :stakes stakes-column-names [:reg-entry/address :stake/staker]))
+(def insert-stake-balance! (create-insert-fn :stake-balances stake-balances-column-names))
+(def insert-or-replace-stake-balance! (create-insert-fn :stake-balances stake-balances-column-names {:insert-or-replace? true}))
+(def update-stake-balance! (create-update-fn :stake-balances stake-balances-column-names [:reg-entry/address :stake-balance/staker]))
+
+(def insert-stake-history! (create-insert-fn :stake-history stake-history-column-names))

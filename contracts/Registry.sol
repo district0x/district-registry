@@ -16,15 +16,15 @@ contract Registry is DSAuth {
 
   address private target; // Keep it here, because this contract is deployed as MutableForwarder
 
-  event ChallengeCreatedEvent(address registryEntry, uint version, uint index, address challenger, uint commitPeriodEnd, uint revealPeriodEnd, uint rewardPool, bytes metaHash);
-  event ChallengeRewardClaimedEvent(address registryEntry, uint version, uint index, address challenger, uint amount);
-  event DistrictConstructedEvent(address registryEntry, uint version, address creator, bytes metaHash, uint deposit, uint challengePeriodEnd, uint32 dntWeight);
-  event DistrictStakeChangedEvent(address registryEntry, uint version, uint dntStaked, uint totalSupply, address staker, uint stakerDntStaked, uint stakerTokens, uint amount);
-  event DistrictMetaHashChangedEvent(address registryEntry, uint version, bytes metaHash);
-  event VotesReclaimedEvent(address registryEntry, uint version, uint index, address voter, uint amount);
-  event VoteCommittedEvent(address registryEntry, uint version, uint index, address voter, uint amount);
-  event VoteRevealedEvent(address registryEntry, uint version, uint index, address voter, uint option, uint amount);
-  event VoteRewardClaimedEvent(address registryEntry, uint version, uint index, address voter, uint amount);
+  event ChallengeCreatedEvent(address registryEntry, uint version, uint index, address challenger, uint commitPeriodEnd, uint revealPeriodEnd, uint rewardPool, bytes metaHash, uint timestamp);
+  event ChallengeRewardClaimedEvent(address registryEntry, uint version, uint index, address challenger, uint amount, uint timestamp);
+  event DistrictConstructedEvent(address registryEntry, uint version, address creator, bytes metaHash, uint deposit, uint challengePeriodEnd, uint32 dntWeight, uint timestamp);
+  event DistrictStakeChangedEvent(address registryEntry, uint version, uint dntTotalStaked, uint votingTokenTotalSupply, address staker, uint stakerDntStaked, uint stakerVotingTokenBalance, uint stakedAmount, bool isUnstake, uint timestamp);
+  event DistrictMetaHashChangedEvent(address registryEntry, uint version, bytes metaHash, uint timestamp);
+  event VotesReclaimedEvent(address registryEntry, uint version, uint index, address voter, uint amount, uint timestamp);
+  event VoteCommittedEvent(address registryEntry, uint version, uint index, address voter, uint amount, uint timestamp);
+  event VoteRevealedEvent(address registryEntry, uint version, uint index, address voter, uint option, uint amount, uint timestamp);
+  event VoteRewardClaimedEvent(address registryEntry, uint version, uint index, address voter, uint amount, uint timestamp);
 
   bytes32 public constant challengeDispensationKey = keccak256("challengeDispensation");
   bytes32 public constant challengePeriodDurationKey = keccak256("challengePeriodDuration");
@@ -150,20 +150,20 @@ contract Registry is DSAuth {
     public
     onlyRegistryEntry
   {
-    emit DistrictConstructedEvent(msg.sender, version, creator, metaHash, deposit, challengePeriodEnd, dntWeight);
+    emit DistrictConstructedEvent(msg.sender, version, creator, metaHash, deposit, challengePeriodEnd, dntWeight, now);
   }
-  function fireDistrictStakeChangedEvent(uint version, uint dntStaked, uint totalSupply, address staker, uint stakerDntStaked, uint stakerTokens, uint amount)
+  function fireDistrictStakeChangedEvent(uint version, uint dntTotalStaked, uint votingTokenTotalSupply, address staker, uint stakerDntStaked, uint stakerVotingTokenBalance, uint stakedAmount, bool isUnstake)
     public
     onlyRegistryEntry
   {
-    emit DistrictStakeChangedEvent(msg.sender, version, dntStaked, totalSupply, staker, stakerDntStaked, stakerTokens, amount);
+    emit DistrictStakeChangedEvent(msg.sender, version, dntTotalStaked, votingTokenTotalSupply, staker, stakerDntStaked, stakerVotingTokenBalance, stakedAmount, isUnstake, now);
   }
 
   function fireDistrictMetaHashChangedEvent(uint version, bytes metahash)
     public
     onlyRegistryEntry
   {
-    emit DistrictMetaHashChangedEvent(msg.sender, version, metahash);
+    emit DistrictMetaHashChangedEvent(msg.sender, version, metahash, now);
   }
 
   function fireChallengeCreatedEvent(
@@ -178,42 +178,42 @@ contract Registry is DSAuth {
     public
     onlyRegistryEntry
   {
-    emit ChallengeCreatedEvent(msg.sender, version, index, challenger, commitPeriodEnd, revealPeriodEnd, rewardPool, metaHash);
+    emit ChallengeCreatedEvent(msg.sender, version, index, challenger, commitPeriodEnd, revealPeriodEnd, rewardPool, metaHash, now);
   }
 
   function fireVoteCommittedEvent(uint version, uint index, address voter, uint amount)
     public
     onlyRegistryEntry
   {
-    emit VoteCommittedEvent(msg.sender, version, index, voter, amount);
+    emit VoteCommittedEvent(msg.sender, version, index, voter, amount, now);
   }
 
   function fireVoteRevealedEvent(uint version, uint index, address voter, uint option, uint amount)
     public
     onlyRegistryEntry
   {
-    emit VoteRevealedEvent(msg.sender, version, index, voter, option, amount);
+    emit VoteRevealedEvent(msg.sender, version, index, voter, option, amount, now);
   }
 
   function fireVotesReclaimedEvent(uint version, uint index, address voter, uint amount)
     public
     onlyRegistryEntry
   {
-    emit VotesReclaimedEvent(msg.sender, version, index, voter, amount);
+    emit VotesReclaimedEvent(msg.sender, version, index, voter, amount, now);
   }
 
   function fireVoteRewardClaimedEvent(uint version, uint index, address voter, uint amount)
     public
     onlyRegistryEntry
   {
-    emit VoteRewardClaimedEvent(msg.sender, version, index, voter, amount);
+    emit VoteRewardClaimedEvent(msg.sender, version, index, voter, amount, now);
   }
 
   function fireChallengeRewardClaimedEvent(uint version, uint index, address challenger, uint amount)
     public
     onlyRegistryEntry
   {
-    emit ChallengeRewardClaimedEvent(msg.sender, version, index, challenger, amount);
+    emit ChallengeRewardClaimedEvent(msg.sender, version, index, challenger, amount, now);
   }
 
 }

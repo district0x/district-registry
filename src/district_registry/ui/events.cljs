@@ -6,7 +6,8 @@
     [district-registry.ui.contract.registry-entry :as registry-entry]
     [print.foo :refer [look] :include-macros true]
     [re-frame.core :as re-frame]
-    [medley.core :as medley]))
+    [medley.core :as medley]
+    [clojure.string :as string]))
 
 (def interceptors [re-frame/trim-v])
 
@@ -20,7 +21,7 @@
   ::add-challenge
   interceptors
   (fn [{:keys [:db]} [{:keys [:reg-entry/address :comment] :as data}]]
-    (let [challenge-meta (build-challenge-meta-string {:comment comment})
+    (let [challenge-meta (build-challenge-meta-string {:comment (string/trim comment)})
           buffer-data (js/buffer.Buffer.from challenge-meta)]
       (prn "Uploading challenge meta " challenge-meta)
       {:ipfs/call {:func "add"
@@ -53,6 +54,12 @@
                    :on-error ::error}})))
 
 
+(defn- safe-trim [s]
+  (if (string? s)
+    (string/trim s)
+    s))
+
+
 (defn- build-district-info-string [data logo background]
   (->> [:name
         :description
@@ -62,6 +69,7 @@
         :twitter-url]
     (select-keys data)
     (medley/remove-vals nil?)
+    (medley/map-vals safe-trim)
     (merge {:logo-image-hash (:Hash logo)
             :background-image-hash (:Hash background)})
     (into (sorted-map))

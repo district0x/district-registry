@@ -4,6 +4,7 @@ import "./Registry.sol";
 import "./math/SafeMath.sol";
 import "minimetoken/contracts/MiniMeToken.sol";
 import "./ownership/Ownable.sol";
+import "./StakeBank.sol";
 
 contract Challenge is Ownable {
 
@@ -25,23 +26,21 @@ contract Challenge is Ownable {
   }
 
   address public challenger;
-  bytes metaHash;
-  uint challengePeriodEnd;
-  uint commitPeriodEnd;
-  uint creationBlock;
-  uint revealPeriodEnd;
-  uint rewardPool;
-  uint voteQuorum;
+  bytes public metaHash;
+  uint public challengePeriodEnd;
+  uint public commitPeriodEnd;
+  uint public creationBlock;
+  uint public revealPeriodEnd;
+  uint public rewardPool;
+  uint public voteQuorum;
 
-  uint votesInclude;
-  uint votesExclude;
-  uint claimedRewardOn;
-  mapping(address => Vote) votes;
-  int stakeDelta;
-  mapping(address => int) stakeDeltas;
+  uint public votesInclude;
+  uint public votesExclude;
+  uint public claimedRewardOn;
+  mapping(address => Vote) public votes;
+
 
   function construct(
-    address _owner,
     address _challenger,
     bytes _metaHash,
     uint _challengePeriodEnd,
@@ -52,8 +51,7 @@ contract Challenge is Ownable {
   )
     public {
     require(owner == address(0));
-    require(_owner != address(0));
-    owner = _owner;
+    owner = msg.sender;
     challenger = _challenger;
     metaHash = _metaHash;
     challengePeriodEnd = _challengePeriodEnd;
@@ -66,63 +64,63 @@ contract Challenge is Ownable {
 
   function isVoteRevealPeriodActive()
     public
-    constant
+    view
     returns (bool) {
     return !isVoteCommitPeriodActive() && now <= revealPeriodEnd;
   }
 
   function isVoteRevealed(address _voter)
     public
-    constant
+    view
     returns (bool) {
     return votes[_voter].revealedOn > 0;
   }
 
   function isVoteRewardClaimed(address _voter)
     public
-    constant
+    view
     returns (bool) {
     return votes[_voter].claimedRewardOn > 0;
   }
 
   function areVotesReclaimed(address _voter)
     public
-    constant
+    view
     returns (bool) {
     return votes[_voter].reclaimedVotesOn > 0;
   }
 
   function isChallengeRewardClaimed()
     public
-    constant
+    view
     returns (bool) {
     return claimedRewardOn > 0;
   }
 
   function isChallengePeriodActive()
     public
-    constant
+    view
     returns (bool) {
     return now <= challengePeriodEnd;
   }
 
   function isWhitelisted()
     public
-    constant
+    view
     returns (bool) {
     return status() == Status.Whitelisted;
   }
 
   function isVoteCommitPeriodActive()
     public
-    constant
+    view
     returns (bool) {
     return now <= commitPeriodEnd;
   }
 
   function isVoteRevealPeriodOver()
     public
-    constant
+    view
     returns (bool) {
     return revealPeriodEnd > 0 && now > revealPeriodEnd;
   }
@@ -134,21 +132,21 @@ contract Challenge is Ownable {
    */
   function isWinningOptionInclude()
     public
-    constant
+    view
     returns (bool) {
     return winningVoteOption() == VoteOption.Include;
   }
 
   function hasVoted(address _voter)
     public
-    constant
+    view
     returns (bool) {
     return votes[_voter].amount != 0;
   }
 
   function wasChallenged()
     public
-    constant
+    view
     returns (bool) {
     return challenger != 0x0;
   }
@@ -161,7 +159,7 @@ contract Challenge is Ownable {
    */
   function votedWinningVoteOption(address _voter)
     public
-    constant
+    view
     returns (bool) {
     return votes[_voter].option == winningVoteOption();
   }
@@ -173,7 +171,7 @@ contract Challenge is Ownable {
    */
   function status()
     public
-    constant
+    view
     returns (Status) {
     if (isChallengePeriodActive() && !wasChallenged()) {
       return Status.ChallengePeriod;
@@ -199,57 +197,74 @@ contract Challenge is Ownable {
    */
   function challengeReward(uint deposit)
     public
-    constant
+    view
     returns (uint) {
     return deposit.add(deposit.sub(rewardPool));
   }
 
+  function voteOptionIncludeVoterAmount(address _voter)
+    public
+    view
+    returns (uint)
+  {
+    return votes[_voter].amount;
+  }
+
+  function voteOptionExcludeVoterAmount(address _voter)
+    public
+    view
+    returns (uint)
+  {
+    return votes[_voter].amount;
+  }
+
   /**
    * @dev Returns token reward amount belonging to a voter for voting for a winning option
-   * Staked DNT is automatically counted as voting for inclusion
    * @param _voter Address of a voter
    *
    * @return Amount of tokens
    */
   function voteReward(address _voter)
     public
-    constant
+    view
     returns (uint) {
-    uint winningAmount = winningVotesAmount();
+    uint winningAmount = winningVoteOptionAmount();
     if (!votedWinningVoteOption(_voter)) {
       return 0;
     }
-    int voterAmount =  stakeDeltas[_voter] + int(votes[_voter].amount);
+    uint voterAmount;
+    if (isWinningOptionInclude()) {
+      voterAmount = voteOptionIncludeVoterAmount(_voter);
+    } else {
+      voterAmount = voteOptionExcludeVoterAmount(_voter);
+    }
+
     if (voterAmount > 0) {
-      return (uint(voterAmount).mul(rewardPool)) / winningAmount;  
+      return (voterAmount.mul(rewardPool)).div(winningAmount);
     } else {
       return 0;
     }
   }
 
-  function adjustStakeDelta(
-    address _voter,
-    int _amount
-  )
-    public
-    onlyOwner
-  {
-    stakeDelta += _amount;
-    stakeDeltas[_voter] += _amount;
-  }
-
   function isBlacklisted()
-    private
-    constant
+    public
+    view
     returns (bool) {
     return status() == Status.Blacklisted;
   }
 
-  function includeVotesAmount()
-    private
-    constant
+  function voteOptionIncludeAmount()
+    public
+    view
     returns (uint) {
-    return uint(stakeDelta + int(votesInclude) + int(registryToken.balanceOfAt(this, creationBlock)));
+    return votesInclude;
+  }
+
+  function voteOptionExcludeAmount()
+    public
+    view
+    returns (uint) {
+    return votesExclude;
   }
 
   /**
@@ -260,14 +275,14 @@ contract Challenge is Ownable {
    * @return Winning vote option
    */
   function winningVoteOption()
-    private
-    constant
+    public
+    view
     returns (VoteOption) {
     if (!isVoteRevealPeriodOver()) {
       return VoteOption.Neither;
     }
-    uint _votesInclude = includeVotesAmount();
-    if (_votesInclude.mul(100) > voteQuorum.mul(_votesInclude.add(votesExclude))) {
+    uint _voteOptionIncludeAmount = voteOptionIncludeAmount();
+    if (_voteOptionIncludeAmount.mul(100) > voteQuorum.mul(_voteOptionIncludeAmount.add(votesExclude))) {
       return VoteOption.Include;
     } else {
       return VoteOption.Exclude;
@@ -279,15 +294,15 @@ contract Challenge is Ownable {
    *
    * @return Amount of votes
    */
-  function winningVotesAmount()
-    private
-    constant
+  function winningVoteOptionAmount()
+    public
+    view
     returns (uint) {
     VoteOption voteOption = winningVoteOption();
     if (voteOption == VoteOption.Include) {
-      return includeVotesAmount();
+      return voteOptionIncludeAmount();
     } else if (voteOption == VoteOption.Exclude) {
-      return votesExclude;
+      return voteOptionExcludeAmount();
     } else {
       return 0;
     }

@@ -8,7 +8,7 @@ import "./proxy/Forwarder.sol";
 
 contract StakeBank is Ownable, MiniMeTokenProxyTarget {
 
-  MiniMeTokenFactory internal constant minimeTokenFactory = MiniMeTokenFactory(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
+  MiniMeTokenFactory public constant minimeTokenFactory = MiniMeTokenFactory(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
   uint32 public MAX_WEIGHT;
   using SafeMath for uint256;
 
@@ -37,7 +37,6 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
   }
 
   function construct(
-    address _owner,
     uint32 _dntWeight
   )
     public
@@ -55,8 +54,8 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     );
 
     require(_dntWeight >= 1 && _dntWeight <= MAX_WEIGHT);
-    owner = _owner;
-    changeController(_owner);
+    owner = msg.sender;
+    changeController(owner);
     dntWeight = _dntWeight;
     power = Power(new Forwarder());
     power.construct();

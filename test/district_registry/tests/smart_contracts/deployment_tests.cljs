@@ -12,7 +12,6 @@
    [district.server.web3 :refer [web3]]
    [district-registry.server.contract.district :as district]
    [district-registry.server.contract.district-factory :as district-factory]
-   [district-registry.server.contract.param-change :as param-change]
    [district-registry.server.contract.param-change-factory :as param-change-factory]
    [district-registry.server.contract.registry :as registry]
    [district-registry.server.contract.registry-entry :as registry-entry]

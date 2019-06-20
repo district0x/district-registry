@@ -48,6 +48,7 @@ let MiniMeTokenFactory = requireContract("MiniMeTokenFactory");
 let Power = requireContract("Power");
 let StakeBank = requireContract("StakeBank");
 let Challenge = requireContract("Challenge");
+let DistrictChallenge = requireContract("DistrictChallenge");
 let DistrictRegistryDb = requireContract("EternalDb", "DistrictRegistryDb");
 
 
@@ -241,10 +242,21 @@ async function deploy_Challenge(deployer, opts) {
 
   const dnt = await getDNT();
   linkBytecode(Challenge, dntPlaceholder, dnt.address);
-  await deployer.deploy(Challenge, Object.assign({}, opts, {gas: 5e6}));
+  await deployer.deploy(Challenge, Object.assign({}, opts, {gas: 3e6}));
   const challenge = await Challenge.deployed();
 
   assignContract(challenge, "Challenge", "challenge");
+}
+
+async function deploy_DistrictChallenge(deployer, opts) {
+  console.log("Deploying District Challenge");
+
+  const dnt = await getDNT();
+  linkBytecode(DistrictChallenge, dntPlaceholder, dnt.address);
+  await deployer.deploy(DistrictChallenge, Object.assign({}, opts, {gas: 3.5e6}));
+  const districtChallenge = await DistrictChallenge.deployed();
+
+  assignContract(districtChallenge, "DistrictChallenge", "district-challenge");
 }
 
 
@@ -252,13 +264,13 @@ async function deploy_District(deployer, opts) {
   console.log("Deploying District");
 
   const dnt = await getDNT();
-  const challenge = await Challenge.deployed();
+  const districtChallenge = await DistrictChallenge.deployed();
   const stakeBank = await StakeBank.deployed();
   const districtRegistryForwarder = await DistrictRegistryForwarder.deployed();
 
   linkBytecode(District, dntPlaceholder, dnt.address);
   linkBytecode(District, registryPlaceholder, districtRegistryForwarder.address);
-  linkBytecode(District, forwarderTargetPlaceholder, challenge.address);
+  linkBytecode(District, forwarderTargetPlaceholder, districtChallenge.address);
   linkBytecode(District, forwarder2TargetPlaceholder, stakeBank.address);
 
   await deployer.deploy(District, Object.assign({}, opts, {gas: 5.5e6}));
@@ -369,6 +381,7 @@ async function deployAll(deployer, opts) {
   await deploy_Power(deployer, opts);
   await deploy_StakeBank(deployer, opts);
   await deploy_Challenge(deployer, opts);
+  await deploy_DistrictChallenge(deployer, opts);
 
   await deploy_District(deployer, opts);
   await deploy_ParamChange(deployer, opts);

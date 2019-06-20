@@ -54,7 +54,6 @@
       :challenge/reveal-period-end
       :challenge/votes-include
       :challenge/votes-exclude
-      :challenge/votes-total
       :challenge/claimed-reward-on
       :challenge/winning-vote-option
       [:challenge/vote {:voter active-account}
@@ -64,7 +63,8 @@
         :vote/revealed-on
         :vote/claimed-reward-on
         :vote/reclaimed-votes-on
-        :vote/reward]]]]
+        :vote/reward
+        :vote/amount-from-staking]]]]
     :district/meta-hash
     :district/name
     :district/description
@@ -253,7 +253,7 @@
     {:href (format/etherscan-addr-url challenger)
      :target :_blank}
     "Challenger (" (subs challenger 0 7) "...):"]
-   [:pre.challenge-comment (str "\"" comment "\"")]])
+   [:pre.challenge-comment comment]])
 
 
 (defn vote-commit-section []
@@ -351,8 +351,8 @@
             :else "Reveal My Vote")]]]])))
 
 (defn- vote-reward-line [reward]
-  (when reward
-    [:span "Your vote reward: " [:b (format-dnt reward)] [:br]]))
+  (when (print.foo/look reward)
+    [:span "Your vote reward: " [:b (print.foo/look (format-dnt reward))] [:br]]))
 
 
 (defn- calculate-challenge-reward [deposit reward-pool]
@@ -407,19 +407,26 @@
                :challenge/challenger
                :challenge/votes-include
                :challenge/votes-exclude
-               :challenge/votes-total
                :challenge/vote
                :challenge/winning-vote-option
                :challenge/claimed-reward-on
                :challenge/reveal-period-end
                :challenge/reward-pool] :as challenge}]
-    (let [{:keys [:vote/option :vote/amount :vote/reward :vote/claimed-reward-on :vote/reclaimed-votes-on :vote/revealed-on]} vote
+    (let [{:keys [:vote/option
+                  :vote/amount
+                  :vote/reward
+                  :vote/claimed-reward-on
+                  :vote/reclaimed-votes-on
+                  :vote/revealed-on
+                  :vote/amount-from-staking]} vote
           user-vote-option (gql-utils/gql-name->kw option)
           winning-vote-option (gql-utils/gql-name->kw winning-vote-option)
           active-account @(subscribe [::account-subs/active-account])
           challenge-reward (when (and (= challenger active-account)
                                       (= winning-vote-option :vote-option/exclude))
-                             (calculate-challenge-reward deposit reward-pool))]
+                             (calculate-challenge-reward deposit reward-pool))
+          votes-total (+ votes-include votes-exclude)]
+      (print.foo/look amount-from-staking)
       [:div
        [:h2 "Vote Results"]
        [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
@@ -487,7 +494,7 @@
         {:keys [:reg-entry/challenges :reg-entry/status]} district
         reversed-challenges (reverse challenges)]
     (cond
-      (or (nil? district) loading?) nil
+      (nil? district) nil
       (-> district :reg-entry/address nil?) [not-found/not-found]
       :else [:section#main
              [:div.container

@@ -103,22 +103,23 @@
 
 (defn challenge-created-event [_ {:keys [:args]}]
   (try-catch
-    (let [{:keys [:registry-entry :index :challenger :commit-period-end :reveal-period-end :reward-pool :meta-hash]} args]
+    (let [{:keys [:registry-entry :index :challenger :commit-period-end :reveal-period-end :reward-pool :meta-hash]} args
+          index (bn/number index)]
       (db/insert-challenge!
         {:reg-entry/address registry-entry
-         :challenge/index (bn/number index)
+         :challenge/index index
          :challenge/challenger challenger
          :challenge/commit-period-end (bn/number commit-period-end)
          :challenge/reveal-period-end (bn/number reveal-period-end)
          :challenge/reward-pool (bn/number reward-pool)
          :challenge/meta-hash (web3/to-ascii meta-hash)})
       (db/update-registry-entry! {:reg-entry/address registry-entry
-                                  :reg-entry/current-challenge-index (bn/number index)})
+                                  :reg-entry/current-challenge-index index})
       (.then (server-utils/get-ipfs-meta @ipfs/ipfs (web3/to-ascii meta-hash))
              (fn [{:keys [comment]}]
                (try-catch
                  (db/update-challenge! {:reg-entry/address registry-entry
-                                        :challenge/index (bn/number index)
+                                        :challenge/index index
                                         :challenge/comment comment})))))))
 
 
@@ -156,8 +157,7 @@
                                    1 :challenge/votes-include
                                    2 :challenge/votes-exclude)
                                  +
-                                 (:vote/amount vote'))
-                         (update :challenge/votes-total + (:vote/amount vote')))]
+                                 (:vote/amount vote')))]
         (db/update-challenge! challenge')
         (db/update-vote! vote')))))
 
@@ -190,16 +190,29 @@
 
 (defn stake-changed-event [_ {:keys [:args]}]
   (try-catch
-    (let [{:keys [:registry-entry :staker-tokens :staker-dnt-staked :dnt-staked :total-supply :staker]} args]
+    (let [{:keys [:registry-entry
+                  :staker-voting-token-balance
+                  :staker-dnt-staked
+                  :dnt-total-staked
+                  :voting-token-total-supply
+                  :staker
+                  :staked-amount
+                  :is-unstake
+                  :timestamp]} args]
       (db/update-district!
         {:reg-entry/address registry-entry
-         :district/dnt-staked (bn/number dnt-staked)
-         :district/total-supply (bn/number total-supply)})
-      (db/insert-or-replace-stake!
+         :district/dnt-staked (bn/number dnt-total-staked)
+         :district/total-supply (bn/number voting-token-total-supply)})
+      (db/insert-stake-history!
         {:reg-entry/address registry-entry
-         :stake/staker staker
-         :stake/dnt (bn/number staker-dnt-staked)
-         :stake/tokens (bn/number staker-tokens)}))))
+         :stake-history/staker staker
+         :stake-history/staked-on timestamp
+         :stake-history/dnt-total-staked (bn/number dnt-total-staked)
+         :stake-history/voting-token-total-supply (bn/number voting-token-total-supply)
+         :stake-history/staker-dnt-staked (bn/number staker-dnt-staked)
+         :stake-history/staker-voting-token-balance (bn/number staker-voting-token-balance)
+         :stake-history/staked-amount (bn/number staked-amount)
+         :stake-history/unstake? (if is-unstake 1 0)}))))
 
 
 (defn eternal-db-event [_ {:keys [:args :address]}]
@@ -220,10 +233,7 @@
 (defn- dispatcher [callback]
   (fn [err event]
     (-> event
-      (update-in [:args :timestamp] (fn [timestamp]
-                                      (if timestamp
-                                        (bn/number timestamp)
-                                        (:timestamp (web3-eth/get-block @web3 (:block-number event))))))
+      (update-in [:args :timestamp] bn/number)
       (update-in [:args :version] bn/number)
       (->> (callback err)))))
 

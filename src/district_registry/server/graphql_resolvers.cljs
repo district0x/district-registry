@@ -12,6 +12,7 @@
     [district.server.smart-contracts :as smart-contracts]
     [district.server.web3 :as web3]
     [district.shared.error-handling :refer [try-catch-throw]]
+    [district.web3-utils :as web3-utils]
     [honeysql.core :as sql]
     [honeysql.helpers :as sqlh]
     [taoensso.timbre :as log]))
@@ -61,7 +62,7 @@
      :has-next-page (not= last-idx total-count)}))
 
 
-(defn district-query-resolver [_ {:keys [:reg-entry/address] :as args}]
+(defn district-query-resolver [_ {:keys [:reg-entry/address]}]
   (db/get {:select [:*]
            :from [[:districts :d] [:reg-entries :re]]
            :where [:and
@@ -69,21 +70,37 @@
                    [:= :re.reg-entry/address address]]}))
 
 
+(defn get-stake-history [{:keys [:challenge/commit-period-end :stake-history/staker :reg-entry/address]}]
+  (let [query (cond-> {:select [:*]
+                       :from [:stake-history]
+                       :order-by [[:stake-history/staked-on :desc]]
+                       :where [:= :reg-entry/address address]
+                       :limit 1}
+                staker (sqlh/merge-where [:= :stake-history/staker staker])
+                commit-period-end (sqlh/merge-where [:< :stake-history/staked-on commit-period-end]))]
+    (db/get query)))
+
+
 (defn reg-entry-status [now {:keys [:reg-entry/address :reg-entry/challenge-period-end]}]
   (let [{:keys [:challenge/index
                 :challenge/commit-period-end
                 :challenge/reveal-period-end
                 :challenge/votes-include
-                :challenge/votes-exclude]} (db/get {:select [:*]
-                                                    :from [:challenges]
-                                                    :where [:= :challenges.reg-entry/address address]
-                                                    :order-by [[:challenges.challenge/index :desc]]})]
+                :challenge/votes-exclude]}
+        (db/get {:select [:*]
+                 :from [:challenges]
+                 :where [:= :challenges.reg-entry/address address]
+                 :order-by [[:challenges.challenge/index :desc]]})
+
+        {:keys [:stake-history/dnt-total-staked]}
+        (get-stake-history {:challenge/commit-period-end commit-period-end
+                            :reg-entry/address address})]
     (cond
       (and (< now challenge-period-end) (not index)) :reg-entry.status/challenge-period
       (< now commit-period-end) :reg-entry.status/commit-period
       (< now reveal-period-end) :reg-entry.status/reveal-period
       (or
-        (< votes-exclude votes-include)
+        (< votes-exclude (+ votes-include (or dnt-total-staked 0)))
         (< challenge-period-end now)) :reg-entry.status/whitelisted
       :else :reg-entry.status/blacklisted)))
 
@@ -217,53 +234,98 @@
 (defn reg-entry->status-resolver [reg-entry]
   (enum (reg-entry-status (server-utils/now-in-seconds) reg-entry)))
 
-
-(defn vote->reward-resolver [{:keys [:reg-entry/address :challenge/index :vote/option] :as vote}]
+(defn vote->reward-resolver [{:keys [:reg-entry/address
+                                     :challenge/commit-period-end
+                                     :challenge/index
+                                     :vote/option
+                                     :vote/voter
+                                     :vote/amount] :as vote}]
   (log/debug "vote->reward-resolver args" vote)
   (try-catch-throw
     (let [now (server-utils/now-in-seconds)
           status (reg-entry-status now vote)
-          {:keys [:votes/include :votes/exclude :challenge/reward-pool] :as sql-query}
-          (db/get {:select [[{:select [:challenge/reward-pool]
-                              :from [:challenges]
-                              :where [:and
-                                      [:= address :challenges.reg-entry/address]
-                                      [:= index :challenges.challenge/index]]}
-                             :challenge/reward-pool]
-                            [{:select [:%count.*]
-                              :from [:votes]
-                              :where [:and
-                                      [:= address :votes.reg-entry/address]
-                                      [:= index :votes.challenge/index]
-                                      [:= 1 :votes.vote/option]]}
-                             :votes/include]
-                            [{:select [:%count.*]
-                              :from [:votes]
-                              :where [:and
-                                      [:= address :votes.reg-entry/address]
-                                      [:= index :votes.challenge/index]
-                                      [:= 2 :votes.vote/option]]}
-                             :votes/exclude]]})]
+
+          {:keys [:stake-history/staker-dnt-staked]}
+          (get-stake-history {:reg-entry/address address
+                              :challenge/commit-period-end commit-period-end
+                              :stake-history/staker voter})
+
+          {:keys [:challenge/reward-pool] :as sql-query}
+          (db/get
+            {:select [:challenge/reward-pool]
+             :from [:challenges]
+             :where [:and
+                     [:= address :challenges.reg-entry/address]
+                     [:= index :challenges.challenge/index]]})]
       (log/debug "vote->reward-resolver query" sql-query)
       (cond
         (and (= :reg-entry.status/whitelisted status)
              (= option 1))
-        (/ reward-pool include)
+        (web3-utils/eth->wei (/ reward-pool (+ amount (or staker-dnt-staked 0))))
 
         (and (= :reg-entry.status/blacklisted status)
              (= option 2))
-        (/ reward-pool exclude)
+        (web3-utils/eth->wei (/ reward-pool amount))
 
         :else nil))))
 
 
-(defn challenge->winning-vote-option-resolver [{:keys [:challenge/votes-include :challenge/votes-exclude]}]
-  (log/debug "challenge->winning-vote-option-resolver" {:challenge/votes-include votes-include :challenge/votes-exclude votes-exclude})
+(defn vote->amount-resolver [{:keys [:reg-entry/address
+                                     :challenge/commit-period-end
+                                     :vote/option
+                                     :vote/voter
+                                     :vote/amount] :as vote}]
+  (log/debug "vote->amount-resolver args" vote)
   (try-catch-throw
-    (graphql-utils/kw->gql-name
-      (if (>= votes-exclude votes-include)
-        :vote-option/exclude
-        :vote-option/include))))
+    (if (= option 1)
+      (let [{:keys [:stake-history/staker-dnt-staked]}
+            (get-stake-history {:reg-entry/address address
+                                :challenge/commit-period-end commit-period-end
+                                :stake-history/staker voter})]
+        (+ amount (or staker-dnt-staked 0)))
+      amount)))
+
+
+(defn vote->amount-from-staking-resolver [{:keys [:reg-entry/address
+                                                 :challenge/commit-period-end
+                                                 :vote/option
+                                                 :vote/voter
+                                                 :vote/amount] :as vote}]
+  (log/debug "vote->amount-from-staking-resolver args" vote)
+  (try-catch-throw
+    (let [{:keys [:stake-history/staker-dnt-staked]}
+          (get-stake-history {:reg-entry/address address
+                              :challenge/commit-period-end commit-period-end
+                              :stake-history/staker voter})]
+      staker-dnt-staked)))
+
+
+(defn challenge->winning-vote-option-resolver [{:keys [:challenge/votes-include
+                                                       :challenge/votes-exclude
+                                                       :challenge/commit-period-end
+                                                       :reg-entry/address]
+                                                :as challenge}]
+  (log/debug "challenge->winning-vote-option-resolver" challenge)
+  (try-catch-throw
+    (let [{:keys [:stake-history/dnt-total-staked]}
+          (get-stake-history {:challenge/commit-period-end commit-period-end
+                              :reg-entry/address address})]
+      (graphql-utils/kw->gql-name
+        (if (>= votes-exclude (+ votes-include (or dnt-total-staked 0)))
+          :vote-option/exclude
+          :vote-option/include)))))
+
+
+(defn challenge->votes-include-resolver [{:keys [:challenge/votes-include
+                                                 :challenge/commit-period-end
+                                                 :reg-entry/address]
+                                          :as challenge}]
+  (log/debug "challenge->votes-include-resolver" challenge)
+  (try-catch-throw
+    (let [{:keys [:stake-history/dnt-total-staked]}
+          (get-stake-history {:challenge/commit-period-end commit-period-end
+                              :reg-entry/address address})]
+      (+ votes-include (or dnt-total-staked 0)))))
 
 
 (defn challenge->vote [{:keys [:reg-entry/address :challenge/index] :as challenge} {:keys [:voter]}]
@@ -309,31 +371,33 @@
    :reg-entry/status reg-entry->status-resolver})
 
 
-(defn- get-stake [{:keys [:reg-entry/address]} {:keys [:staker]}]
-  (db/get {:select [:*]
-           :from [:stakes]
-           :where [:and
-                   [:= :stakes.reg-entry/address address]
-                   [:= :stakes.stake/staker staker]]}))
-
-
 (def District
   (assoc RegEntry
-    :district/dnt-staked-for (fn [district args]
-                               (:stake/dnt (get-stake district args)))
-    :district/balance-of (fn [district args]
-                           (:stake/tokens (get-stake district args)))))
+    :district/dnt-staked-for (fn [{:keys [:reg-entry/address]} {:keys [:staker]}]
+                               (let [{:keys [:stake-history/staker-dnt-staked]}
+                                     (get-stake-history {:reg-entry/address address
+                                                         :stake-history/staker staker})]
+                                 (or staker-dnt-staked 0)))
+
+    :district/balance-of (fn [{:keys [:reg-entry/address]} {:keys [:staker]}]
+                           (let [{:keys [:stake-history/staker-voting-token-balance]}
+                                 (get-stake-history {:reg-entry/address address
+                                                     :stake-history/staker staker})]
+                             (or staker-voting-token-balance 0)))))
 
 (def ParamChange
   RegEntry)
 
 (def Challenge
   {:challenge/vote challenge->vote
-   :challenge/winning-vote-option challenge->winning-vote-option-resolver})
+   :challenge/winning-vote-option challenge->winning-vote-option-resolver
+   :challenge/votes-include challenge->votes-include-resolver})
 
 (def Vote
   {:vote/option vote->option-resolver
-   :vote/reward vote->reward-resolver})
+   :vote/reward vote->reward-resolver
+   :vote/amount vote->amount-resolver
+   :vote/amount-from-staking vote->amount-from-staking-resolver})
 
 (def resolvers-map
   {:Query Query

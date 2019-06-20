@@ -3,6 +3,7 @@ pragma solidity ^0.4.24;
 import "./RegistryEntry.sol";
 import "./StakeBank.sol";
 import "./proxy/Forwarder2.sol";
+import "./DistrictChallenge.sol";
 
 
 /**
@@ -15,12 +16,12 @@ import "./proxy/Forwarder2.sol";
 
 contract District is RegistryEntry {
 
-  StakeBank private stakeBank;
+  StakeBank public stakeBank;
 
   /**
    * @dev IPFS hash of file that contains all data from form fields
    */
-  bytes private metaHash;
+  bytes public metaHash;
 
   /**
    * @dev Constructor for this contract.
@@ -41,7 +42,7 @@ contract District is RegistryEntry {
   {
     super.construct(_creator, _version);
     stakeBank = StakeBank(new Forwarder2());
-    stakeBank.construct(msg.sender, _dntWeight);
+    stakeBank.construct(_dntWeight);
     challengePeriodEnd = ~uint(0);
     metaHash = _metaHash;
     registry.fireDistrictConstructedEvent(version, creator, metaHash, deposit, challengePeriodEnd, _dntWeight);
@@ -54,6 +55,19 @@ contract District is RegistryEntry {
     metaHash = _metaHash;
     registry.fireDistrictMetaHashChangedEvent(version, _metaHash);
   }
+
+
+  function createChallenge(
+    address _challenger,
+    bytes _challengeMetaHash
+  )
+  public
+  notEmergency
+  {
+    super.createChallenge(_challenger, _challengeMetaHash);
+    DistrictChallenge(currentChallenge()).setStakeBank(stakeBank);
+  }
+
 
   /// @param _owner The address that's balance is being requested
   /// @return The balance of `_owner` at the current block
@@ -72,7 +86,16 @@ contract District is RegistryEntry {
     require(registryToken.transferFrom(_user, address(this), _amount));
     stakeBank.stakeFor(_user, _amount);
     maybeAdjustStakeDelta(_user, int(_amount));
-    registry.fireDistrictStakeChangedEvent(version, stakeBank.totalStaked(), stakeBank.totalSupply(), _user, stakeBank.totalStakedFor(_user), stakeBank.balanceOf(_user), _amount);
+    registry.fireDistrictStakeChangedEvent(
+      version,
+      stakeBank.totalStaked(),
+      stakeBank.totalSupply(),
+      _user,
+      stakeBank.totalStakedFor(_user),
+      stakeBank.balanceOf(_user),
+      _amount,
+      false
+    );
   }
 
   /// @notice Unstakes a certain amount of tokens.
@@ -82,7 +105,16 @@ contract District is RegistryEntry {
   {
     stakeBank.unstake(msg.sender, _amount);
     maybeAdjustStakeDelta(msg.sender, int(_amount) * -1);
-    registry.fireDistrictStakeChangedEvent(version, stakeBank.totalStaked(), stakeBank.totalSupply(), msg.sender, stakeBank.totalStakedFor(msg.sender), stakeBank.balanceOf(msg.sender), _amount);
+    registry.fireDistrictStakeChangedEvent(
+      version,
+      stakeBank.totalStaked(),
+      stakeBank.totalSupply(),
+      msg.sender,
+      stakeBank.totalStakedFor(msg.sender),
+      stakeBank.balanceOf(msg.sender),
+      _amount,
+      true
+    );
   }
 
   function maybeAdjustStakeDelta(
@@ -92,7 +124,7 @@ contract District is RegistryEntry {
     private
   {
     if (challenges.length != 0 && currentChallenge().isVoteCommitPeriodActive()) {
-      currentChallenge().adjustStakeDelta(_voter, _amount);
+      DistrictChallenge(currentChallenge()).adjustStakeDelta(_voter, _amount);
     }
   }
 

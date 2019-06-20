@@ -78,7 +78,6 @@ type Challenge {
   challenge_revealPeriodEnd: Date
   challenge_votesInclude: Float
   challenge_votesExclude: Float
-  challenge_votesTotal: Float
   challenge_claimedRewardOn: Date
   challenge_winningVoteOption: VoteOption
   challenge_vote(voter: ID): Vote
@@ -101,6 +100,7 @@ type Vote {
   vote_claimedRewardOn: Date
   vote_reclaimedVotesOn: Date
   vote_reward: Float
+  vote_amountFromStaking: Float
 }
 
 type District implements RegEntry {

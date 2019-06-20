@@ -20,17 +20,17 @@ contract RegistryEntry is ApproveAndCallFallBack {
 
   using SafeMath for uint;
 
-  Registry internal constant registry = Registry(0xfEEDFEEDfeEDFEedFEEdFEEDFeEdfEEdFeEdFEEd);
-  MiniMeToken internal constant registryToken = MiniMeToken(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD);
+  Registry public constant registry = Registry(0xfEEDFEEDfeEDFEedFEEdFEEDFeEdfEEdFeEdFEEd);
+  MiniMeToken public constant registryToken = MiniMeToken(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD);
 
   enum Status {ChallengePeriod, CommitPeriod, RevealPeriod, Blacklisted, Whitelisted}
 
-  address internal creator;
-  uint internal version;
-  uint internal deposit;
-  uint internal challengePeriodEnd;
+  address public creator;
+  uint public version;
+  uint public deposit;
+  uint public challengePeriodEnd;
 
-  address[] internal challenges;
+  address[] public challenges;
 
   /**
    * @dev Modifier that disables function if registry is in emergency state
@@ -106,7 +106,6 @@ contract RegistryEntry is ApproveAndCallFallBack {
     Challenge challenge = Challenge(new Forwarder());
 
     challenge.construct(
-      msg.sender,
       _challenger,
       _challengeMetaHash,
       challengePeriodEnd,
