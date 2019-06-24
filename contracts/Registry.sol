@@ -17,7 +17,8 @@ contract Registry is DSAuth {
   address private target; // Keep it here, because this contract is deployed as MutableForwarder
 
   event ChallengeCreatedEvent(address registryEntry, uint version, uint index, address challenger, uint commitPeriodEnd, uint revealPeriodEnd, uint rewardPool, bytes metaHash, uint timestamp);
-  event ChallengeRewardClaimedEvent(address registryEntry, uint version, uint index, address challenger, uint amount, uint timestamp);
+  event ChallengerRewardClaimedEvent(address registryEntry, uint version, uint index, address challenger, uint amount, uint timestamp);
+  event CreatorRewardClaimedEvent(address registryEntry, uint version, uint index, address creator, uint amount, uint timestamp);
   event DistrictConstructedEvent(address registryEntry, uint version, address creator, bytes metaHash, uint deposit, uint challengePeriodEnd, uint32 dntWeight, uint timestamp);
   event DistrictStakeChangedEvent(address registryEntry, uint version, uint dntTotalStaked, uint votingTokenTotalSupply, address staker, uint stakerDntStaked, uint stakerVotingTokenBalance, uint stakedAmount, bool isUnstake, uint timestamp);
   event DistrictMetaHashChangedEvent(address registryEntry, uint version, bytes metaHash, uint timestamp);
@@ -209,11 +210,18 @@ contract Registry is DSAuth {
     emit VoteRewardClaimedEvent(msg.sender, version, index, voter, amount, now);
   }
 
-  function fireChallengeRewardClaimedEvent(uint version, uint index, address challenger, uint amount)
+  function fireChallengerRewardClaimedEvent(uint version, uint index, address challenger, uint amount)
     public
     onlyRegistryEntry
   {
-    emit ChallengeRewardClaimedEvent(msg.sender, version, index, challenger, amount, now);
+    emit ChallengerRewardClaimedEvent(msg.sender, version, index, challenger, amount, now);
+  }
+
+  function fireCreatorRewardClaimedEvent(uint version, uint index, address creator, uint amount)
+    public
+    onlyRegistryEntry
+  {
+    emit CreatorRewardClaimedEvent(msg.sender, version, index, creator, amount, now);
   }
 
 }

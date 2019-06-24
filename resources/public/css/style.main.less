@@ -257,6 +257,10 @@ input {
   white-space: pre;
 }
 
+.help-block {
+
+}
+
 .dropzone {
   display: inline;
   img {
@@ -1491,8 +1495,9 @@ form {
       }
       .form-btns {
         .flex(column,
-              flex-start,
-              flex-start);
+              center,
+              center);
+        margin-bottom: 10px;
         .btn-wrap {
           margin-left: auto;
           margin-right: auto;
@@ -1677,15 +1682,6 @@ form {
       margin-top: 32px;
     }
     .box-cta {
-      margin-top: 30px;
-      form {
-        .center-max(215px);
-      }
-      .form-btns {
-        .flex(column,
-              center,
-              center);
-      }
       fieldset {
         .flexorder(1,
                    center);
@@ -1693,10 +1689,31 @@ form {
         margin-right: 0px;
         margin-bottom: 28px;
       }
-      .cta-btns {
-        .flexorder(2);
-        float: none;
-      }
+    }
+  }
+
+
+  .box-cta.stake-form {
+    width: 100%;
+    margin-top: 30px;
+    form {
+      .center-max(215px);
+    }
+    .form-btns {
+      .flex(column,
+            center,
+            center);
+    }
+    fieldset {
+      .flexorder(1,
+                 center);
+      width: 100%;
+      margin-right: 0px;
+      margin-bottom: 28px;
+    }
+    .cta-btns {
+      .flexorder(2);
+      float: none;
     }
   }
 
@@ -1754,11 +1771,23 @@ form {
         max-width: 120px;
       }
 
+      .tx-name {
+        font-size: 16px;
+      }
+
       .tx-status {
         i.icon {
-          transform: scale(0.7);
+          transform: scale(0.6);
           margin-bottom: 0;
         }
+      }
+
+      .tx-status-text {
+        font-size: 11px;
+      }
+
+      .tx-value {
+        font-size: 13px;
       }
 
       .tx-remove {

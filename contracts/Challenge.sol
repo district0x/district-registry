@@ -5,6 +5,7 @@ import "./math/SafeMath.sol";
 import "minimetoken/contracts/MiniMeToken.sol";
 import "./ownership/Ownable.sol";
 import "./StakeBank.sol";
+import "./RegistryEntry.sol";
 
 contract Challenge is Ownable {
 
@@ -25,6 +26,7 @@ contract Challenge is Ownable {
     uint reclaimedVotesOn;
   }
 
+  RegistryEntry public registryEntry;
   address public challenger;
   bytes public metaHash;
   uint public challengePeriodEnd;
@@ -36,11 +38,13 @@ contract Challenge is Ownable {
 
   uint public votesInclude;
   uint public votesExclude;
-  uint public claimedRewardOn;
+  uint public challengerRewardClaimedOn;
+  uint public creatorRewardClaimedOn;
   mapping(address => Vote) public votes;
 
 
   function construct(
+    RegistryEntry _registryEntry,
     address _challenger,
     bytes _metaHash,
     uint _challengePeriodEnd,
@@ -51,6 +55,7 @@ contract Challenge is Ownable {
   )
     public {
     require(owner == address(0));
+    registryEntry = _registryEntry;
     owner = msg.sender;
     challenger = _challenger;
     metaHash = _metaHash;
@@ -94,7 +99,14 @@ contract Challenge is Ownable {
     public
     view
     returns (bool) {
-    return claimedRewardOn > 0;
+    return challengerRewardClaimedOn > 0;
+  }
+
+  function isCreatorRewardClaimed()
+    public
+    view
+    returns (bool) {
+    return creatorRewardClaimedOn > 0;
   }
 
   function isChallengePeriodActive()
@@ -195,11 +207,20 @@ contract Challenge is Ownable {
    *
    * @return Amount of token
    */
-  function challengeReward(uint deposit)
+  function challengerReward()
     public
     view
     returns (uint) {
+    uint deposit = registryEntry.deposit();
     return deposit.add(deposit.sub(rewardPool));
+  }
+
+  function creatorReward()
+    public
+    view
+    returns (uint) {
+    uint deposit = registryEntry.deposit();
+    return deposit.sub(rewardPool);
   }
 
   function voteOptionIncludeVoterAmount(address _voter)
@@ -207,7 +228,11 @@ contract Challenge is Ownable {
     view
     returns (uint)
   {
-    return votes[_voter].amount;
+    uint amount = 0;
+    if (votes[_voter].option == VoteOption.Include) {
+      amount = votes[_voter].amount;
+    }
+    return amount;
   }
 
   function voteOptionExcludeVoterAmount(address _voter)
@@ -215,7 +240,11 @@ contract Challenge is Ownable {
     view
     returns (uint)
   {
-    return votes[_voter].amount;
+    uint amount = 0;
+    if (votes[_voter].option == VoteOption.Exclude) {
+      amount = votes[_voter].amount;
+    }
+    return amount;
   }
 
   /**
@@ -356,7 +385,8 @@ contract Challenge is Ownable {
     uint amount = 0;
     if (isVoteRevealPeriodOver() &&
         !isVoteRevealed(_voter) &&
-        !areVotesReclaimed(_voter)
+        !areVotesReclaimed(_voter) &&
+        hasVoted(_voter)
     ) {
       votes[_voter].reclaimedVotesOn = now;
       amount = votes[_voter].amount;
@@ -372,7 +402,6 @@ contract Challenge is Ownable {
     uint reward = 0;
     if (isVoteRevealPeriodOver() &&
       !isVoteRewardClaimed(_voter) &&
-      isVoteRevealed(_voter) &&
       votedWinningVoteOption(_voter)
     ) {
       reward = voteReward(_voter);
@@ -383,7 +412,7 @@ contract Challenge is Ownable {
     return reward;
   }
 
-  function safeClaimChallengeReward(address _user, uint deposit)
+  function safeClaimChallengerReward(address _user)
     external
     onlyOwner
     returns (uint)
@@ -394,9 +423,28 @@ contract Challenge is Ownable {
       !isWinningOptionInclude() &&
       challenger == _user
     ) {
-      claimedRewardOn = now;
-      reward = challengeReward(deposit);
+      challengerRewardClaimedOn = now;
+      reward = challengerReward();
+    }
+    return reward;
+  }
+
+  function safeClaimCreatorReward(address _user)
+    external
+    onlyOwner
+    returns (uint)
+  {
+    uint reward = 0;
+    if (isVoteRevealPeriodOver() &&
+      !isCreatorRewardClaimed() &&
+      isWinningOptionInclude() &&
+      registryEntry.creator() == _user
+    ) {
+      creatorRewardClaimedOn = now;
+      reward = creatorReward();
     }
     return reward;
   }
 }
+
+

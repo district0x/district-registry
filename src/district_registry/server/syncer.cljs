@@ -5,10 +5,10 @@
     [cljs-solidity-sha3.core :refer [solidity-sha3]]
     [cljs-web3.core :as web3]
     [cljs-web3.eth :as web3-eth]
-    [district-registry.server.contract.dnt :as dnt]
     [district-registry.server.db :as db]
     [district-registry.server.ipfs :as ipfs]
     [district-registry.server.utils :as server-utils]
+    [district-registry.shared.utils :refer [vote-option->num]]
     [district.server.config :refer [config]]
     [district.server.smart-contracts :refer [replay-past-events]]
     [district.server.web3 :refer [web3]]
@@ -131,7 +131,7 @@
          :challenge/index (bn/number index)
          :vote/voter voter
          :vote/amount (bn/number amount)
-         :vote/option 0                                     ; neither, changed to include/exclude when revealed
+         :vote/option (vote-option->num :vote-option/neither)
          :vote/created-on timestamp}))))
 
 
@@ -165,10 +165,23 @@
 (defn vote-reward-claimed-event [_ {:keys [:args]}]
   (try-catch
     (let [{:keys [:registry-entry :index :timestamp :version :voter]} args]
-      (db/update-vote! {:reg-entry/address registry-entry
-                        :vote/voter voter
-                        :challenge/index (bn/number index)
-                        :vote/claimed-reward-on timestamp}))))
+      (let [index (bn/number index)]
+        (if (db/vote-exists? {:reg-entry/address registry-entry
+                              :vote/voter voter
+                              :challenge/index index})
+          (db/update-vote! {:reg-entry/address registry-entry
+                            :vote/voter voter
+                            :challenge/index index
+                            :vote/claimed-reward-on timestamp})
+          ;; User got reward solely because of staking, he didn't vote
+          ;; We still need to insert vote to mark reward as claimed
+          (db/insert-vote! {:reg-entry/address registry-entry
+                            :challenge/index index
+                            :vote/voter voter
+                            :vote/amount 0
+                            :vote/option (vote-option->num :vote-option/neither)
+                            :vote/created-on timestamp
+                            :vote/claimed-reward-on timestamp}))))))
 
 
 (defn votes-reclaimed-event [_ {:keys [:args]}]
@@ -180,12 +193,20 @@
                         :vote/reclaimed-votes-on timestamp}))))
 
 
-(defn challenge-reward-claimed-event [_ {:keys [:args]}]
+(defn challenger-reward-claimed-event [_ {:keys [:args]}]
   (try-catch
     (let [{:keys [:registry-entry :index :timestamp :version :challenger :amount]} args]
       (db/update-challenge! {:reg-entry/address registry-entry
                              :challenge/index (bn/number index)
-                             :challenge/claimed-reward-on timestamp}))))
+                             :challenge/challenger-reward-claimed-on timestamp}))))
+
+
+(defn creator-reward-claimed-event [_ {:keys [:args]}]
+  (try-catch
+    (let [{:keys [:registry-entry :index :timestamp :version :creator :amount]} args]
+      (db/update-challenge! {:reg-entry/address registry-entry
+                             :challenge/index (bn/number index)
+                             :challenge/creator-reward-claimed-on timestamp}))))
 
 
 (defn stake-changed-event [_ {:keys [:args]}]
@@ -259,7 +280,8 @@
            :district-registry/vote-revealed-event vote-revealed-event
            :district-registry/vote-reward-claimed-event vote-reward-claimed-event
            :district-registry/votes-reclaimed-event votes-reclaimed-event
-           :district-registry/challenge-reward-claimed-event challenge-reward-claimed-event
+           :district-registry/challenger-reward-claimed-event challenger-reward-claimed-event
+           :district-registry/creator-reward-claimed-event creator-reward-claimed-event
            :district-registry/stake-changed-event stake-changed-event}
 
           callback-ids (doseq [[event-key callback] event-callbacks]

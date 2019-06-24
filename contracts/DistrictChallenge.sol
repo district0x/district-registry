@@ -27,23 +27,42 @@ contract DistrictChallenge is Challenge {
     return uint(int(totalStakedAtChallengeCreation()) + stakeDelta + int(votesInclude));
   }
 
+  function votedWinningVoteOption(address _voter)
+    public
+    view
+    returns (bool) {
+
+    return
+      super.votedWinningVoteOption(_voter) ||
+      (winningVoteOption() == VoteOption.Include && voteOptionIncludeVoterAmount(_voter) > 0);
+  }
+
   function voteOptionIncludeVoterAmount(address _voter)
     public
     view
     returns (uint)
   {
-    return uint(
-            int(totalStakedForAtChallengeCreation(_voter)) +
-            stakeDeltasFor[_voter] +
-            int(votes[_voter].amount
-          ));
+    return
+      uint(
+        int(totalStakedForAtChallengeCreation(_voter)) +
+        stakeDeltasFor[_voter] +
+        int(super.voteOptionIncludeVoterAmount(_voter))
+      );
   }
 
-  function totalStakedForAtChallengeCreation(address _address) public view returns (uint256) {
+  function totalStakedForAtChallengeCreation(address _address)
+    public
+    view
+    returns (uint256)
+  {
     return stakeBank.totalStakedForAt(_address, creationBlock);
   }
 
-  function totalStakedAtChallengeCreation() public view returns (uint256) {
+  function totalStakedAtChallengeCreation()
+    public
+    view
+    returns (uint256)
+  {
     return stakeBank.totalStakedAt(creationBlock);
   }
 

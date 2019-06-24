@@ -145,7 +145,7 @@ async function deploy_ParamChangeRegistryDb(deployer, opts) {
 async function deploy_DistrictRegistry(deployer, opts) {
   console.log("Deploying DistrictRegistry");
 
-  await deployer.deploy(DistrictRegistry, Object.assign({}, opts, {gas: 3e6}));
+  await deployer.deploy(DistrictRegistry, Object.assign({}, opts, {gas: 3.2e6}));
   const districtRegistry = await DistrictRegistry.deployed();
 
   assignContract(districtRegistry, "DistrictRegistry", "district-registry");

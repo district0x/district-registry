@@ -78,7 +78,9 @@ type Challenge {
   challenge_revealPeriodEnd: Date
   challenge_votesInclude: Float
   challenge_votesExclude: Float
-  challenge_claimedRewardOn: Date
+  challenge_votesIncludeFromStaking: Float
+  challenge_challengerRewardClaimedOn: Date
+  challenge_creatorRewardClaimedOn: Date
   challenge_winningVoteOption: VoteOption
   challenge_vote(voter: ID): Vote
 }

@@ -13,5 +13,6 @@
    :district-registry/vote-revealed-event [:district-registry-fwd :VoteRevealedEvent {} {:from-block 0 :to-block "latest"}]
    :district-registry/votes-reclaimed-event [:district-registry-fwd :VotesReclaimedEvent {} {:from-block 0 :to-block "latest"}]
    :district-registry/vote-reward-claimed-event [:district-registry-fwd :VoteRewardClaimedEvent {} {:from-block 0 :to-block "latest"}]
-   :district-registry/challenge-reward-claimed-event [:district-registry-fwd :ChallengeRewardClaimedEvent {} {:from-block 0 :to-block "latest"}]
+   :district-registry/challenger-reward-claimed-event [:district-registry-fwd :ChallengerRewardClaimedEvent {} {:from-block 0 :to-block "latest"}]
+   :district-registry/creator-reward-claimed-event [:district-registry-fwd :CreatorRewardClaimedEvent {} {:from-block 0 :to-block "latest"}]
    :district-registry/stake-changed-event [:district-registry-fwd :DistrictStakeChangedEvent {} {:from-block 0 :to-block "latest"}]})

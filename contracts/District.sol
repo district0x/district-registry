@@ -52,6 +52,7 @@ contract District is RegistryEntry {
     public
   {
     require(msg.sender == creator);
+    require(isChallengeable());
     metaHash = _metaHash;
     registry.fireDistrictMetaHashChangedEvent(version, _metaHash);
   }

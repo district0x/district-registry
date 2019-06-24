@@ -6,7 +6,7 @@
     [district-registry.shared.smart-contracts-prod :as smart-contracts-prod]
     [district-registry.shared.smart-contracts-qa :as smart-contracts-qa]
     [mount.core :refer [defstate]])
-  (:require-macros [district-registry.shared.utils :refer [get-environment]]))
+  (:require-macros [district-registry.shared.macros :refer [get-environment]]))
 
 (def skipped-contracts [:ds-guard :param-change-registry-db :district-registry-db :minime-token-factory])
 

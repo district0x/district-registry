@@ -32,13 +32,12 @@
    [mount.core :as mount]
    [print.foo :include-macros true]
    [taoensso.timbre :as log])
-  (:require-macros [district-registry.shared.utils :refer [get-environment]]))
+  (:require-macros [district-registry.shared.macros :refer [get-environment]]))
 
 (nodejs/enable-util-print!)
 
 (def graphql-module (nodejs/require "graphql"))
 (def parse-graphql (aget graphql-module "parse"))
-(def visit (aget graphql-module "visit"))
 
 (defn on-jsload []
   (graphql/restart {:schema (utils/build-schema graphql-schema

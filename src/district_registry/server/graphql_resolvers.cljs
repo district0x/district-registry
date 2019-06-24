@@ -1,19 +1,17 @@
 (ns district-registry.server.graphql-resolvers
   (:require
-    [bignumber.core :as bn]
-    [cljs-web3.eth :as web3-eth]
-    [cljs.nodejs :as nodejs]
     [clojure.pprint :refer [pprint]]
     [district-registry.server.utils :as server-utils]
+    [district-registry.shared.utils :refer [vote-option->kw]]
+    [district.cljs-utils :as cljs-utils]
     [district.graphql-utils :as graphql-utils]
     [district.parsers :as parsers]
     [district.server.config :refer [config]]
     [district.server.db :as db]
     [district.server.smart-contracts :as smart-contracts]
-    [district.server.web3 :as web3]
     [district.shared.error-handling :refer [try-catch-throw]]
-    [district.web3-utils :as web3-utils]
     [honeysql.core :as sql]
+    [honeysql.format :as sql-format]
     [honeysql.helpers :as sqlh]
     [taoensso.timbre :as log]))
 
@@ -25,21 +23,6 @@
     (select-keys @config whitelisted-config-keys)))
 
 (def enum graphql-utils/kw->gql-name)
-
-(def graphql-fields (nodejs/require "graphql-fields"))
-
-(defn- query-fields
-  "Returns the first order fields"
-  [document & [path]]
-  (->> (-> document
-         graphql-fields
-         (js->clj))
-    (#(if-let [p (name path)]
-        (get-in % [p])
-        %))
-    keys
-    (map graphql-utils/gql-name->kw)
-    set))
 
 
 (defn paged-query
@@ -70,14 +53,14 @@
                    [:= :re.reg-entry/address address]]}))
 
 
-(defn get-stake-history [{:keys [:challenge/commit-period-end :stake-history/staker :reg-entry/address]}]
-  (let [query (cond-> {:select [:*]
+(defn get-stake-history [{:keys [:challenge/commit-period-end :stake-history/staker :reg-entry/address]} & [fields]]
+  (let [query (cond-> {:select (or fields [:*])
                        :from [:stake-history]
                        :order-by [[:stake-history/staked-on :desc]]
                        :where [:= :reg-entry/address address]
                        :limit 1}
                 staker (sqlh/merge-where [:= :stake-history/staker staker])
-                commit-period-end (sqlh/merge-where [:< :stake-history/staked-on commit-period-end]))]
+                commit-period-end (sqlh/merge-where [:<= :stake-history/staked-on commit-period-end]))]
     (db/get query)))
 
 
@@ -106,7 +89,7 @@
 
 
 (defn reg-entry-status-sql-clause [now]
-  (sql/call                                                 ;; TODO: can we remove aliases here?
+  (sql/call
     :case
     [:and
      [:< now :re.reg-entry/challenge-period-end]
@@ -114,7 +97,18 @@
     [:< now :c.challenge/commit-period-end] (enum :reg-entry.status/commit-period)
     [:< now :c.challenge/reveal-period-end] (enum :reg-entry.status/reveal-period)
     [:or
-     [:< :c.challenge/votes-exclude :c.challenge/votes-include]
+     [:< :c.challenge/votes-exclude
+      (sql/raw
+        (str (sql-format/*name-transform-fn* (cljs-utils/kw->str :c.challenge/votes-include)) " + ("
+             (first (sql/format
+                      {:select [(sql/call :case
+                                          [:= :%count.* (sql/inline 0)] (sql/inline 0)
+                                          :else :stake-history/dnt-total-staked)]
+                       :from [[:stake-history :sh]]
+                       :where [:and
+                               [:= :re.reg-entry/address :sh.reg-entry/address]
+                               [:<= :sh.stake-history/staked-on :c.challenge/commit-period-end]]}))
+             ")"))]
      [:< :re.reg-entry/challenge-period-end now]] (enum :reg-entry.status/whitelisted)
     :else (enum :reg-entry.status/blacklisted)))
 
@@ -224,48 +218,64 @@
       sql-query)))
 
 
-(defn vote->option-resolver [{:keys [:vote/option] :as vote}]
+(defn vote->option-resolver [{:keys [:vote/option]}]
   (cond
     (= 1 option) (enum :vote-option/include)
     (= 2 option) (enum :vote-option/exclude)
     :else (enum :vote-option/neither)))
 
-
 (defn reg-entry->status-resolver [reg-entry]
   (enum (reg-entry-status (server-utils/now-in-seconds) reg-entry)))
 
+
+(defn- winning-vote-option [{:keys [:challenge/votes-exclude :challenge/votes-include :stake-history/dnt-total-staked]}]
+  (if (>= votes-exclude (+ votes-include (or dnt-total-staked 0)))
+    :vote-option/exclude
+    :vote-option/include))
+
+
 (defn vote->reward-resolver [{:keys [:reg-entry/address
-                                     :challenge/commit-period-end
                                      :challenge/index
                                      :vote/option
                                      :vote/voter
-                                     :vote/amount] :as vote}]
+                                     :vote/amount
+                                     :challenge/reward-pool
+                                     :challenge/votes-include
+                                     :challenge/votes-exclude
+                                     :challenge/commit-period-end] :as vote}]
   (log/debug "vote->reward-resolver args" vote)
   (try-catch-throw
-    (let [now (server-utils/now-in-seconds)
-          status (reg-entry-status now vote)
-
-          {:keys [:stake-history/staker-dnt-staked]}
+    (let [{:keys [:stake-history/staker-dnt-staked] :as query1}
           (get-stake-history {:reg-entry/address address
                               :challenge/commit-period-end commit-period-end
                               :stake-history/staker voter})
 
-          {:keys [:challenge/reward-pool] :as sql-query}
-          (db/get
-            {:select [:challenge/reward-pool]
-             :from [:challenges]
-             :where [:and
-                     [:= address :challenges.reg-entry/address]
-                     [:= index :challenges.challenge/index]]})]
-      (log/debug "vote->reward-resolver query" sql-query)
-      (cond
-        (and (= :reg-entry.status/whitelisted status)
-             (= option 1))
-        (web3-utils/eth->wei (/ reward-pool (+ amount (or staker-dnt-staked 0))))
+          {:keys [:stake-history/dnt-total-staked] :as query2}
+          (get-stake-history {:reg-entry/address address
+                              :challenge/commit-period-end commit-period-end})
 
-        (and (= :reg-entry.status/blacklisted status)
-             (= option 2))
-        (web3-utils/eth->wei (/ reward-pool amount))
+          winning-vote-opt (winning-vote-option
+                             {:challenge/votes-exclude votes-exclude
+                              :challenge/votes-include votes-include
+                              :stake-history/dnt-total-staked dnt-total-staked})
+          option (vote-option->kw option)]
+      (log/debug "vote->reward-resolver query" [query1 query2])
+      (cond
+        (and (= winning-vote-opt :vote-option/include)
+             (= option :vote-option/include))
+        (let [amount (+ amount (or staker-dnt-staked 0))
+              votes-include (+ votes-include (or dnt-total-staked 0))]
+          (/ (* amount reward-pool) votes-include))
+
+        (and (= winning-vote-opt :vote-option/include)
+             (not= option :vote-option/include)
+             (pos? staker-dnt-staked))
+        (let [votes-include (+ votes-include (or dnt-total-staked 0))]
+          (/ (* staker-dnt-staked reward-pool) votes-include))
+
+        (and (= winning-vote-opt :vote-option/exclude)
+             (= option :vote-option/exclude))
+        (/ (* amount reward-pool) votes-exclude)
 
         :else nil))))
 
@@ -277,7 +287,7 @@
                                      :vote/amount] :as vote}]
   (log/debug "vote->amount-resolver args" vote)
   (try-catch-throw
-    (if (= option 1)
+    (if (= (vote-option->kw option) :vote-option/include)
       (let [{:keys [:stake-history/staker-dnt-staked]}
             (get-stake-history {:reg-entry/address address
                                 :challenge/commit-period-end commit-period-end
@@ -287,10 +297,10 @@
 
 
 (defn vote->amount-from-staking-resolver [{:keys [:reg-entry/address
-                                                 :challenge/commit-period-end
-                                                 :vote/option
-                                                 :vote/voter
-                                                 :vote/amount] :as vote}]
+                                                  :challenge/commit-period-end
+                                                  :vote/option
+                                                  :vote/voter
+                                                  :vote/amount] :as vote}]
   (log/debug "vote->amount-from-staking-resolver args" vote)
   (try-catch-throw
     (let [{:keys [:stake-history/staker-dnt-staked]}
@@ -328,16 +338,36 @@
       (+ votes-include (or dnt-total-staked 0)))))
 
 
+(defn challenge->votes-include-from-staking-resolver [{:keys [:challenge/commit-period-end
+                                                              :reg-entry/address]
+                                                       :as challenge}]
+  (log/debug "challenge->votes-include-from-staking-resolver" challenge)
+  (try-catch-throw
+    (let [{:keys [:stake-history/dnt-total-staked]}
+          (get-stake-history {:challenge/commit-period-end commit-period-end
+                              :reg-entry/address address})]
+      dnt-total-staked)))
+
+
 (defn challenge->vote [{:keys [:reg-entry/address :challenge/index] :as challenge} {:keys [:voter]}]
   (log/debug "challenge->vote args" {:challenge challenge :voter voter})
   (try-catch-throw
-    (db/get {:select [:*]
-             :from [:votes]
-             :join [:reg-entries [:= :reg-entries.reg-entry/address :votes.reg-entry/address]]
-             :where [:and
-                     [:= :votes.vote/voter voter]
-                     [:= :votes.reg-entry/address address]
-                     [:= :votes.challenge/index index]]})))
+    (let [vote (db/get {:select [:*]
+                        :from [:votes]
+                        :join [:reg-entries [:= :reg-entries.reg-entry/address :votes.reg-entry/address]]
+                        :where [:and
+                                [:= :votes.vote/voter voter]
+                                [:= :votes.reg-entry/address address]
+                                [:= :votes.challenge/index index]]})]
+      (merge
+        challenge
+        (if (seq vote)
+          vote
+          {:reg-entry/address address
+           :challenge/index index
+           :vote/voter voter
+           :vote/option 0
+           :vote/amount 0})))))
 
 
 (defn district-list->items-resolver [district-list]
@@ -391,7 +421,8 @@
 (def Challenge
   {:challenge/vote challenge->vote
    :challenge/winning-vote-option challenge->winning-vote-option-resolver
-   :challenge/votes-include challenge->votes-include-resolver})
+   :challenge/votes-include challenge->votes-include-resolver
+   :challenge/votes-include-from-staking challenge->votes-include-from-staking-resolver})
 
 (def Vote
   {:vote/option vote->option-resolver

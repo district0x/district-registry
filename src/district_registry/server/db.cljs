@@ -77,7 +77,7 @@
    [:challenge/reveal-period-end :unsigned :integer default-nil]
    [:challenge/votes-include :BIG :INT default-zero]
    [:challenge/votes-exclude :BIG :INT default-zero]
-   [:challenge/claimed-reward-on :unsigned :integer default-nil]
+   [:challenge/challenger-reward-claimed-on :unsigned :integer default-nil]
    [(sql/call :primary-key :challenge/index :reg-entry/address)]
    [(sql/call :foreign-key :reg-entry/address) (sql/call :references :reg-entries :reg-entry/address)]])
 
@@ -229,6 +229,8 @@
 (def insert-vote! (create-insert-fn :votes votes-column-names))
 (def update-vote! (create-update-fn :votes votes-column-names [:reg-entry/address :challenge/index :vote/voter]))
 (def get-vote (create-get-fn :votes [:reg-entry/address :challenge/index :vote/voter]))
+(defn vote-exists? [& args]
+  (boolean (seq (apply get-vote args))))
 
 (def insert-stake-balance! (create-insert-fn :stake-balances stake-balances-column-names))
 (def insert-or-replace-stake-balance! (create-insert-fn :stake-balances stake-balances-column-names {:insert-or-replace? true}))

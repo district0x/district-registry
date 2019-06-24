@@ -16,7 +16,7 @@
     [reagent.core :as r]
     [reagent.ratom :refer [reaction]]
     [district.web3-utils :as web3-utils])
-  (:require-macros [district-registry.shared.utils :refer [get-environment]]))
+  (:require-macros [district-registry.shared.macros :refer [get-environment]]))
 
 
 (defn param-search-query [param]

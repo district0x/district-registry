@@ -106,6 +106,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
     Challenge challenge = Challenge(new Forwarder());
 
     challenge.construct(
+      this,
       _challenger,
       _challengeMetaHash,
       challengePeriodEnd,
@@ -235,10 +236,16 @@ contract RegistryEntry is ApproveAndCallFallBack {
   {
     Challenge challenge = getChallenge(_challengeIndex);
 
-    uint challengeReward = challenge.safeClaimChallengeReward(_user, deposit);
-    if (challengeReward > 0) {
-      require(registryToken.transfer(challenge.challenger(), challengeReward));
-      registry.fireChallengeRewardClaimedEvent(version, _challengeIndex, challenge.challenger(), challengeReward);
+    uint challengerReward = challenge.safeClaimChallengerReward(_user);
+    if (challengerReward > 0) {
+      require(registryToken.transfer(challenge.challenger(), challengerReward));
+      registry.fireChallengerRewardClaimedEvent(version, _challengeIndex, challenge.challenger(), creatorReward);
+    }
+
+    uint creatorReward = challenge.safeClaimCreatorReward(_user);
+    if (creatorReward > 0) {
+      require(registryToken.transfer(creator, creatorReward));
+      registry.fireCreatorRewardClaimedEvent(version, _challengeIndex, creator, creatorReward);
     }
 
     uint voteReward = challenge.safeClaimVoteReward(_user);

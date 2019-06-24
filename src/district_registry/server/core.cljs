@@ -19,7 +19,7 @@
     [district.server.web3-watcher]
     [mount.core :as mount]
     [taoensso.timbre :as log :refer-macros [info warn error]])
-  (:require-macros [district-registry.shared.utils :refer [get-environment]]))
+  (:require-macros [district-registry.shared.macros :refer [get-environment]]))
 
 (nodejs/enable-util-print!)
 

@@ -1,10 +1,8 @@
 (ns district-registry.ui.contract.registry-entry
   (:require
     [cljs-solidity-sha3.core :refer [solidity-sha3]]
-    [cljs-web3.core :as web3]
     [cljs-web3.eth :as web3-eth]
-    [cljs.spec.alpha :as s]
-    [district-registry.shared.contract.registry-entry :as reg-entry]
+    [district-registry.shared.utils :refer [vote-option->num]]
     [district.cljs-utils :as cljs-utils]
     [district.ui.logging.events :as logging]
     [district.ui.notification.events :as notification-events]
@@ -53,7 +51,7 @@
   (fn [{:keys [:db :store]} [{:keys [:reg-entry/address :vote/amount :vote/option :district/name]}]]
     (let [active-account (account-queries/active-account db)
           salt (cljs-utils/rand-str 5)
-          secret-hash (solidity-sha3 (reg-entry/vote-option->num option) salt)
+          secret-hash (solidity-sha3 (vote-option->num option) salt)
           extra-data (web3-eth/contract-get-data (contract-queries/instance db :district address)
                                                  :commit-vote
                                                  active-account
@@ -92,7 +90,7 @@
       {:dispatch [::tx-events/send-tx
                   {:instance (contract-queries/instance db :district address)
                    :fn :reveal-vote
-                   :args [(reg-entry/vote-option->num option) salt]
+                   :args [(vote-option->num option) salt]
                    :tx-opts {:from active-account}
                    :tx-id {:reveal-vote {:reg-entry/address address}}
                    :tx-log {:name tx-log-name :related-href {:name :route/detail :params {:address address}}}
@@ -158,3 +156,12 @@
   interceptors
   (fn [_ [{:keys [:reg-entry/address]}]]
     {:dispatch [::router-events/navigate :route/detail {:address address}]}))
+
+
+(re-frame/reg-event-fx
+  ::reveal-period-finished
+  (constantly nil))
+
+(re-frame/reg-event-fx
+  ::commit-period-finished
+  (constantly nil))
