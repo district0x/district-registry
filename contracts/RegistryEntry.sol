@@ -2,10 +2,10 @@ pragma solidity ^0.4.24;
 
 import "./Challenge.sol";
 import "./Registry.sol";
-import "./math/SafeMath.sol";
-import "minimetoken/contracts/MiniMeToken.sol";
+import "@aragon/os/contracts/lib/math/SafeMath.sol";
+import "@aragon/apps-shared-minime/contracts/MiniMeToken.sol";
 import "./utils/AddressUtils.sol";
-import "./proxy/Forwarder.sol";
+import "./proxy/Forwarder1.sol";
 
 /**
  * @title Contract created with each submission to a TCR
@@ -103,7 +103,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
     ).mul(deposit)) / 100;
     uint voteQuorum = registry.db().getUIntValue(registry.voteQuorumKey());
 
-    Challenge challenge = Challenge(new Forwarder());
+    Challenge challenge = Challenge(new Forwarder1());
 
     challenge.construct(
       this,

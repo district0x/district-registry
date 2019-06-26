@@ -1,8 +1,8 @@
 pragma solidity ^0.4.18;
 
 import "./Registry.sol";
-import "./proxy/Forwarder.sol";
-import "minimetoken/contracts/MiniMeToken.sol";
+import "./proxy/Forwarder1.sol";
+import "@aragon/apps-shared-minime/contracts/MiniMeToken.sol";
 
 /**
  * @title Base Factory contract for creating RegistryEntry contracts
@@ -31,7 +31,7 @@ contract RegistryEntryFactory is ApproveAndCallFallBack {
    */
   function createRegistryEntry(address _creator) internal returns (address) {
     uint deposit = registry.db().getUIntValue(depositKey);
-    address regEntry = new Forwarder();
+    address regEntry = new Forwarder1();
     require(registryToken.transferFrom(_creator, this, deposit));
     require(registryToken.approve(regEntry, deposit));
     registry.addRegistryEntry(regEntry);

@@ -1,8 +1,8 @@
 pragma solidity ^0.4.18;
 
-import "../proxy/DelegateProxy.sol";
+import  "./ForwarderDelegateProxy.sol";
 
-contract Forwarder2 is DelegateProxy {
+contract Forwarder2 is ForwarderDelegateProxy {
   // After compiling contract, `beefbeef...` is replaced in the bytecode by the real target address
   address public constant target = 0xFEebfEebfeEBfeEBFEeBFEebfEeBFeeBfEebFeeb; // checksumed to silence warning
 

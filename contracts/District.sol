@@ -4,6 +4,7 @@ import "./RegistryEntry.sol";
 import "./StakeBank.sol";
 import "./proxy/Forwarder2.sol";
 import "./DistrictChallenge.sol";
+import "./KitDistrict.sol";
 
 
 /**
@@ -17,6 +18,7 @@ import "./DistrictChallenge.sol";
 contract District is RegistryEntry {
 
   StakeBank public stakeBank;
+  KitDistrict public constant kitDistrict = KitDistrict(0xaAaAaAaaAaAaAaaAaAAAAAAAAaaaAaAaAaaAaaAa);
 
   /**
    * @dev IPFS hash of file that contains all data from form fields
@@ -36,7 +38,8 @@ contract District is RegistryEntry {
     address _creator,
     uint _version,
     bytes _metaHash,
-    uint32 _dntWeight
+    uint32 _dntWeight,
+    string _aragonId
   )
     public
   {
@@ -45,6 +48,8 @@ contract District is RegistryEntry {
     stakeBank.construct(_dntWeight);
     challengePeriodEnd = ~uint(0);
     metaHash = _metaHash;
+    Kernel dao;
+    (dao,,,,) = kitDistrict.createDAO(_aragonId, MiniMeToken(stakeBank));
     registry.fireDistrictConstructedEvent(version, creator, metaHash, deposit, challengePeriodEnd, _dntWeight);
   }
 

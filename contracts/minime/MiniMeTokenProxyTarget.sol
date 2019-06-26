@@ -25,9 +25,7 @@ pragma solidity ^0.4.18;
 ///  affecting the original token
 /// @dev It is ERC20 compliant, but still needs to under go further testing.
 
-import "minimetoken/contracts/Controlled.sol";
-import "minimetoken/contracts/MiniMeToken.sol";
-import "minimetoken/contracts/TokenController.sol";
+import "@aragon/apps-shared-minime/contracts/MiniMeToken.sol";
 
 /// @dev The actual token contract, the default controller is the msg.sender
 ///  that deploys the contract, so usually this token will be deployed by a
@@ -185,7 +183,7 @@ contract MiniMeTokenProxyTarget is Controlled {
 
     // Alerts the token controller of the transfer
     if (isContract(controller)) {
-      require(TokenController(controller).onTransfer(_from, _to, _amount));
+      require(ITokenController(controller).onTransfer(_from, _to, _amount));
     }
 
     // First update the balance array with the new value for the address
@@ -226,7 +224,7 @@ contract MiniMeTokenProxyTarget is Controlled {
 
     // Alerts the token controller of the approve function call
     if (isContract(controller)) {
-      require(TokenController(controller).onApprove(msg.sender, _spender, _amount));
+      require(ITokenController(controller).onApprove(msg.sender, _spender, _amount));
     }
 
     allowed[msg.sender][_spender] = _amount;
@@ -350,7 +348,7 @@ contract MiniMeTokenProxyTarget is Controlled {
   ) public returns(address) {
     if (_snapshotBlock == 0) _snapshotBlock = block.number;
     MiniMeToken cloneToken = tokenFactory.createCloneToken(
-      this,
+      MiniMeToken(this),
       _snapshotBlock,
       _cloneTokenName,
       _cloneDecimalUnits,
@@ -483,7 +481,7 @@ contract MiniMeTokenProxyTarget is Controlled {
   ///  ether and creates tokens as described in the token controller contract
   function () public payable {
     require(isContract(controller));
-    require(TokenController(controller).proxyPayment.value(msg.value)(msg.sender));
+    require(ITokenController(controller).proxyPayment.value(msg.value)(msg.sender));
   }
 
   //////////

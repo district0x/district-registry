@@ -98,7 +98,17 @@
                        ;; truffle script deps
                        [jsedn "0.4.1"]
                        [minimetoken "0.2.0"]
-                       [openzeppelin-solidity "2.3.0"]]}
+                       [openzeppelin-solidity "2.3.0"]
+
+                       ;; Aragon dependencies:
+                       ["@aragon/os" "4.2.0"]
+                       ["@aragon/kits-base" "1.0.0"]
+                       ["@aragon/id" "2.0.3"]
+                       ["@aragon/apps-voting" "2.1.0"]
+                       ["@aragon/apps-vault" "4.1.0"]
+                       ["@aragon/apps-finance" "3.0.0"]
+                       ["eth-ens-namehash" "2.0.8"]
+                       ["web3-utils" "1.0.0-beta.55"]]}
 
   :solc {:src-path "resources/public/contracts/src"
          :build-path "resources/public/contracts/build"

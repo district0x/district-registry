@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "minimetoken/contracts/MiniMeToken.sol";
+import "@aragon/apps-shared-minime/contracts/MiniMeToken.sol";
 
 /**
  * @title Token used for curation of DistrictRegistry TCR
@@ -9,11 +9,11 @@ import "minimetoken/contracts/MiniMeToken.sol";
  */
 
 contract District0xNetworkToken is MiniMeToken {
-  constructor(address _tokenFactory, uint _mintedAmount)
+  constructor(MiniMeTokenFactory _tokenFactory, uint _mintedAmount)
     public
     MiniMeToken(
       _tokenFactory,
-      0x0,
+      MiniMeToken(address(0)),
       0,
       "District0x Network Token",
       18,

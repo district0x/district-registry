@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-contract DelegateProxy {
+contract ForwarderDelegateProxy {
   /**
   * @dev Performs a delegatecall and returns whatever the delegatecall returned (entire context execution will return!)
   * @param _dst Destination address to perform the delegatecall

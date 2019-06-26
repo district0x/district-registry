@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../proxy/DelegateProxy.sol";
+import  "./ForwarderDelegateProxy.sol";
 import "../auth/DSAuth.sol";
 
 /**
@@ -13,7 +13,7 @@ import "../auth/DSAuth.sol";
  * and all events stay still accessible on the same address.
  */
 
-contract MutableForwarder is DelegateProxy, DSAuth {
+contract MutableForwarder is ForwarderDelegateProxy, DSAuth {
 
   address public target = 0xBEeFbeefbEefbeEFbeEfbEEfBEeFbeEfBeEfBeef; // checksumed to silence warning
 

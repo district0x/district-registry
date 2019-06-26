@@ -1,10 +1,10 @@
 pragma solidity ^0.4.24;
 
 import "./Power.sol";
-import "./math/SafeMath.sol";
+import "@aragon/os/contracts/lib/math/SafeMath.sol";
 import "./ownership/Ownable.sol";
 import "./minime/MiniMeTokenProxyTarget.sol";
-import "./proxy/Forwarder.sol";
+import "./proxy/Forwarder1.sol";
 
 contract StakeBank is Ownable, MiniMeTokenProxyTarget {
 
@@ -57,7 +57,7 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     owner = msg.sender;
     changeController(owner);
     dntWeight = _dntWeight;
-    power = Power(new Forwarder());
+    power = Power(new Forwarder1());
     power.construct();
   }
 

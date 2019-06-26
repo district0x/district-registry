@@ -1,8 +1,8 @@
 pragma solidity ^0.4.24;
 
 import "./Registry.sol";
-import "./math/SafeMath.sol";
-import "minimetoken/contracts/MiniMeToken.sol";
+import "@aragon/os/contracts/lib/math/SafeMath.sol";
+import "@aragon/apps-shared-minime/contracts/MiniMeToken.sol";
 import "./ownership/Ownable.sol";
 import "./StakeBank.sol";
 import "./RegistryEntry.sol";
