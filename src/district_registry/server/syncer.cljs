@@ -39,7 +39,7 @@
 
 (defn district-constructed-event [_ {:keys [:args]}]
   (try-catch
-    (let [{:keys [:registry-entry :timestamp :creator :meta-hash :version :deposit :challenge-period-end :dnt-weight]} args]
+    (let [{:keys [:registry-entry :timestamp :creator :meta-hash :version :deposit :challenge-period-end :dnt-weight :aragon-dao :aragon-id]} args]
       (let [registry-entry-data {:reg-entry/address registry-entry
                                  :reg-entry/creator creator
                                  :reg-entry/version version
@@ -50,7 +50,9 @@
                       :district/meta-hash (web3/to-ascii meta-hash)
                       :district/dnt-weight (bn/number dnt-weight)
                       :district/dnt-staked 0
-                      :district/total-supply 0}]
+                      :district/total-supply 0
+                      :district/aragon-dao aragon-dao
+                      :district/aragon-id aragon-id}]
         (insert-registry-entry! registry-entry-data timestamp)
         (db/insert-district! district)
         (let [{:keys [:district/meta-hash]} district]

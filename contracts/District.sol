@@ -48,9 +48,8 @@ contract District is RegistryEntry {
     stakeBank.construct(_dntWeight);
     challengePeriodEnd = ~uint(0);
     metaHash = _metaHash;
-    Kernel dao;
-    (dao,,,,) = kitDistrict.createDAO(_aragonId, MiniMeToken(stakeBank));
-    registry.fireDistrictConstructedEvent(version, creator, metaHash, deposit, challengePeriodEnd, _dntWeight);
+    Kernel aragonDao = kitDistrict.createDAO(_aragonId, MiniMeToken(stakeBank));
+    registry.fireDistrictConstructedEvent(version, creator, metaHash, deposit, challengePeriodEnd, _dntWeight, address(aragonDao), _aragonId);
   }
 
   function setMetaHash(bytes _metaHash)

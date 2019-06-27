@@ -19,7 +19,7 @@ contract Registry is DSAuth {
   event ChallengeCreatedEvent(address registryEntry, uint version, uint index, address challenger, uint commitPeriodEnd, uint revealPeriodEnd, uint rewardPool, bytes metaHash, uint timestamp);
   event ChallengerRewardClaimedEvent(address registryEntry, uint version, uint index, address challenger, uint amount, uint timestamp);
   event CreatorRewardClaimedEvent(address registryEntry, uint version, uint index, address creator, uint amount, uint timestamp);
-  event DistrictConstructedEvent(address registryEntry, uint version, address creator, bytes metaHash, uint deposit, uint challengePeriodEnd, uint32 dntWeight, uint timestamp);
+  event DistrictConstructedEvent(address registryEntry, uint version, address creator, bytes metaHash, uint deposit, uint challengePeriodEnd, uint32 dntWeight, address aragonDao, string aragonId, uint timestamp);
   event DistrictStakeChangedEvent(address registryEntry, uint version, uint dntTotalStaked, uint votingTokenTotalSupply, address staker, uint stakerDntStaked, uint stakerVotingTokenBalance, uint stakedAmount, bool isUnstake, uint timestamp);
   event DistrictMetaHashChangedEvent(address registryEntry, uint version, bytes metaHash, uint timestamp);
   event VotesReclaimedEvent(address registryEntry, uint version, uint index, address voter, uint amount, uint timestamp);
@@ -146,12 +146,14 @@ contract Registry is DSAuth {
     bytes metaHash,
     uint deposit,
     uint challengePeriodEnd,
-    uint32 dntWeight
+    uint32 dntWeight,
+    address aragonDao,
+    string aragonId
   )
     public
     onlyRegistryEntry
   {
-    emit DistrictConstructedEvent(msg.sender, version, creator, metaHash, deposit, challengePeriodEnd, dntWeight, now);
+    emit DistrictConstructedEvent(msg.sender, version, creator, metaHash, deposit, challengePeriodEnd, dntWeight, aragonDao, aragonId, now);
   }
   function fireDistrictStakeChangedEvent(uint version, uint dntTotalStaked, uint votingTokenTotalSupply, address staker, uint stakerDntStaked, uint stakerVotingTokenBalance, uint stakedAmount, bool isUnstake)
     public

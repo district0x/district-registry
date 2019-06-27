@@ -125,6 +125,8 @@ type District implements RegEntry {
   district_dntWeight: Int
   district_facebookUrl: String
   district_twitterUrl: String
+  district_aragonDao: String
+  district_aragonId: String
 
   district_dntStaked: Float
   district_totalSupply: Float

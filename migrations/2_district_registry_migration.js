@@ -21,12 +21,11 @@ const dntPlaceholder = "deaddeaddeaddeaddeaddeaddeaddeaddeaddead";
 const forwarder1TargetPlaceholder = "beefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 const forwarder2TargetPlaceholder = "feebfeebfeebfeebfeebfeebfeebfeebfeebfeeb";
 const minimeTokenFactoryPlaceholder = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+const kitDistrictPlaceholder = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
 const zeroAddress = "0x0000000000000000000000000000000000000000";
 const dsGuardANY = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 const aragonENSNode = namehash.hash("aragonid.eth");
-const kernelAppBasesNamespace = sha3("base");
-const appManagerRole = sha3("APP_MANAGER_ROLE");
 
 //
 // Contract Artifacts
@@ -59,6 +58,10 @@ let DAOFactory = requireContract("DAOFactory", "DAOFactory");
 let ENS = requireContract("ENS", "ENS");
 let PublicResolver = requireContract("PublicResolver", "PublicResolver");
 let FIFSResolvingRegistrar = requireContract("FIFSResolvingRegistrar", "FIFSResolvingRegistrar");
+let APMRegistry = requireContract("APMRegistry", "APMRegistry");
+let APMRegistryFactory = requireContract("APMRegistryFactory", "APMRegistryFactory");
+let Repo = requireContract("Repo", "Repo");
+let ENSSubdomainRegistrar = requireContract("ENSSubdomainRegistrar", "ENSSubdomainRegistrar");
 let Voting = requireContract("Voting", "Voting");
 let Finance = requireContract("Finance", "Finance");
 let Vault = requireContract("Vault", "Vault");
@@ -190,7 +193,7 @@ async function deploy_DistrictRegistryForwarder(deployer, opts) {
 async function deploy_ParamChangeRegistry(deployer, opts) {
   console.log("Deploying ParamChangeRegistry");
 
-  await deployer.deploy(ParamChangeRegistry, Object.assign({}, opts, {gas: 3.8e6}));
+  await deployer.deploy(ParamChangeRegistry, Object.assign({}, opts, {gas: 4e6}));
   const paramChangeRegistry = await ParamChangeRegistry.deployed();
 
   assignContract(paramChangeRegistry, "ParamChangeRegistry", "param-change-registry");
@@ -279,11 +282,13 @@ async function deploy_District(deployer, opts) {
   const districtChallenge = await DistrictChallenge.deployed();
   const stakeBank = await StakeBank.deployed();
   const districtRegistryForwarder = await DistrictRegistryForwarder.deployed();
+  const kitDistrict = await KitDistrict.deployed();
 
   linkBytecode(District, dntPlaceholder, dnt.address);
   linkBytecode(District, registryPlaceholder, districtRegistryForwarder.address);
   linkBytecode(District, forwarder1TargetPlaceholder, districtChallenge.address);
   linkBytecode(District, forwarder2TargetPlaceholder, stakeBank.address);
+  linkBytecode(District, kitDistrictPlaceholder, kitDistrict.address);
 
   await deployer.deploy(District, Object.assign({}, opts, {gas: 6e6}));
   const district = await District.deployed();
@@ -363,10 +368,6 @@ async function deploy_Kernel(deployer, opts) {
   assignContract(paramChangeFactory, "ParamChangeFactory", "param-change-factory");
 }
 
-async function deploy_KitDistrict(deployer, opts) {
-  console.log("Deploying KitDistrict");
-}
-
 // Aragon Deployments
 
 async function deploy_ACL(deployer, opts) {
@@ -392,10 +393,6 @@ async function deploy_Kernel(deployer, opts) {
 
   await deployer.deploy(Kernel, true, Object.assign({}, opts, {gas: 4.6e6}));
   const kernel = await Kernel.deployed();
-
-//  console.log("Setting active account APP_MANAGER_ROLE for Kernel");
-//  const acl = await ACL.deployed();
-//  acl.
 
   assignContract(kernel, "Kernel", "aragon/kernel");
 }
@@ -432,7 +429,65 @@ async function deploy_PublicResolver(deployer, opts) {
   await deployer.deploy(PublicResolver, ens.address, Object.assign({}, opts, {gas: 1.9e6}));
   const publicResolver = await PublicResolver.deployed();
 
+  console.log("Setting active account to be owner of resolver.eth");
+  await ens.setSubnodeOwner(namehash.hash("eth"), sha3("resolver"), opts.from, Object.assign({}, opts, {gas: 0.2e6}));
+
+  console.log("Setting resolver for resolver.eth");
+  await ens.setResolver(namehash.hash("resolver.eth"), publicResolver.address, Object.assign({}, opts, {gas: 0.2e6}));
+
+  console.log("Setting resolving address for resolver.eth");
+  await publicResolver.setAddr(namehash.hash("resolver.eth"), publicResolver.address, Object.assign({}, opts, {gas: 0.3e6}));
+
   assignContract(publicResolver, "PublicResolver", "ens/public-resolver");
+}
+
+async function deploy_ENSSubdomainRegistrar(deployer, opts) {
+  console.log("Deploying Aragon ENSSubdomainRegistrar");
+
+  const ens = await ENS.deployed();
+  await deployer.deploy(ENSSubdomainRegistrar, Object.assign({}, opts, {gas: 6e6}));
+  const ensSubdomainRegistrar = await ENSSubdomainRegistrar.deployed();
+
+  assignContract(ensSubdomainRegistrar, "ENSSubdomainRegistrar", "ens/ens-subdomain-registrar");
+}
+
+async function deploy_Repo(deployer, opts) {
+  console.log("Deploying Aragon Repo");
+
+  await deployer.deploy(Repo, Object.assign({}, opts, {gas: 6e6}));
+  const repo = await Repo.deployed();
+
+  assignContract(Repo, "Repo", "aragon/repo");
+}
+
+async function deploy_APMRegistry(deployer, opts) {
+  console.log("Deploying Aragon APMRegistry");
+
+  await deployer.deploy(APMRegistry, Object.assign({}, opts, {gas: 6e6}));
+  const apmRegistry = await APMRegistry.deployed();
+
+  assignContract(apmRegistry, "APMRegistry", "aragon/apm-registry");
+}
+
+async function deploy_APMRegistryFactory(deployer, opts) {
+  console.log("Deploying Aragon APMRegistryFactory");
+
+  const ens = await ENS.deployed();
+  const daoFactory = await DAOFactory.deployed();
+  const repo = await Repo.deployed();
+  const ensSubdomainRegistrar = await ENSSubdomainRegistrar.deployed();
+  const apmRegistry = await APMRegistry.deployed();
+
+  await deployer.deploy(APMRegistryFactory, daoFactory.address, apmRegistry.address, repo.address, ensSubdomainRegistrar.address, ens.address, zeroAddress, Object.assign({}, opts, {gas: 6e6}));
+  const apmRegistryFactory = await APMRegistryFactory.deployed();
+
+  console.log("Setting APMRegistryFactory to be owner of aragonpm.eth");
+  await ens.setSubnodeOwner(namehash.hash("eth"), sha3("aragonpm"), apmRegistryFactory.address, Object.assign({}, opts, {gas: 0.2e6}));
+
+  console.log("Creating new APM at aragonpm.eth");
+  await apmRegistryFactory.newAPM(namehash.hash("eth"), sha3("aragonpm"), opts.from, Object.assign({}, opts, {gas: 7e6}));
+
+  assignContract(apmRegistryFactory, "APMRegistryFactory", "aragon/apm-registry-factory");
 }
 
 
@@ -451,15 +506,21 @@ async function deploy_FIFSResolvingRegistrar(deployer, opts) {
   assignContract(fifsResolvingRegistrar, "FIFSResolvingRegistrar", "aragon/fifs-resolving-registrar");
 }
 
+async function createRepo(repoName, contractAddress, opts) {
+  const publicResolver = await PublicResolver.deployed();
+  const apmRegistryAddress = await publicResolver.addr(namehash.hash("aragonpm.eth"));
+  const apmRegistry = await APMRegistry.at(apmRegistryAddress);
+  await apmRegistry.newRepoWithVersion(repoName, opts.from, [1,0,0], contractAddress, zeroAddress, Object.assign({}, opts, {gas: 4e6}));
+}
+
 async function deploy_Voting(deployer, opts) {
   console.log("Deploying Aragon Voting");
 
   await deployer.deploy(Voting, Object.assign({}, opts, {gas: 5.6e6}));
   const voting = await Voting.deployed();
 
-//  console.log("Setting Voting App in Kernel");
-//  const kernel = await Kernel.deployed();
-//  await kernel.setApp(kernelAppBasesNamespace, sha3("voting"), voting.address, Object.assign({}, opts, {gas: 1e6}));
+  console.log("Creating voting.aragonpm.eth repo");
+  await createRepo("voting", voting.address, opts);
 
   assignContract(voting, "Voting", "aragon/voting");
 }
@@ -470,6 +531,9 @@ async function deploy_Vault(deployer, opts) {
   await deployer.deploy(Vault, Object.assign({}, opts, {gas: 2.7e6}));
   const vault = await Vault.deployed();
 
+  console.log("Creating vault.aragonpm.eth repo");
+  await createRepo("vault", vault.address, opts);
+
   assignContract(vault, "Vault", "aragon/vault");
 }
 
@@ -478,8 +542,31 @@ async function deploy_Finance(deployer, opts) {
 
   await deployer.deploy(Finance, Object.assign({}, opts, {gas: 8.7e6}));
   const finance = await Finance.deployed();
-  
+
+  console.log("Creating finance.aragonpm.eth repo");
+  await createRepo("finance", finance.address, opts);
+
   assignContract(finance, "Finance", "aragon/finance");
+}
+
+async function deploy_KitDistrict(deployer, opts) {
+  console.log("Deploying Aragon KitDistrict");
+
+  const daoFactory = await DAOFactory.deployed();
+  const ens = await ENS.deployed();
+  const fifsResolvingRegistrar = await FIFSResolvingRegistrar.deployed();
+
+  await deployer.deploy(KitDistrict, daoFactory.address, ens.address, fifsResolvingRegistrar.address, Object.assign({}, opts, {gas: 4e6}));
+  const kitDistrict = await KitDistrict.deployed();
+
+  console.log("Setting authority of KitDistrict to DSGuard");
+  const dsGuard = await DSGuard.deployed();
+  await kitDistrict.setAuthority(dsGuard.address, Object.assign({}, opts, {gas: 0.5e6}));
+
+  console.log("Setting owner of KitDistrict to 0x0");
+  await kitDistrict.setOwner(zeroAddress, Object.assign({}, opts, {gas: 0.5e6}));
+
+  assignContract(kitDistrict, "KitDistrict", "aragon/kit-district");
 }
 
 async function setInitialParameters(instance, parametersKey, opts) {
@@ -510,16 +597,21 @@ async function deploy_Aragon(deployer, opts) {
 
   await deploy_ENS(deployer, opts);
   await deploy_PublicResolver(deployer, opts);
+  await deploy_ENSSubdomainRegistrar(deployer, opts);
   await deploy_FIFSResolvingRegistrar(deployer, opts);
+
+  await deploy_Repo(deployer, opts);
+  await deploy_APMRegistry(deployer, opts);
+  await deploy_APMRegistryFactory(deployer, opts);
+
 
   await deploy_Voting(deployer, opts);
   await deploy_Vault(deployer, opts);
   await deploy_Finance(deployer, opts);
+
+  await deploy_KitDistrict(deployer, opts);
 }
 
-/*
-  Deploy All Ethlance Contracts
- */
 async function deployAll(deployer, opts) {
   await deploy_DSGuard(deployer, opts);
 
@@ -541,8 +633,6 @@ async function deployAll(deployer, opts) {
   await deploy_DistrictChallenge(deployer, opts);
 
   await deploy_Aragon(deployer, opts);
-
-  await deploy_KitDistrict(deployer, opts);
 
   await deploy_District(deployer, opts);
   await deploy_ParamChange(deployer, opts);

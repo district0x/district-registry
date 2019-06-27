@@ -8,14 +8,14 @@
     [mount.core :refer [defstate]])
   (:require-macros [district-registry.shared.macros :refer [get-environment]]))
 
-(def skipped-contracts [:ds-guard :param-change-registry-db :district-registry-db :minime-token-factory])
+(def contracts-to-load [:DNT :district :param-change :district-factory :param-change-factory])
 
 (def development-config
   {:debug? true
    :logging {:level :debug
              :console? true}
    :time-source :js-date
-   :smart-contracts {:contracts (apply dissoc smart-contracts-dev/smart-contracts skipped-contracts)}
+   :smart-contracts {:contracts (select-keys smart-contracts-dev/smart-contracts contracts-to-load)}
    :web3-balances {:contracts (select-keys smart-contracts-dev/smart-contracts [:DNT])}
    :web3 {:url "http://localhost:8549"}
    :web3-tx {:disable-loading-recommended-gas-prices? true}
@@ -36,7 +36,7 @@
              :sentry {:dsn "https://4bb89c9cdae14444819ff0ac3bcba253@sentry.io/1306960"
                       :environment "QA"}}
    :time-source :js-date
-   :smart-contracts {:contracts (apply dissoc smart-contracts-qa/smart-contracts skipped-contracts)}
+   :smart-contracts {:contracts (select-keys smart-contracts-qa/smart-contracts contracts-to-load)}
    :web3-balances {:contracts (select-keys smart-contracts-qa/smart-contracts [:DNT])}
    :web3 {:url "https://ropsten.district0x.io"}
    :web3-tx-log {:disable-using-localstorage? false
@@ -58,7 +58,7 @@
              :sentry {:dsn "https://4bb89c9cdae14444819ff0ac3bcba253@sentry.io/1306960"
                       :environment "PRODUCTION"}}
    :time-source :js-date
-   :smart-contracts {:contracts (apply dissoc smart-contracts-prod/smart-contracts skipped-contracts)}
+   :smart-contracts {:contracts (select-keys smart-contracts-prod/smart-contracts contracts-to-load)}
    :web3-balances {:contracts (select-keys smart-contracts-prod/smart-contracts [:DNT])}
    :web3 {:url "https://mainnet.district0x.io"}
    :web3-tx-log {:disable-using-localstorage? false

@@ -1,26 +1,35 @@
 pragma solidity ^0.4.24;
 
+import "./auth/DSAuth.sol";
+
 import "@aragon/os/contracts/common/IsContract.sol";
 import "@aragon/kits-base/contracts/KitBase.sol";
 import "@aragon/id/contracts/FIFSResolvingRegistrar.sol";
+import "@aragon/os/contracts/apm/APMNamehash.sol";
 
 import "@aragon/apps-voting/contracts/Voting.sol";
 import "@aragon/apps-vault/contracts/Vault.sol";
 import "@aragon/apps-finance/contracts/Finance.sol";
 
-import "@aragon/os/contracts/lib/ens/PublicResolver.sol"; // Not really required, just to make truffle happy
+// These are not really required, just to make truffle find artifacts
+import "@aragon/os/contracts/factory/APMRegistryFactory.sol";
+import "@aragon/os/contracts/lib/ens/PublicResolver.sol";
 
-contract KitDistrict is KitBase, IsContract {
+contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
   FIFSResolvingRegistrar public aragonID;
   bytes32[3] public appIds;
 
-  enum Apps { Voting, Vault, Finance}
+  enum Apps {Voting, Vault, Finance}
+
+  uint64 public votingSupportRequiredPct = 51 ^ 17; // 51%
+  uint64 public votingMinAcceptQuorumPct = 25 ^ 17; // 25%
+  uint64 public votingVoteTime = 3 days;
+  uint64 public financePeriodDuration = 30 days;
 
   constructor(
     DAOFactory _fac,
     ENS _ens,
-    FIFSResolvingRegistrar _aragonID,
-    bytes32[3] _appIds
+    FIFSResolvingRegistrar _aragonID
   )
   KitBase(_fac, _ens)
   public
@@ -28,7 +37,9 @@ contract KitDistrict is KitBase, IsContract {
     require(isContract(address(_fac.regFactory())));
 
     aragonID = _aragonID;
-    appIds = _appIds;
+    appIds[uint8(Apps.Voting)] = apmNamehash("voting");
+    appIds[uint8(Apps.Vault)] = apmNamehash("vault");
+    appIds[uint8(Apps.Finance)] = apmNamehash("finance");
   }
 
   function createDAO(
@@ -37,20 +48,16 @@ contract KitDistrict is KitBase, IsContract {
   )
   public
   returns (
-    Kernel dao,
-    ACL acl,
-    Finance finance,
-    Vault vault,
-    Voting voting
+    Kernel dao
   )
   {
     dao = fac.newDAO(this);
 
-    acl = ACL(dao.acl());
+    ACL acl = ACL(dao.acl());
 
     acl.createPermission(this, dao, dao.APP_MANAGER_ROLE(), this);
 
-    voting = Voting(
+    Voting voting = Voting(
       dao.newAppInstance(
         appIds[uint8(Apps.Voting)],
         latestVersionAppBase(appIds[uint8(Apps.Voting)])
@@ -58,7 +65,7 @@ contract KitDistrict is KitBase, IsContract {
     );
     emit InstalledApp(voting, appIds[uint8(Apps.Voting)]);
 
-    vault = Vault(
+    Vault vault = Vault(
       dao.newAppInstance(
         appIds[uint8(Apps.Vault)],
         latestVersionAppBase(appIds[uint8(Apps.Vault)]),
@@ -68,7 +75,7 @@ contract KitDistrict is KitBase, IsContract {
     );
     emit InstalledApp(vault, appIds[uint8(Apps.Vault)]);
 
-    finance = Finance(
+    Finance finance = Finance(
       dao.newAppInstance(
         appIds[uint8(Apps.Finance)],
         latestVersionAppBase(appIds[uint8(Apps.Finance)])
@@ -85,8 +92,8 @@ contract KitDistrict is KitBase, IsContract {
 
     // App inits
     vault.initialize();
-    finance.initialize(vault, 30 days);
-    voting.initialize(_token, 51^17, 25^17, 3 days);
+    finance.initialize(vault, financePeriodDuration);
+    voting.initialize(_token, votingSupportRequiredPct, votingMinAcceptQuorumPct, votingVoteTime);
 
     // EVMScriptRegistry permissions
     EVMScriptRegistry reg = EVMScriptRegistry(acl.getEVMScriptRegistry());
@@ -99,11 +106,28 @@ contract KitDistrict is KitBase, IsContract {
     registerAragonID(_aragonId, dao);
     emit DeployInstance(dao);
 
-    return (dao, acl, finance, vault, voting);
+    return dao;
   }
 
   function registerAragonID(string name, address owner) internal {
     aragonID.register(keccak256(abi.encodePacked(name)), owner);
   }
+
+  function setVotingSupportRequiredPct(uint64 _votingSupportRequiredPct) public auth {
+    votingSupportRequiredPct = _votingSupportRequiredPct;
+  }
+
+  function setVotingMinAcceptQuorumPct(uint64 _votingMinAcceptQuorumPct) public auth {
+    votingMinAcceptQuorumPct = _votingMinAcceptQuorumPct;
+  }
+
+  function setVotingVoteTime(uint64 _votingVoteTime) public auth {
+    votingVoteTime = _votingVoteTime;
+  }
+
+  function setFinancePeriodDuration(uint64 _financePeriodDuration) public auth {
+    financePeriodDuration = _financePeriodDuration;
+  }
+
 
 }
