@@ -8,7 +8,7 @@
     [mount.core :refer [defstate]])
   (:require-macros [district-registry.shared.macros :refer [get-environment]]))
 
-(def contracts-to-load [:DNT :district :param-change :district-factory :param-change-factory])
+(def contracts-to-load [:DNT :district :param-change :district-factory :param-change-factory :ENS])
 
 (def development-config
   {:debug? true

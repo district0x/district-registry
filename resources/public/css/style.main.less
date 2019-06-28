@@ -2070,3 +2070,26 @@ input[type=number] {
     margin-bottom: 5px;
   }
 }
+
+.input-group.has-hint {
+  .help-block {
+    font-size: 12px;
+    text-align: right;
+    transition: color 0.3s ease;
+  }
+  &.available {
+    .help-block {
+      color: #26C485;
+    }
+  }
+  &.taken {
+    .help-block {
+      color: @violet;
+    }
+  }
+  &.checking {
+    .help-block {
+      color: fade(@bcblue, 40%);
+    }
+  }
+}

@@ -1,21 +1,25 @@
 (ns district-registry.ui.components.district-form
   (:require
     [cljs-web3.core :as web3]
+    [district-registry.shared.utils :refer [debounce]]
     [district-registry.ui.components.app-layout :refer [app-layout]]
+    [district-registry.ui.contract.ens :as ens]
     [district-registry.ui.events :as events]
     [district-registry.ui.spec :as spec]
+    [district-registry.ui.subs :as subs]
     [district.format :as format]
     [district.graphql-utils :as graphql-utils]
-    [district.ui.component.form.input :refer [index-by-type file-drag-input with-label chip-input text-input textarea-input select-input int-input]]
+    [district.ui.component.form.input :refer [index-by-type file-drag-input with-label chip-input text-input textarea-input select-input int-input assoc-by-path]]
     [district.ui.component.page :refer [page]]
     [district.ui.component.tx-button :refer [tx-button]]
     [district.ui.graphql.subs :as gql]
     [district.ui.web3-tx-id.subs :as tx-id-subs]
+    [district.web3-utils :as web3-utils]
     [print.foo :refer [look] :include-macros true]
     [re-frame.core :refer [subscribe dispatch]]
     [reagent.core :as r]
     [reagent.ratom :refer [reaction]]
-    [district.web3-utils :as web3-utils])
+    [clojure.string :as str])
   (:require-macros [district-registry.shared.macros :refer [get-environment]]))
 
 
@@ -129,13 +133,26 @@
        :type "submit"}
       "Save"]]))
 
+(defn- aragon-full-name [aragon-id]
+  (str aragon-id ".aragonid.eth"))
+
+(def debounced-check-availability
+  (debounce
+    (fn [value]
+      (dispatch [::ens/check-availability {:aragon-id value}]))
+    500))
+
 
 (defn district-form [{:keys [:form-data :edit?]}]
   (let [deposit-query (when-not edit?
                         (subscribe [::gql/query {:queries [(param-search-query :deposit)]}]))
         form-data (r/atom (or form-data default-form-data))]
+    (when (and (= "dev" (get-environment))                  ;; dirty, but only for dev, so please forgive me
+               (not edit?))
+      (js/setTimeout #(dispatch [::ens/check-availability (select-keys @form-data [:aragon-id])]) 1000))
     (fn [{:keys [:reg-entry/address]}]
-      (let [deposit (when-not edit?
+      (let [aragon-id-available? @(subscribe [::subs/aragon-id-available? (:aragon-id @form-data)])
+            deposit (when-not edit?
                       (-> @deposit-query
                         :search-param-changes
                         :items
@@ -147,6 +164,7 @@
                     :github-url
                     :facebook-url
                     :twitter-url
+                    :aragon-id
                     :logo-file-info
                     :background-file-info]} @form-data
             errors (cond-> []
@@ -154,6 +172,8 @@
                      (empty? description) (conj "District description is required")
                      (empty? url) (conj "URL is required")
                      (empty? github-url) (conj "GitHub URL is required")
+                     (and (not edit?) (empty? aragon-id)) (conj "Aragon ID is required")
+                     (and (not edit?) (not (empty? aragon-id)) (false? aragon-id-available?)) (conj "Aragon ID is not available")
                      (and (seq url) (not (spec/check ::spec/url url))) (conj "URL is not valid")
                      (and (seq github-url) (not (re-find #"https?://github.com/.+" github-url))) (conj "GitHub URL is not valid")
                      (and (seq facebook-url) (not (re-find #"https?://(www\.)?facebook.com/.+" facebook-url))) (conj "Facebook URL is not valid")
@@ -165,7 +185,8 @@
                      (< 100 (count facebook-url)) (conj "Facebook URL is too long")
                      (< 100 (count twitter-url)) (conj "Twitter URL is too long")
                      (< 100 (count url)) (conj "URL is too long")
-                     (< 50 (count name)) (conj "District title is too long"))]
+                     (< 50 (count name)) (conj "District title is too long"))
+            ]
         [:section#main
          [:div.container
           [:div.box-wrap
@@ -197,9 +218,25 @@
                              :placeholder "Twitter URL"
                              :id :twitter-url}]
                 (when-not edit?
-                 [text-input {:form-data form-data
-                              :placeholder "Aragon ID"
-                              :id :aragon-id}])
+                  (let [aragon-id (:aragon-id @form-data)
+                        hint (when-not (str/blank? aragon-id)
+                               (condp = aragon-id-available?
+                                 true (str (aragon-full-name aragon-id) " is available")
+                                 false (str (aragon-full-name aragon-id) " is taken")
+                                 "Checking availability..."))]
+                    [text-input {:form-data form-data
+                                 :placeholder "Aragon ID"
+                                 :id :aragon-id
+                                 :class "aragon-id"
+                                 :group-class (condp = aragon-id-available?
+                                                true "available"
+                                                false "taken"
+                                                "checking")
+                                 :errors {:local {:aragon-id {:hint hint}}}
+                                 :on-change (fn [value]
+                                              (if (re-matches #"[a-z0-9]{0,100}" value)
+                                                (debounced-check-availability value)
+                                                (swap! form-data assoc-by-path :aragon-id aragon-id)))}]))
                 [:div.submit-errors
                  (doall
                    (for [e errors]

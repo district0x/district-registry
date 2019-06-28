@@ -3,7 +3,8 @@ const fs = require("fs");
 const edn = require("jsedn");
 const {env, contracts_build_directory, smart_contracts_path, parameters} = require("../truffle.js");
 const namehash = require('eth-ens-namehash');
-const sha3 = require('web3-utils').sha3;
+const web3Utils = require('web3-utils');
+const sha3 = web3Utils.sha3;
 
 /*
   Returns the contract artifact for the given `contract_name`
@@ -26,6 +27,11 @@ const kitDistrictPlaceholder = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const zeroAddress = "0x0000000000000000000000000000000000000000";
 const dsGuardANY = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 const aragonENSNode = namehash.hash("aragonid.eth");
+
+// These are hashes from mainnet, but it's only for development. For testnet and mainnet we don't need to deploy these apps
+const aragonVotingIPFS = web3Utils.fromAscii("QmZaUjYWqXeVWDpQLJdFUrewxhnWTiCSzv8RPCcL2FEXED"); // 2.0.4
+const aragonVaultIPFS = web3Utils.fromAscii("QmYRcQBcHsietDuUmt7bbFG7BqetoYF85CxDn7pAa2wdnA"); // 3.0.1
+const aragonFinanceIPFS = web3Utils.fromAscii("QmUigVxDYp4qcNZUwBe3Q1mG7Mq7rQrdctMreke1Cg32oZ"); // 2.0.6
 
 //
 // Contract Artifacts
@@ -354,6 +360,47 @@ async function deploy_ParamChangeFactory(deployer, opts) {
   assignContract(paramChangeFactory, "ParamChangeFactory", "param-change-factory");
 }
 
+//
+// ENS Deployments
+//
+
+async function deploy_ENS(deployer, opts) {
+  var ens;
+  if (!parameters.ENS) {
+    console.log("Deploying ENS");
+
+    await deployer.deploy(ENS, Object.assign({}, opts, {gas: 0.7e6}));
+    ens = await ENS.deployed();
+
+    console.log("Setting active account owner of .eth");
+    await ens.setSubnodeOwner("0x0", sha3("eth"), opts.from, Object.assign({}, opts, {gas: 0.2e6}));
+  } else {
+    ens = await ENS.at(parameters.ENS);
+  }
+
+  assignContract(ens, "ENS", "ENS");
+}
+
+async function deploy_PublicResolver(deployer, opts) {
+  if (!parameters.ENS) {
+    console.log("Deploying ENS PublicResolver");
+
+    const ens = await ENS.deployed();
+    await deployer.deploy(PublicResolver, ens.address, Object.assign({}, opts, {gas: 1.9e6}));
+    const publicResolver = await PublicResolver.deployed();
+
+    console.log("Setting active account to be owner of resolver.eth");
+    await ens.setSubnodeOwner(namehash.hash("eth"), sha3("resolver"), opts.from, Object.assign({}, opts, {gas: 0.2e6}));
+
+    console.log("Setting resolver for resolver.eth");
+    await ens.setResolver(namehash.hash("resolver.eth"), publicResolver.address, Object.assign({}, opts, {gas: 0.2e6}));
+
+    console.log("Setting resolving address for resolver.eth");
+    await publicResolver.setAddr(namehash.hash("resolver.eth"), publicResolver.address, Object.assign({}, opts, {gas: 0.3e6}));
+
+    assignContract(publicResolver, "PublicResolver", "public-resolver");
+  }
+}
 
 async function deploy_Kernel(deployer, opts) {
   console.log("Deploying Aragon Kernel");
@@ -368,7 +415,9 @@ async function deploy_Kernel(deployer, opts) {
   assignContract(paramChangeFactory, "ParamChangeFactory", "param-change-factory");
 }
 
+//
 // Aragon Deployments
+//
 
 async function deploy_ACL(deployer, opts) {
   console.log("Deploying Aragon ACL");
@@ -410,37 +459,6 @@ async function deploy_DAOFactory(deployer, opts) {
   assignContract(daoFactory, "DAOFactory", "aragon/dao-factory");
 }
 
-async function deploy_ENS(deployer, opts) {
-  console.log("Deploying ENS");
-  
-  await deployer.deploy(ENS, Object.assign({}, opts, {gas: 0.7e6}));
-  const ens = await ENS.deployed();
-
-  console.log("Setting active account owner of .eth");
-  await ens.setSubnodeOwner("0x0", sha3("eth"), opts.from, Object.assign({}, opts, {gas: 0.2e6}));
-  
-  assignContract(ens, "ENS", "ens");
-}
-
-async function deploy_PublicResolver(deployer, opts) {
-  console.log("Deploying ENS PublicResolver");
-
-  const ens = await ENS.deployed();
-  await deployer.deploy(PublicResolver, ens.address, Object.assign({}, opts, {gas: 1.9e6}));
-  const publicResolver = await PublicResolver.deployed();
-
-  console.log("Setting active account to be owner of resolver.eth");
-  await ens.setSubnodeOwner(namehash.hash("eth"), sha3("resolver"), opts.from, Object.assign({}, opts, {gas: 0.2e6}));
-
-  console.log("Setting resolver for resolver.eth");
-  await ens.setResolver(namehash.hash("resolver.eth"), publicResolver.address, Object.assign({}, opts, {gas: 0.2e6}));
-
-  console.log("Setting resolving address for resolver.eth");
-  await publicResolver.setAddr(namehash.hash("resolver.eth"), publicResolver.address, Object.assign({}, opts, {gas: 0.3e6}));
-
-  assignContract(publicResolver, "PublicResolver", "ens/public-resolver");
-}
-
 async function deploy_ENSSubdomainRegistrar(deployer, opts) {
   console.log("Deploying Aragon ENSSubdomainRegistrar");
 
@@ -448,7 +466,7 @@ async function deploy_ENSSubdomainRegistrar(deployer, opts) {
   await deployer.deploy(ENSSubdomainRegistrar, Object.assign({}, opts, {gas: 6e6}));
   const ensSubdomainRegistrar = await ENSSubdomainRegistrar.deployed();
 
-  assignContract(ensSubdomainRegistrar, "ENSSubdomainRegistrar", "ens/ens-subdomain-registrar");
+  assignContract(ensSubdomainRegistrar, "ENSSubdomainRegistrar", "aragon/ens-subdomain-registrar");
 }
 
 async function deploy_Repo(deployer, opts) {
@@ -506,11 +524,11 @@ async function deploy_FIFSResolvingRegistrar(deployer, opts) {
   assignContract(fifsResolvingRegistrar, "FIFSResolvingRegistrar", "aragon/fifs-resolving-registrar");
 }
 
-async function createRepo(repoName, contractAddress, opts) {
+async function createRepo(repoName, contractAddress, ipfsHash, opts) {
   const publicResolver = await PublicResolver.deployed();
   const apmRegistryAddress = await publicResolver.addr(namehash.hash("aragonpm.eth"));
   const apmRegistry = await APMRegistry.at(apmRegistryAddress);
-  await apmRegistry.newRepoWithVersion(repoName, opts.from, [1,0,0], contractAddress, zeroAddress, Object.assign({}, opts, {gas: 4e6}));
+  await apmRegistry.newRepoWithVersion(repoName, opts.from, [1,0,0], contractAddress, ipfsHash, Object.assign({}, opts, {gas: 4e6}));
 }
 
 async function deploy_Voting(deployer, opts) {
@@ -520,7 +538,7 @@ async function deploy_Voting(deployer, opts) {
   const voting = await Voting.deployed();
 
   console.log("Creating voting.aragonpm.eth repo");
-  await createRepo("voting", voting.address, opts);
+  await createRepo("voting", voting.address, aragonVotingIPFS, opts);
 
   assignContract(voting, "Voting", "aragon/voting");
 }
@@ -528,11 +546,11 @@ async function deploy_Voting(deployer, opts) {
 async function deploy_Vault(deployer, opts) {
   console.log("Deploying Aragon Vault");
 
-  await deployer.deploy(Vault, Object.assign({}, opts, {gas: 2.7e6}));
+  await deployer.deploy(Vault, Object.assign({}, opts, {gas: 3e6}));
   const vault = await Vault.deployed();
 
   console.log("Creating vault.aragonpm.eth repo");
-  await createRepo("vault", vault.address, opts);
+  await createRepo("vault", vault.address, aragonVaultIPFS, opts);
 
   assignContract(vault, "Vault", "aragon/vault");
 }
@@ -544,17 +562,41 @@ async function deploy_Finance(deployer, opts) {
   const finance = await Finance.deployed();
 
   console.log("Creating finance.aragonpm.eth repo");
-  await createRepo("finance", finance.address, opts);
+  await createRepo("finance", finance.address, aragonFinanceIPFS, opts);
 
   assignContract(finance, "Finance", "aragon/finance");
 }
 
-async function deploy_KitDistrict(deployer, opts) {
-  console.log("Deploying Aragon KitDistrict");
+async function getDAOFactory() {
+  if (parameters.DAOFactory) {
+    return DAOFactory.at(parameters.DAOFactory);
+  } else {
+    return DAOFactory.deployed();
+  }
+}
 
-  const daoFactory = await DAOFactory.deployed();
-  const ens = await ENS.deployed();
-  const fifsResolvingRegistrar = await FIFSResolvingRegistrar.deployed();
+async function getENS() {
+  if (parameters.ENS) {
+    return ENS.at(parameters.ENS);
+  } else {
+    return ENS.deployed();
+  }
+}
+
+async function getFIFSResolvingRegistrar() {
+  if (parameters.FIFSResolvingRegistrar) {
+    return FIFSResolvingRegistrar.at(parameters.FIFSResolvingRegistrar);
+  } else {
+    return FIFSResolvingRegistrar.deployed();
+  }
+}
+
+async function deploy_KitDistrict(deployer, opts) {
+  console.log("Deploying KitDistrict");
+
+  const daoFactory = await getDAOFactory();
+  const ens = await getENS();
+  const fifsResolvingRegistrar = await getFIFSResolvingRegistrar();
 
   await deployer.deploy(KitDistrict, daoFactory.address, ens.address, fifsResolvingRegistrar.address, Object.assign({}, opts, {gas: 4e6}));
   const kitDistrict = await KitDistrict.deployed();
@@ -566,7 +608,7 @@ async function deploy_KitDistrict(deployer, opts) {
   console.log("Setting owner of KitDistrict to 0x0");
   await kitDistrict.setOwner(zeroAddress, Object.assign({}, opts, {gas: 0.5e6}));
 
-  assignContract(kitDistrict, "KitDistrict", "aragon/kit-district");
+  assignContract(kitDistrict, "KitDistrict", "kit-district");
 }
 
 async function setInitialParameters(instance, parametersKey, opts) {
@@ -590,26 +632,23 @@ async function setInitialParameters(instance, parametersKey, opts) {
 }
 
 async function deploy_Aragon(deployer, opts) {
-  await deploy_ACL(deployer, opts);
-  await deploy_EVMScriptRegistryFactory(deployer, opts);
-  await deploy_Kernel(deployer, opts);
-  await deploy_DAOFactory(deployer, opts);
+  if (!parameters.DAOFactory) {
+    await deploy_ACL(deployer, opts);
+    await deploy_EVMScriptRegistryFactory(deployer, opts);
+    await deploy_Kernel(deployer, opts);
+    await deploy_DAOFactory(deployer, opts);
 
-  await deploy_ENS(deployer, opts);
-  await deploy_PublicResolver(deployer, opts);
-  await deploy_ENSSubdomainRegistrar(deployer, opts);
-  await deploy_FIFSResolvingRegistrar(deployer, opts);
+    await deploy_ENSSubdomainRegistrar(deployer, opts);
+    await deploy_FIFSResolvingRegistrar(deployer, opts);
 
-  await deploy_Repo(deployer, opts);
-  await deploy_APMRegistry(deployer, opts);
-  await deploy_APMRegistryFactory(deployer, opts);
+    await deploy_Repo(deployer, opts);
+    await deploy_APMRegistry(deployer, opts);
+    await deploy_APMRegistryFactory(deployer, opts);
 
-
-  await deploy_Voting(deployer, opts);
-  await deploy_Vault(deployer, opts);
-  await deploy_Finance(deployer, opts);
-
-  await deploy_KitDistrict(deployer, opts);
+    await deploy_Voting(deployer, opts);
+    await deploy_Vault(deployer, opts);
+    await deploy_Finance(deployer, opts);
+  }
 }
 
 async function deployAll(deployer, opts) {
@@ -632,7 +671,12 @@ async function deployAll(deployer, opts) {
   await deploy_Challenge(deployer, opts);
   await deploy_DistrictChallenge(deployer, opts);
 
+  await deploy_ENS(deployer, opts);
+  await deploy_PublicResolver(deployer, opts);
+
   await deploy_Aragon(deployer, opts);
+
+  await deploy_KitDistrict(deployer, opts);
 
   await deploy_District(deployer, opts);
   await deploy_ParamChange(deployer, opts);
@@ -688,6 +732,7 @@ module.exports = async function(deployer, network, accounts) {
   await deployer;
   console.log("@@@ using Web3 version:", web3.version);
   console.log("@@@ using address", address);
+  console.log("@@@ using parameters", parameters);
 
   try {
     await deployAll(deployer, opts);

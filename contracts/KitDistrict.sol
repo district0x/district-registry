@@ -58,7 +58,7 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
     acl.createPermission(this, dao, dao.APP_MANAGER_ROLE(), this);
 
     Voting voting = Voting(
-      dao.newAppInstance(
+      dao.newPinnedAppInstance(
         appIds[uint8(Apps.Voting)],
         latestVersionAppBase(appIds[uint8(Apps.Voting)])
       )
@@ -66,7 +66,7 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
     emit InstalledApp(voting, appIds[uint8(Apps.Voting)]);
 
     Vault vault = Vault(
-      dao.newAppInstance(
+      dao.newPinnedAppInstance(
         appIds[uint8(Apps.Vault)],
         latestVersionAppBase(appIds[uint8(Apps.Vault)]),
         new bytes(0),
@@ -76,7 +76,7 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
     emit InstalledApp(vault, appIds[uint8(Apps.Vault)]);
 
     Finance finance = Finance(
-      dao.newAppInstance(
+      dao.newPinnedAppInstance(
         appIds[uint8(Apps.Finance)],
         latestVersionAppBase(appIds[uint8(Apps.Finance)])
       )

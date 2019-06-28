@@ -34,7 +34,7 @@
                  [district0x/district-server-web3-watcher "1.0.3"]
                  [district0x/district-ui-component-active-account "1.0.0"]
                  [district0x/district-ui-component-active-account-balance "1.0.1"]
-                 [district0x/district-ui-component-form "0.2.6"]
+                 [district0x/district-ui-component-form "0.2.8"]
                  [district0x/district-ui-component-notification "1.0.0"]
                  [district0x/district-ui-component-tx-button "1.0.0"]
                  [district0x/district-ui-conversion-rates "1.0.1"]
@@ -104,9 +104,10 @@
                        ["@aragon/os" "4.2.0"]
                        ["@aragon/kits-base" "1.0.0"]
                        ["@aragon/id" "2.0.3"]
+                       ;; Apps should be latest version Aragon deployed to mainnet, not newer
                        ["@aragon/apps-voting" "2.1.0"]
-                       ["@aragon/apps-vault" "4.1.0"]
-                       ["@aragon/apps-finance" "3.0.0"]
+                       ["@aragon/apps-vault" "3.0.0"]
+                       ["@aragon/apps-finance" "2.1.0"]
                        ["eth-ens-namehash" "2.0.8"]
                        ["web3-utils" "1.0.0-beta.55"]]}
 

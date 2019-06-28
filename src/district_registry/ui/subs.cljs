@@ -7,3 +7,8 @@
   ::vote
   (fn [db [_ reg-entry-address]]
     (get-in db [:district-registry.ui.core/votes (account-queries/active-account db) reg-entry-address])))
+
+(re-frame/reg-sub
+  ::aragon-id-available?
+  (fn [db [_ aragon-id]]
+    (get-in db [:district-registry.ui.core/aragon-id->available? aragon-id])))
