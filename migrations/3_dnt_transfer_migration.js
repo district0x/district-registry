@@ -1,7 +1,4 @@
-const {copy, smartContractsTemplate, encodeContractEDN, linkBytecode} = require("./utils.js");
-const fs = require("fs");
-const {env, contracts_build_directory, smart_contracts_path, parameters} = require("../truffle.js");
-
+const {env, smartContractsPath, parameters} = require("../truffle.js");
 
 const DNT = artifacts.require("District0xNetworkToken_copy");
 const amount = "10000000000000000000000"

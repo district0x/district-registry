@@ -1,37 +1,24 @@
-const {copy, smartContractsTemplate, encodeContractEDN, linkBytecode} = require("./utils.js");
+const {copyContract, copy, smartContractsTemplate, encodeContractEDN, linkBytecode, encodeSmartContracts, writeSmartContracts} = require("./utils.js");
 const fs = require("fs");
 const edn = require("jsedn");
-const {env, contracts_build_directory, smart_contracts_path, parameters} = require("../truffle.js");
+const {env, smartContractsPath, parameters} = require("../truffle.js");
+const {registryPlaceholder, dntPlaceholder, forwarder1TargetPlaceholder, forwarder2TargetPlaceholder, minimeTokenFactoryPlaceholder, kitDistrictPlaceholder, zeroAddress, dsGuardANY, aragonENSNode} = require("./constants.js");
 const namehash = require('eth-ens-namehash');
 const web3Utils = require('web3-utils');
 const sha3 = web3Utils.sha3;
 
-/*
-  Returns the contract artifact for the given `contract_name`
- */
-function requireContract(contract_name, contract_copy_name) {
-  console.log("Creating Copy of " + contract_name + " for deployment...");
-  const copy_name = contract_copy_name || contract_name + "_copy";
-  console.log("- Contract Name: " + copy_name);
-  copy(contract_name, copy_name, contracts_build_directory);
-  return artifacts.require(copy_name);
-}
-
-const registryPlaceholder = "feedfeedfeedfeedfeedfeedfeedfeedfeedfeed";
-const dntPlaceholder = "deaddeaddeaddeaddeaddeaddeaddeaddeaddead";
-const forwarder1TargetPlaceholder = "beefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
-const forwarder2TargetPlaceholder = "feebfeebfeebfeebfeebfeebfeebfeebfeebfeeb";
-const minimeTokenFactoryPlaceholder = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-const kitDistrictPlaceholder = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-
-const zeroAddress = "0x0000000000000000000000000000000000000000";
-const dsGuardANY = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-const aragonENSNode = namehash.hash("aragonid.eth");
+let smartContractsList = [];
 
 // These are hashes from mainnet, but it's only for development. For testnet and mainnet we don't need to deploy these apps
 const aragonVotingIPFS = web3Utils.fromAscii("QmZaUjYWqXeVWDpQLJdFUrewxhnWTiCSzv8RPCcL2FEXED"); // 2.0.4
 const aragonVaultIPFS = web3Utils.fromAscii("QmYRcQBcHsietDuUmt7bbFG7BqetoYF85CxDn7pAa2wdnA"); // 3.0.1
 const aragonFinanceIPFS = web3Utils.fromAscii("QmUigVxDYp4qcNZUwBe3Q1mG7Mq7rQrdctMreke1Cg32oZ"); // 2.0.6
+
+
+function requireContract(contractName, contractCopyName) {
+  return artifacts.require(copyContract(contractName, contractCopyName));
+}
+
 
 //
 // Contract Artifacts
@@ -192,7 +179,7 @@ async function deploy_DistrictRegistryForwarder(deployer, opts) {
   const dsGuard = await DSGuard.deployed();
   await dsGuard.permit(districtRegistryForwarder.address, districtRegistryDb.address, dsGuardANY, Object.assign({}, opts, {gas: 0.2e6}));
 
-  assignContract(districtRegistryForwarder, "MutableForwarder", "district-registry-fwd", {forwards_to: "district-registry"});
+  assignContract(districtRegistryForwarder, "MutableForwarder", "district-registry-fwd", {forwardsTo: "district-registry"});
 }
 
 
@@ -230,7 +217,7 @@ async function deploy_ParamChangeRegistryForwarder(deployer, opts) {
   const districtRegistryDb = await DistrictRegistryDb.deployed();
   await dsGuard.permit(paramChangeRegistryForwarder.address, districtRegistryDb.address, dsGuardANY, Object.assign({}, opts, {gas: 0.1e6}));
 
-  assignContract(paramChangeRegistryForwarder, "MutableForwarder", "param-change-registry-fwd", {forwards_to: "param-change-registry"});
+  assignContract(paramChangeRegistryForwarder, "MutableForwarder", "param-change-registry-fwd", {forwardsTo: "param-change-registry"});
 }
 
 
@@ -684,7 +671,7 @@ async function deployAll(deployer, opts) {
   await deploy_DistrictFactory(deployer, opts);
   await deploy_ParamChangeFactory(deployer, opts);
 
-  writeSmartContracts();
+  writeSmartContracts(smartContractsPath, smartContractsList, env)
 }
 
 
@@ -693,29 +680,12 @@ async function deployAll(deployer, opts) {
 //
 
 
-let smart_contract_listing = [];
-/*
-  Concatenate the given contract to our smart contract listing.
- */
-function assignContract(contract_instance, contract_name, contract_key, opts) {
-  console.log("- Assigning '" + contract_name + "' to smart contract listing...");
+function assignContract(contract_instance, contractName, contract_key, opts) {
+  console.log("- Assigning '" + contractName + "' to smart contract listing...");
   opts = opts || {};
-  smart_contract_listing = smart_contract_listing.concat(
-    encodeContractEDN(contract_instance, contract_name, contract_key, opts));
+  smartContractsList = smartContractsList.concat(
+    encodeContractEDN(contract_instance, contractName, contract_key, opts));
 }
-
-/*
-  Write out our smart contract listing to the file defined by `smart_contracts_path`
- */
-function writeSmartContracts() {
-  console.log("Final Smart Contract Listing:");
-  const smart_contracts = edn.encode(new edn.Map(smart_contract_listing));
-  console.log(smart_contracts);
-  console.log("Writing to smart contract file: " + smart_contracts_path + " ...");
-  fs.writeFileSync(smart_contracts_path, smartContractsTemplate(smart_contracts, env));
-}
-
-
 
 //
 // Begin Migration

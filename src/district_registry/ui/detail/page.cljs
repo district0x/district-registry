@@ -6,12 +6,13 @@
     [clojure.string :as str]
     [district-registry.ui.components.app-layout :refer [app-layout]]
     [district-registry.ui.components.donut-chart :refer [donut-chart]]
+    [district-registry.ui.components.nav :as nav]
     [district-registry.ui.components.stake :as stake]
     [district-registry.ui.contract.registry-entry :as reg-entry]
     [district-registry.ui.events :as events]
     [district-registry.ui.not-found.page :as not-found]
     [district-registry.ui.spec :as spec]
-    [district-registry.ui.subs :as district-registry-subs]
+    [district-registry.ui.subs :as subs]
     [district.format :as format]
     [district.graphql-utils :as gql-utils]
     [district.parsers :as parsers]
@@ -29,8 +30,7 @@
     [medley.core :as medley]
     [re-frame.core :refer [dispatch subscribe]]
     [reagent.core :as r]
-    [reagent.ratom :as ratom]
-    [district-registry.ui.components.nav :as nav]))
+    [reagent.ratom :as ratom]))
 
 (def format-dnt (comp format/format-dnt web3-utils/wei->eth-number))
 (def format-number (comp format/format-number web3-utils/wei->eth-number))
@@ -75,6 +75,7 @@
     :district/github-url
     :district/facebook-url
     :district/twitter-url
+    :district/aragon-id
     :district/logo-image-hash
     :district/background-image-hash
     :district/dnt-weight
@@ -104,7 +105,7 @@
   (let [active-account (subscribe [::account-subs/active-account])]
     (when (and address
                creator
-               (print.foo/look status)
+               status
                (= @active-account creator)
                (= (gql-utils/gql-name->kw status) :reg-entry.status/whitelisted))
       [:form.edit-district-button
@@ -127,6 +128,7 @@
                             :district/github-url
                             :district/facebook-url
                             :district/twitter-url
+                            :district/aragon-id
                             :district/total-supply
                             :district/dnt-staked
                             :reg-entry/status
@@ -159,7 +161,7 @@
           [:ul
            [:li
             [:a {:target "_blank"
-                 :href github-url}
+                 :href @(subscribe [::subs/aragon-url aragon-id])}
              [:span.icon-aragon]]]
            (when github-url
              [:li
@@ -339,7 +341,7 @@
       (let [tx-pending? (subscribe [::tx-id-subs/tx-pending? {:reveal-vote {:reg-entry/address address}}])
             remaining-time (format-remaining-time (gql-utils/gql-date->date reveal-period-end))
             no-vote? (not (pos? (:vote/amount vote)))
-            stored-vote @(subscribe [::district-registry-subs/vote address])]
+            stored-vote @(subscribe [::subs/vote address])]
 
         (when (and reveal-period-end
                    (not remaining-time)

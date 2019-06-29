@@ -44,7 +44,8 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
 
   function createDAO(
     string _aragonId,
-    MiniMeToken _token
+    MiniMeToken _token,
+    address _creator
   )
   public
   returns (
@@ -85,6 +86,9 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
 
     // permissions
     acl.createPermission(voting, voting, voting.MODIFY_QUORUM_ROLE(), voting);
+    acl.createPermission(voting, voting, voting.MODIFY_SUPPORT_ROLE(), voting);
+    acl.createPermission(_creator, voting, voting.CREATE_VOTES_ROLE(), _creator);
+
     acl.createPermission(finance, vault, vault.TRANSFER_ROLE(), voting);
     acl.createPermission(voting, finance, finance.CREATE_PAYMENTS_ROLE(), voting);
     acl.createPermission(voting, finance, finance.EXECUTE_PAYMENTS_ROLE(), voting);

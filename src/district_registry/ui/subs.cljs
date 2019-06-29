@@ -1,5 +1,7 @@
 (ns district-registry.ui.subs
   (:require
+    [district-registry.ui.config :as config]
+    [district.format :as format]
     [district.ui.web3-accounts.queries :as account-queries]
     [re-frame.core :as re-frame]))
 
@@ -12,3 +14,8 @@
   ::aragon-id-available?
   (fn [db [_ aragon-id]]
     (get-in db [:district-registry.ui.core/aragon-id->available? aragon-id])))
+
+(re-frame/reg-sub
+  ::aragon-url
+  (fn [_ [_ aragon-id]]
+    (str (format/ensure-trailing-slash (:aragon-url config/config-map)) aragon-id)))

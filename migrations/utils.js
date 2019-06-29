@@ -1,5 +1,6 @@
 const fs = require("fs");
 const edn = require ("jsedn");
+const {contracts_build_directory} = require("../truffle.js");
 
 
 let last = (array) => {
@@ -7,9 +8,9 @@ let last = (array) => {
 };
 
 
-let copy = (srcName, dstName, contracts_build_directory) => {
+let copy = (srcName, dstName, contractsBuildDirectory) => {
 
-  let buildPath = contracts_build_directory;
+  let buildPath = contractsBuildDirectory;
 
   const srcPath = buildPath + srcName + ".json";
   const dstPath = buildPath + dstName + ".json";
@@ -29,6 +30,15 @@ let linkBytecode = (contract, placeholder, replacement) => {
 };
 
 
+let copyContract = (contractName, contractCopyName) => {
+  console.log("Creating Copy of " + contractName + " for deployment...");
+  const copyName = contractCopyName || contractName + "_copy";
+  console.log("- Contract Name: " + copyName);
+  copy(contractName, copyName, contracts_build_directory);
+  return copyName;
+}
+
+
 let smartContractsTemplate = (map, env) => {
   return `(ns district-registry.shared.smart-contracts-${env})
 
@@ -38,27 +48,69 @@ let smartContractsTemplate = (map, env) => {
 };
 
 
-let encodeContractEDN = (contract_instance, contract_name, contract_key, opts) => {
-  const clj_contract_name = ":" + contract_key;
-  const contract_address = contract_instance.address.toLowerCase();
+let encodeContractEDN = (contractInstance, contractName, contractKey, opts) => {
+  const cljContractName = ":" + contractKey;
+  const contract_address = contractInstance.address.toLowerCase();
   opts = opts || {};
   
   let entry_value = [
-    edn.kw(":name"), contract_name,
+    edn.kw(":name"), contractName,
     edn.kw(":address"), contract_address,
   ];
 
   // assign a forwards-to optional
-  if (opts.forwards_to !== undefined) {
+  if (opts.forwardsTo !== undefined) {
     entry_value = entry_value.concat([
-      edn.kw(":forwards-to"), edn.kw(":" + opts.forwards_to),
+      edn.kw(":forwards-to"), edn.kw(":" + opts.forwardsTo),
     ]);
   }
 
   return [
-    edn.kw(clj_contract_name),
+    edn.kw(cljContractName),
     new edn.Map(entry_value),
   ];
+};
+
+
+let readSmartContractsFile = (smartContractsPath) => {
+  var content = fs.readFileSync(smartContractsPath, "utf8");
+
+  content = content.replace(/\(ns.*\)/gm, "");
+  content = content.replace(/\(def smart-contracts/gm, "");
+  content = content.replace(/\)$/gm, "");
+
+  return edn.parse(content);
+};
+
+
+let encodeSmartContracts = (smartContracts) => {
+  if (Array.isArray(smartContracts)) {
+    smartContracts = new edn.Map(smartContracts);
+  }
+  var contracts = edn.encode(smartContracts);
+  console.log(contracts);
+  return contracts;
+};
+
+
+let writeSmartContracts = (smartContractsPath, smartContracts, env) => {
+  console.log("Writing to smart contract file: " + smartContractsPath);
+  fs.writeFileSync(smartContractsPath, smartContractsTemplate(encodeSmartContracts(smartContracts), env));
+};
+
+
+let getSmartContractAddress = (smartContracts, contractKey) => {
+  try {
+    return edn.atPath(smartContracts, contractKey + " :address");
+  } catch (e) {
+    return null;
+  }
+};
+
+let setSmartContractAddress = (smartContracts, contractKey, newAddress) => {
+  var contract = edn.atPath(smartContracts, contractKey);
+  contract = contract.set(edn.kw(":address"), newAddress);
+  return smartContracts.set(edn.kw(contractKey), contract);
 };
 
 
@@ -66,6 +118,12 @@ module.exports = {
   last: last,
   copy: copy,
   linkBytecode: linkBytecode,
+  copyContract: copyContract,
   smartContractsTemplate: smartContractsTemplate,
   encodeContractEDN: encodeContractEDN,
+  readSmartContractsFile: readSmartContractsFile,
+  encodeSmartContracts: encodeSmartContracts,
+  writeSmartContracts: writeSmartContracts,
+  getSmartContractAddress: getSmartContractAddress,
+  setSmartContractAddress: setSmartContractAddress
 };

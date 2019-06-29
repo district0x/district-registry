@@ -35,17 +35,17 @@ let parameters = {
     FIFSResolvingRegistrar: "0x3665e7bfd4d3254ae7796779800f5b603c43c60d",
     districtRegistryDb : {
       challengePeriodDuration : 0,
-      commitPeriodDuration : 600, // seconds
-      revealPeriodDuration : 600, // seconds
+      commitPeriodDuration : 200, // seconds
+      revealPeriodDuration : 200, // seconds
       deposit : 1e18, // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
       voteQuorum : 50, // percent
     },
 
     paramChangeRegistryDb : {
-      challengePeriodDuration : 600, // seconds
-      commitPeriodDuration : 600, // seconds
-      revealPeriodDuration : 600, // seconds
+      challengePeriodDuration : 200, // seconds
+      commitPeriodDuration : 200, // seconds
+      revealPeriodDuration : 200, // seconds
       deposit : 1e18, // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
       voteQuorum : 50 // percent
@@ -79,7 +79,7 @@ let parameters = {
 
 module.exports = {
   env: DISTRICT_REGISTRY_ENV,
-  smart_contracts_path: __dirname + smartContractsPaths[DISTRICT_REGISTRY_ENV],
+  smartContractsPath: __dirname + smartContractsPaths[DISTRICT_REGISTRY_ENV],
   contracts_build_directory: __dirname + '/resources/public/contracts/build/',
   parameters : parameters[DISTRICT_REGISTRY_ENV],
 

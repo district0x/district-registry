@@ -70,9 +70,9 @@
                             :graphql {:port 6400
                                       :middlewares [logging-middlewares]
                                       :schema (utils/build-schema graphql-schema
-                                                resolvers-map
-                                                {:kw->gql-name graphql-utils/kw->gql-name
-                                                 :gql-name->kw graphql-utils/gql-name->kw})
+                                                                  resolvers-map
+                                                                  {:kw->gql-name graphql-utils/kw->gql-name
+                                                                   :gql-name->kw graphql-utils/gql-name->kw})
                                       :field-resolver (utils/build-default-field-resolver graphql-utils/gql-name->kw)
                                       :path "/graphql"
                                       :graphiql true}

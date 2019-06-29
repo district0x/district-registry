@@ -68,7 +68,7 @@
                        :notification {:default-show-duration 3000
                                       :default-hide-duration 1000}})]
 
-    (js/console.log "Entire config:" (clj->js full-config))
+    (js/console.log "config:" (clj->js full-config))
     (-> (mount/with-args full-config)
       (mount/start))
     (re-frame/dispatch-sync [::init])))

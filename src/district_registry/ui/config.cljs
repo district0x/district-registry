@@ -21,14 +21,15 @@
    :web3-tx {:disable-loading-recommended-gas-prices? true}
    :web3-tx-log {:disable-using-localstorage? true
                  :tx-costs-currencies [:USD]
-                 :etherscan-url "https://ropsten.etherscan.io"}
+                 :etherscan-url "https://rinkeby.etherscan.io"}
    :graphql {:schema graphql-schema
              :url "http://localhost:6400/graphql"}
    :ipfs {:host "http://127.0.0.1:5001"
           :endpoint "/api/v0"
           :gateway "http://127.0.0.1:8080/ipfs"}
    :router {:html5? false}
-   :router-google-analytics {:enabled? false}})
+   :router-google-analytics {:enabled? false}
+   :aragon-url "https://rinkeby.aragon.org/#/"})
 
 (def qa-config
   {:logging {:level :warn
@@ -38,19 +39,27 @@
    :time-source :js-date
    :smart-contracts {:contracts (select-keys smart-contracts-qa/smart-contracts contracts-to-load)}
    :web3-balances {:contracts (select-keys smart-contracts-qa/smart-contracts [:DNT])}
-   :web3 {:url "https://ropsten.district0x.io"}
+   :web3 {:url "https://rinkeby.district0x.io"}
+   :web3-tx {:disable-loading-recommended-gas-prices? true}
    :web3-tx-log {:disable-using-localstorage? false
                  :tx-costs-currencies [:USD]
-                 :etherscan-url "https://ropsten.etherscan.io"}
+                 :etherscan-url "https://rinkeby.etherscan.io"}
    :graphql {:schema graphql-schema
              :url "https://api.district-registry.qa.district0x.io/graphql"}
    :ipfs {:host "https://ipfs.qa.district0x.io/api"
           :endpoint "/api/v0"
           :gateway "https://ipfs.qa.district0x.io/gateway/ipfs"}
    :router {:html5? true}
-   :router-google-analytics {:enabled? false}})
+   :router-google-analytics {:enabled? false}
+   :aragon-url "https://rinkeby.aragon.org/#/"})
 
-(def qa-dev-config (assoc-in qa-config [:router :html5?] false))
+(def qa-dev-config (merge (assoc-in qa-config [:router :html5?] false)
+                          {:ipfs {:host "http://127.0.0.1:5001"
+                                  :endpoint "/api/v0"
+                                  :gateway "http://127.0.0.1:8080/ipfs"}
+                           :web3 {:url "http://localhost:8545"}
+                           :graphql {:schema graphql-schema
+                                     :url "http://localhost:6400/graphql"}}))
 
 (def production-config
   {:logging {:level :warn
@@ -71,7 +80,8 @@
           :endpoint "/api/v0"
           :gateway "https://ipfs.district0x.io/gateway/ipfs"}
    :router {:html5? true}
-   :router-google-analytics {:enabled? true}})
+   :router-google-analytics {:enabled? true}
+   :aragon-url "https://mainnet.aragon.org/#/"})
 
 (def config-map
   (condp = (get-environment)
