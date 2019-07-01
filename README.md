@@ -1,5 +1,7 @@
 # District Registry
 
+[![Build Status](https://travis-ci.org/district0x/district-registry.svg?branch=master)](https://travis-ci.org/district0x/district-registry)
+
 A community-curated registry of marketplaces on the district0x Network.
 
 ## Development
