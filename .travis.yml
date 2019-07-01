@@ -2,7 +2,7 @@ dist: xenial
 language: clojure
 node_js:
 - '11'
-script: lein doo node "server-tests" once
+script: echo "No tests exist in this project" #lein doo node "server-tests" once
 notifications:
   slack:
     on_success: always
