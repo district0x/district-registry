@@ -7,7 +7,7 @@ function requireContract(contractName, contractCopyName) {
   return artifacts.require(copyContract(contractName, contractCopyName));
 }
 
-let KitDistrict = requireContract("KitDistrict", "KitDistrict");
+let KitDistrict = requireContract("KitDistrict");
 
 /**
  * This migration deploys and swaps KitDistrict contract and its dependencies

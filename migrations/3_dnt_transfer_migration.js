@@ -1,6 +1,11 @@
 const {env, smartContractsPath, parameters} = require("../truffle.js");
+const {copyContract, linkBytecode, encodeSmartContracts, writeSmartContracts, readSmartContractsFile, getSmartContractAddress, kitDistrictAppsToNum} = require("./utils.js");
 
-const DNT = artifacts.require("District0xNetworkToken_copy");
+function requireContract(contractName, contractCopyName) {
+  return artifacts.require(copyContract(contractName, contractCopyName));
+}
+
+const DNT = requireContract("District0xNetworkToken");
 const amount = "10000000000000000000000"
 
 /**
@@ -22,7 +27,9 @@ module.exports = async function(deployer, network, accounts) {
   console.log("@@@ using Web3 version:", web3.version);
   console.log("@@@ using address", address);
 
-  const dnt = await DNT.deployed();
+  var smartContracts = readSmartContractsFile(smartContractsPath);
+  var dntAddr = getSmartContractAddress(smartContracts, ":DNT");
+  const dnt = await DNT.at(dntAddr);
 
   // First one already owns DNT
   accounts.shift();

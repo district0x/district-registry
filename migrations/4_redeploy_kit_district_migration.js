@@ -1,4 +1,4 @@
-const {copy, smartContractsTemplate, encodeContractEDN, linkBytecode, readSmartContractsFile, writeSmartContracts, getSmartContractAddress, setSmartContractAddress, copyContract} = require("./utils.js");
+const {copy, smartContractsTemplate, encodeContractEDN, linkBytecode, readSmartContractsFile, writeSmartContracts, getSmartContractAddress, setSmartContractAddress, copyContract, kitDistrictAppsToNum} = require("./utils.js");
 const fs = require("fs");
 const {env, smartContractsPath, parameters} = require("../truffle.js");
 const {registryPlaceholder, dntPlaceholder, forwarder1TargetPlaceholder, forwarder2TargetPlaceholder, minimeTokenFactoryPlaceholder, kitDistrictPlaceholder, zeroAddress, dsGuardANY, aragonENSNode} = require("./constants.js");
@@ -10,7 +10,7 @@ function requireContract(contractName, contractCopyName) {
 let DistrictRegistry = requireContract("Registry", "DistrictRegistry");
 let DistrictFactory = requireContract("DistrictFactory");
 let District = requireContract("District");
-let KitDistrict = requireContract("KitDistrict", "KitDistrict");
+let KitDistrict = requireContract("KitDistrict");
 
 /**
  * This migration deploys and swaps KitDistrict contract and its dependencies
@@ -22,7 +22,9 @@ let KitDistrict = requireContract("KitDistrict", "KitDistrict");
 async function deploy_KitDistrict(deployer, daoFactoryAddr, ensAddr, fifsResolvingRegistrarAddr, dsGuardAddr, opts) {
   console.log("Deploying KitDistrict");
 
-  await deployer.deploy(KitDistrict, daoFactoryAddr, ensAddr, fifsResolvingRegistrarAddr, Object.assign({}, opts, {gas: 4e6}));
+  const includeApps = kitDistrictAppsToNum(parameters.KitDistrict.includeApps);
+
+  await deployer.deploy(KitDistrict, daoFactoryAddr, ensAddr, fifsResolvingRegistrarAddr, includeApps, Object.assign({}, opts, {gas: 4.1e6}));
   const kitDistrict = await KitDistrict.deployed();
 
   console.log("Setting authority of KitDistrict to DSGuard");

@@ -113,6 +113,11 @@ let setSmartContractAddress = (smartContracts, contractKey, newAddress) => {
   return smartContracts.set(edn.kw(contractKey), contract);
 };
 
+kitDistrictAppToNum = {"voting": 0, "vault": 1, "finance": 2};
+
+kitDistrictAppsToNum = (apps) => {
+  return apps.map((app) => kitDistrictAppToNum[app]);
+}
 
 module.exports = {
   last: last,
@@ -125,5 +130,6 @@ module.exports = {
   encodeSmartContracts: encodeSmartContracts,
   writeSmartContracts: writeSmartContracts,
   getSmartContractAddress: getSmartContractAddress,
-  setSmartContractAddress: setSmartContractAddress
+  setSmartContractAddress: setSmartContractAddress,
+  kitDistrictAppsToNum: kitDistrictAppsToNum
 };

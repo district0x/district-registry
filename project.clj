@@ -99,6 +99,8 @@
                        [jsedn "0.4.1"]
                        [minimetoken "0.2.0"]
                        [openzeppelin-solidity "2.3.0"]
+                       [truffle-hdwallet-provider "1.0.12"]
+                       [dotenv "8.0.0"]
 
                        ;; Aragon dependencies:
                        ["@aragon/os" "4.2.0"]

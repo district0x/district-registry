@@ -1,4 +1,4 @@
-const {copyContract, copy, smartContractsTemplate, encodeContractEDN, linkBytecode, encodeSmartContracts, writeSmartContracts} = require("./utils.js");
+const {copyContract, copy, smartContractsTemplate, encodeContractEDN, linkBytecode, encodeSmartContracts, writeSmartContracts, kitDistrictAppsToNum} = require("./utils.js");
 const fs = require("fs");
 const edn = require("jsedn");
 const {env, smartContractsPath, parameters} = require("../truffle.js");
@@ -103,11 +103,19 @@ async function deploy_DNT(deployer, opts) {
 }
 
 
-async function getDNT(deployer, opts) {
+async function getDNT() {
   if (parameters.DNT) {
     return DNT.at(parameters.DNT);
   } else {
     return DNT.deployed();
+  }
+}
+
+async function getMiniMeTokenFactory() {
+  if (parameters.MiniMeTokenFactory) {
+    return MiniMeTokenFactory.at(parameters.MiniMeTokenFactory);
+  } else {
+    return MiniMeTokenFactory.deployed();
   }
 }
 
@@ -235,7 +243,7 @@ async function deploy_StakeBank(deployer, opts) {
   console.log("Deploying StakeBank");
 
   const power = await Power.deployed();
-  const miniMeTokenFactory = await MiniMeTokenFactory.deployed();
+  const miniMeTokenFactory = await getMiniMeTokenFactory();
   linkBytecode(StakeBank, forwarder1TargetPlaceholder, power.address);
   linkBytecode(StakeBank, minimeTokenFactoryPlaceholder, miniMeTokenFactory.address);
   await deployer.deploy(StakeBank, Object.assign({}, opts, {gas: 5.2e6}));
@@ -584,8 +592,9 @@ async function deploy_KitDistrict(deployer, opts) {
   const daoFactory = await getDAOFactory();
   const ens = await getENS();
   const fifsResolvingRegistrar = await getFIFSResolvingRegistrar();
+  const includeApps = kitDistrictAppsToNum(parameters.KitDistrict.includeApps);
 
-  await deployer.deploy(KitDistrict, daoFactory.address, ens.address, fifsResolvingRegistrar.address, Object.assign({}, opts, {gas: 4e6}));
+  await deployer.deploy(KitDistrict, daoFactory.address, ens.address, fifsResolvingRegistrar.address, includeApps, Object.assign({}, opts, {gas: 4.1e6}));
   const kitDistrict = await KitDistrict.deployed();
 
   console.log("Setting authority of KitDistrict to DSGuard");

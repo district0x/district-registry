@@ -26,10 +26,13 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
   uint64 public votingVoteTime = 3 days;
   uint64 public financePeriodDuration = 30 days;
 
+  mapping(uint8 => bool) public includeApp;
+
   constructor(
     DAOFactory _fac,
     ENS _ens,
-    FIFSResolvingRegistrar _aragonID
+    FIFSResolvingRegistrar _aragonID,
+    Apps[] _includeApps
   )
   KitBase(_fac, _ens)
   public
@@ -40,6 +43,9 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
     appIds[uint8(Apps.Voting)] = apmNamehash("voting");
     appIds[uint8(Apps.Vault)] = apmNamehash("vault");
     appIds[uint8(Apps.Finance)] = apmNamehash("finance");
+    for (uint i; i < _includeApps.length; i++) {
+      setAppIncluded(_includeApps[i]);
+    }
   }
 
   function createDAO(
@@ -58,54 +64,77 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
 
     acl.createPermission(this, dao, dao.APP_MANAGER_ROLE(), this);
 
-    Voting voting = Voting(
-      dao.newPinnedAppInstance(
-        appIds[uint8(Apps.Voting)],
-        latestVersionAppBase(appIds[uint8(Apps.Voting)])
-      )
-    );
-    emit InstalledApp(voting, appIds[uint8(Apps.Voting)]);
+    Voting voting;
+    Vault vault;
+    Finance finance;
 
-    Vault vault = Vault(
-      dao.newPinnedAppInstance(
-        appIds[uint8(Apps.Vault)],
-        latestVersionAppBase(appIds[uint8(Apps.Vault)]),
-        new bytes(0),
-        true
-      )
-    );
-    emit InstalledApp(vault, appIds[uint8(Apps.Vault)]);
+    if (isAppIncluded(Apps.Voting)) {
+      voting = Voting(
+        dao.newPinnedAppInstance(
+          appIds[uint8(Apps.Voting)],
+          latestVersionAppBase(appIds[uint8(Apps.Voting)])
+        )
+      );
+      emit InstalledApp(voting, appIds[uint8(Apps.Voting)]);
+    }
 
-    Finance finance = Finance(
-      dao.newPinnedAppInstance(
-        appIds[uint8(Apps.Finance)],
-        latestVersionAppBase(appIds[uint8(Apps.Finance)])
-      )
-    );
-    emit InstalledApp(finance, appIds[uint8(Apps.Finance)]);
+    if (isAppIncluded(Apps.Vault) || isAppIncluded(Apps.Finance)) {
+      vault = Vault(
+        dao.newPinnedAppInstance(
+          appIds[uint8(Apps.Vault)],
+          latestVersionAppBase(appIds[uint8(Apps.Vault)]),
+          new bytes(0),
+          true
+        )
+      );
+      emit InstalledApp(vault, appIds[uint8(Apps.Vault)]);
+    }
 
-    // permissions
-    acl.createPermission(voting, voting, voting.MODIFY_QUORUM_ROLE(), voting);
-    acl.createPermission(voting, voting, voting.MODIFY_SUPPORT_ROLE(), voting);
-    acl.createPermission(_creator, voting, voting.CREATE_VOTES_ROLE(), _creator);
+    if (isAppIncluded(Apps.Finance)) {
+      finance = Finance(
+        dao.newPinnedAppInstance(
+          appIds[uint8(Apps.Finance)],
+          latestVersionAppBase(appIds[uint8(Apps.Finance)])
+        )
+      );
+      emit InstalledApp(finance, appIds[uint8(Apps.Finance)]);
+    }
 
-    acl.createPermission(finance, vault, vault.TRANSFER_ROLE(), voting);
-    acl.createPermission(voting, finance, finance.CREATE_PAYMENTS_ROLE(), voting);
-    acl.createPermission(voting, finance, finance.EXECUTE_PAYMENTS_ROLE(), voting);
-    acl.createPermission(voting, finance, finance.MANAGE_PAYMENTS_ROLE(), voting);
+    if (isAppIncluded(Apps.Voting)) {
+      acl.createPermission(voting, voting, voting.MODIFY_QUORUM_ROLE(), voting);
+      acl.createPermission(voting, voting, voting.MODIFY_SUPPORT_ROLE(), voting);
+      acl.createPermission(_creator, voting, voting.CREATE_VOTES_ROLE(), _creator);
+    }
+
+    if (isAppIncluded(Apps.Voting) && isAppIncluded(Apps.Finance)) {
+      acl.createPermission(finance, vault, vault.TRANSFER_ROLE(), voting);
+      acl.createPermission(voting, finance, finance.CREATE_PAYMENTS_ROLE(), voting);
+      acl.createPermission(voting, finance, finance.EXECUTE_PAYMENTS_ROLE(), voting);
+      acl.createPermission(voting, finance, finance.MANAGE_PAYMENTS_ROLE(), voting);
+    }
 
     // App inits
-    vault.initialize();
-    finance.initialize(vault, financePeriodDuration);
-    voting.initialize(_token, votingSupportRequiredPct, votingMinAcceptQuorumPct, votingVoteTime);
 
-    // EVMScriptRegistry permissions
-    EVMScriptRegistry reg = EVMScriptRegistry(acl.getEVMScriptRegistry());
-    acl.createPermission(voting, reg, reg.REGISTRY_ADD_EXECUTOR_ROLE(), voting);
-    acl.createPermission(voting, reg, reg.REGISTRY_MANAGER_ROLE(), voting);
+    if (isAppIncluded(Apps.Vault) || isAppIncluded(Apps.Finance)) {
+      vault.initialize();
+    }
 
-    // clean-up
-    cleanupPermission(acl, voting, dao, dao.APP_MANAGER_ROLE());
+    if (isAppIncluded(Apps.Finance)) {
+      finance.initialize(vault, financePeriodDuration);
+    }
+
+    if (isAppIncluded(Apps.Voting)) {
+      voting.initialize(_token, votingSupportRequiredPct, votingMinAcceptQuorumPct, votingVoteTime);
+      EVMScriptRegistry reg = EVMScriptRegistry(acl.getEVMScriptRegistry());
+      acl.createPermission(voting, reg, reg.REGISTRY_ADD_EXECUTOR_ROLE(), voting);
+      acl.createPermission(voting, reg, reg.REGISTRY_MANAGER_ROLE(), voting);
+    }
+
+    if (isAppIncluded(Apps.Voting)) {
+      cleanupPermission(acl, voting, dao, dao.APP_MANAGER_ROLE());
+    } else {
+      cleanupPermission(acl, _creator, dao, dao.APP_MANAGER_ROLE());
+    }
 
     registerAragonID(_aragonId, dao);
     emit DeployInstance(dao);
@@ -131,6 +160,14 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
 
   function setFinancePeriodDuration(uint64 _financePeriodDuration) public auth {
     financePeriodDuration = _financePeriodDuration;
+  }
+
+  function setAppIncluded(Apps _app) public auth {
+    includeApp[uint8(_app)] = true;
+  }
+
+  function isAppIncluded(Apps _app) public view returns(bool){
+    return includeApp[uint8(_app)];
   }
 
 
