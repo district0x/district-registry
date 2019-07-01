@@ -594,15 +594,12 @@ async function deploy_KitDistrict(deployer, opts) {
   const fifsResolvingRegistrar = await getFIFSResolvingRegistrar();
   const includeApps = kitDistrictAppsToNum(parameters.KitDistrict.includeApps);
 
-  await deployer.deploy(KitDistrict, daoFactory.address, ens.address, fifsResolvingRegistrar.address, includeApps, Object.assign({}, opts, {gas: 4.1e6}));
+  await deployer.deploy(KitDistrict, daoFactory.address, ens.address, fifsResolvingRegistrar.address, includeApps, Object.assign({}, opts, {gas: 4.5e6}));
   const kitDistrict = await KitDistrict.deployed();
 
   console.log("Setting authority of KitDistrict to DSGuard");
   const dsGuard = await DSGuard.deployed();
   await kitDistrict.setAuthority(dsGuard.address, Object.assign({}, opts, {gas: 0.5e6}));
-
-  console.log("Setting owner of KitDistrict to 0x0");
-  await kitDistrict.setOwner(zeroAddress, Object.assign({}, opts, {gas: 0.5e6}));
 
   assignContract(kitDistrict, "KitDistrict", "kit-district");
 }

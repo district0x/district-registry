@@ -45,7 +45,7 @@
                  :tx-costs-currencies [:USD]
                  :etherscan-url "https://rinkeby.etherscan.io"}
    :graphql {:schema graphql-schema
-             :url "http://localhost:6400/graphql"}
+             :url "http://api.registry.qa.district0x.io/"}
    :ipfs {:host "https://ipfs.qa.district0x.io/api"
           :endpoint "/api/v0"
           :gateway "https://ipfs.qa.district0x.io/gateway/ipfs"}
@@ -75,7 +75,7 @@
                  :tx-costs-currencies [:USD]
                  :etherscan-url "https://etherscan.io"}
    :graphql {:schema graphql-schema
-             :url "https://api.district-registry.io/graphql"}
+             :url "http://api.registry.district0x.io/"}
    :ipfs {:host "https://ipfs.district0x.io/api"
           :endpoint "/api/v0"
           :gateway "https://ipfs.district0x.io/gateway/ipfs"}

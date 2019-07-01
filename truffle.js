@@ -14,6 +14,9 @@ const smartContractsPaths = {
 let parameters = {
   "dev": {
     KitDistrict : {includeApps: ["voting", "vault", "finance"]},
+//    KitDistrict : {includeApps: ["voting", "vault"]},
+//    KitDistrict : {includeApps: ["finance"]},
+//    KitDistrict : {includeApps: ["voting"]},
     districtRegistryDb : {
       challengePeriodDuration : 0,
       commitPeriodDuration : 60, // seconds
@@ -36,7 +39,7 @@ let parameters = {
     ENS: "0x98df287b6c145399aaa709692c8d308357bc085d",
     DAOFactory: "0x2298d27a9b847c681d2b2c2828ab9d79013f5f1d",
     FIFSResolvingRegistrar: "0x3665e7bfd4d3254ae7796779800f5b603c43c60d",
-    KitDistrict : {includeApps: ["voting", "vault", "finance"]},
+    KitDistrict : {includeApps: ["voting"]},
     districtRegistryDb : {
       challengePeriodDuration : 0,
       commitPeriodDuration : 200, // seconds
@@ -102,7 +105,7 @@ module.exports = {
       host: 'localhost',
       port: 8545,
       gas: 6e6,
-      gasPrice: 6e9, // 6 gwei
+      gasPrice: 3e9, // 6 gwei
       network_id: '*',
       skipDryRun: true
     },

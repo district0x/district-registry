@@ -11,7 +11,7 @@ let DNT = requireContract("District0xNetworkToken");
 let DistrictFactory = requireContract("DistrictFactory");
 
 /**
- * This migration deploys and swaps KitDistrict contract and its dependencies
+ * This migration does dry run to create a new district and see gas costs
  *
  * Usage:
  * truffle migrate --network ganache/parity --reset --f 4 --to 4
@@ -39,11 +39,8 @@ module.exports = async function(deployer, network, accounts) {
 
   var extraData = districtFactory.contract.methods.createDistrict(address, metaHash, dntWeight, aragonId).encodeABI();
   var amount = await dnt.contract.methods.approveAndCall(districtFactory.address, deposit, extraData)
-                        .estimateGas({gas: 7999999});
+                        .estimateGas({gas: 7500000});
 
   console.log(amount);
-
-//  console.log(dnt.contract.methods.approveAndCall());
-
 
 };

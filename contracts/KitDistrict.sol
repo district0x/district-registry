@@ -44,7 +44,7 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
     appIds[uint8(Apps.Vault)] = apmNamehash("vault");
     appIds[uint8(Apps.Finance)] = apmNamehash("finance");
     for (uint i; i < _includeApps.length; i++) {
-      setAppIncluded(_includeApps[i]);
+      setAppIncluded(_includeApps[i], true);
     }
   }
 
@@ -130,10 +130,18 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
       acl.createPermission(voting, reg, reg.REGISTRY_MANAGER_ROLE(), voting);
     }
 
+    bytes32 permRole = acl.CREATE_PERMISSIONS_ROLE();
+
+    acl.revokePermission(this, acl, permRole);
+
     if (isAppIncluded(Apps.Voting)) {
       cleanupPermission(acl, voting, dao, dao.APP_MANAGER_ROLE());
+      acl.grantPermission(voting, acl, permRole);
+      acl.setPermissionManager(voting, acl, permRole);
     } else {
       cleanupPermission(acl, _creator, dao, dao.APP_MANAGER_ROLE());
+      acl.grantPermission(_creator, acl, permRole);
+      acl.setPermissionManager(_creator, acl, permRole);
     }
 
     registerAragonID(_aragonId, dao);
@@ -162,8 +170,15 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
     financePeriodDuration = _financePeriodDuration;
   }
 
-  function setAppIncluded(Apps _app) public auth {
-    includeApp[uint8(_app)] = true;
+  function setAppsIncluded(Apps[] _includeApps, bool[] _isIncluded) public auth {
+    require(_includeApps.length == _isIncluded.length);
+    for (uint i; i < _includeApps.length; i++) {
+      setAppIncluded(_includeApps[i], _isIncluded[i]);
+    }
+  }
+
+  function setAppIncluded(Apps _app, bool _isIncluded) public auth {
+    includeApp[uint8(_app)] = _isIncluded;
   }
 
   function isAppIncluded(Apps _app) public view returns(bool){
