@@ -39,7 +39,7 @@ function build {
 
     case $SERVICE in
       "ui")
-        lein garden once
+        lein less4clj once
         env DISTRICT_REGISTRY_ENV=$BUILD_ENV lein cljsbuild once "ui"
         ;;
       "server")

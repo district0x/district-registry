@@ -127,8 +127,8 @@
              :repl-eval-timeout 60000}
 
   :aliases {"clean-prod-server" ["shell" "rm" "-rf" "server"]
-            "watch-css" ["shell" "./semantic.sh" "watch"]
-            "build-css" ["shell" "./semantic.sh" "build-css"]
+            "watch-css" ["less4clj" "auto"]
+            "build-css" ["less4clj" "once"]
             "build-prod-server" ["do" ["clean-prod-server"] ["cljsbuild" "once" "server"]]
             "build-prod-ui" ["do" ["clean"] ["cljsbuild" "once" "ui"]]
             "build-prod" ["pdo" ["build-prod-server"] ["build-prod-ui"] ["build-css"]]
