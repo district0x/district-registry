@@ -11,10 +11,10 @@ server {
     try_files $uri $uri/index.html /index.html;
   }
 
-  location ~ /(contracts|images|assets|js|css|fonts)(.*)$ {
+  location ~ /(contracts|images|assets|js|css|fonts|vendor)(.*)$ {
     expires 1h;
     add_header Cache-Control "public";
-    rewrite /(contracts|images|assets|js|css|fonts)(.*) /$1$2 break;
+    rewrite /(contracts|images|assets|js|css|fonts|vendor)(.*) /$1$2 break;
     try_files $uri $uri/index.html /index.html;
   }
 
