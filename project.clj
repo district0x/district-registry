@@ -10,7 +10,6 @@
                  [cljsjs/d3 "4.12.0-0"]
                  [cljsjs/react "16.5.2-0"]
                  [cljsjs/react-dom "16.5.2-0"]
-                 [cljsjs/react-infinite "0.13.0-0"]
                  [com.andrewmcveigh/cljs-time "0.5.2"]
                  [com.taoensso/encore "2.92.0"]
                  [com.taoensso/timbre "4.10.0"]
@@ -67,7 +66,9 @@
                  [re-frame "0.10.5"]
                  [reagent "0.8.1"]]
 
-  :exclusions [express-graphql]
+  :exclusions [express-graphql
+               express-graphql
+               cljsjs/react-with-addons]
 
   :plugins [[deraen/lein-less4clj "0.7.0-SNAPSHOT"]
             [lein-auto "0.1.2"]
