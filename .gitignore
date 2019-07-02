@@ -16,7 +16,6 @@
 /figwheel_server.log
 /node_modules/
 /npm-debug.log
-/resources/public/contracts/build/
 /resources/public/js/
 /resources/public/css-compiled/
 /server-tests/
