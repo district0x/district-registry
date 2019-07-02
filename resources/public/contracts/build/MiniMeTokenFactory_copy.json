@@ -29632,12 +29632,12 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x424827aF3A39fc0509358cD41FA5E92DAa77Bb4F",
-      "transactionHash": "0xf7505501b601b0ca9bc6e4c02c6ad7b8ce41356f9ccd58ab3e8ea8717d772395"
+      "address": "0xE58B672036629b83377141B2f9Af934B6bD1Bb51",
+      "transactionHash": "0x11b60a1a816937be395a31248b6e2cd9d2814c3ac1c8090d0a30bff47d449b1c"
     }
   },
   "schemaVersion": "3.0.10",
-  "updatedAt": "2019-07-01T12:48:23.202Z",
+  "updatedAt": "2019-07-02T16:11:40.583Z",
   "devdoc": {
     "methods": {
       "createCloneToken(address,uint256,string,uint8,string,bool)": {

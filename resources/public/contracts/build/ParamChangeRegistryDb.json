@@ -17670,12 +17670,12 @@
         }
       },
       "links": {},
-      "address": "0x16561c8F3C048bd8F9E84A6Cfac1c24c0A75D1EE",
-      "transactionHash": "0x145c610d1b13d8674c292403c631c88fadc5dc6223f86a3004730b3f66490fe5"
+      "address": "0x5C831BBc7a1A6ceb33327D1C9d81218F4d8d6F46",
+      "transactionHash": "0x096c9ea4423182eadc8da682f4237168bbb3b7c3e21c8dc2f7950d442ba48f0c"
     }
   },
   "schemaVersion": "3.0.10",
-  "updatedAt": "2019-07-01T12:48:23.172Z",
+  "updatedAt": "2019-07-02T16:11:40.550Z",
   "devdoc": {
     "methods": {},
     "title": "Contract to store arbitrary state data, decoupled from any logic related to it"

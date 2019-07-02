@@ -18493,12 +18493,12 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0xB23cCBE8c75827237173AE56C495Cef63B795133",
-      "transactionHash": "0x4843168469765626365ce84cf19cd3556b17d5d08b997895f12cfdb6e676af97"
+      "address": "0x3E9B7e1E5716a363a93bE0a30b9651df8f2b12B9",
+      "transactionHash": "0x953151b7e7f1264c98d24911803c109b4bcdc7f3f7e22d125967f3c6e6fdb6e9"
     }
   },
   "schemaVersion": "3.0.10",
-  "updatedAt": "2019-07-01T12:48:23.188Z",
+  "updatedAt": "2019-07-02T16:11:40.569Z",
   "devdoc": {
     "methods": {
       "addRegistryEntry(address)": {

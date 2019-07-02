@@ -4579,12 +4579,12 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x9920dCC4c2220D7476db46F5A2289962b07FfDe1",
-      "transactionHash": "0x0f9aaf3d17ca3fafc154a7de20067878332f04b1d867f5dd245937786dec5609"
+      "address": "0xcF1cF0bd88605a77C85Bc4a25fd3D496D2637CA1",
+      "transactionHash": "0xc0740619985916e0827bb02b9d7b1a70cbcf5e3a8a99187773f419aae19a2303"
     }
   },
   "schemaVersion": "3.0.10",
-  "updatedAt": "2019-07-01T12:48:23.162Z",
+  "updatedAt": "2019-07-02T16:11:40.541Z",
   "devdoc": {
     "methods": {
       "addRegistryEntry(address)": {

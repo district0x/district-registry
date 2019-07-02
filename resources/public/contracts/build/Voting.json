@@ -26538,7 +26538,7 @@
     }
   },
   "schemaVersion": "3.0.10",
-  "updatedAt": "2019-07-01T12:48:23.502Z",
+  "updatedAt": "2019-07-02T16:11:40.883Z",
   "devdoc": {
     "methods": {
       "allowRecoverability(address)": {

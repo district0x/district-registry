@@ -1476,7 +1476,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.10",
-  "updatedAt": "2019-07-01T15:53:02.363Z",
+  "updatedAt": "2019-07-02T16:00:53.609Z",
   "devdoc": {
     "methods": {
       "createDistrict(address,bytes,uint32,string)": {

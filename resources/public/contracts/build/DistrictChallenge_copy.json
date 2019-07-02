@@ -5489,12 +5489,12 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x3951Bf94b177aA58580767FC94Cb0f399e71b229",
-      "transactionHash": "0x1e8be2a88a36ac81d5da4385e1d49e7c869478975854ac231403c0c1baea0291"
+      "address": "0xD00071aAb34c9Adc5E9B9802FaC0422a8A8bc714",
+      "transactionHash": "0x5503fa6c9d6b530f5ebf49127f8fb136b69f914002d822fa26faf340ea33e319"
     }
   },
   "schemaVersion": "3.0.10",
-  "updatedAt": "2019-07-01T12:48:23.312Z",
+  "updatedAt": "2019-07-02T16:11:40.703Z",
   "devdoc": {
     "methods": {
       "challengerReward()": {

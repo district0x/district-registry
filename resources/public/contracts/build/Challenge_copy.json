@@ -24569,12 +24569,12 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x4D923d956fb5C4c499e309761596146847d99930",
-      "transactionHash": "0x2e8f7eb73e0e543398043122269b1acf93c53aeab7e5629ec27f8794d5b27d18"
+      "address": "0x941d665bb693BfCE69e3B81d6C00C5789DA834Dd",
+      "transactionHash": "0x067572a9da0bdc3eb1dfe95ae81cc9a0a00b5b95f6979cd0f69fbaa75b39cec3"
     }
   },
   "schemaVersion": "3.0.10",
-  "updatedAt": "2019-07-01T12:48:23.280Z",
+  "updatedAt": "2019-07-02T16:11:40.668Z",
   "devdoc": {
     "methods": {
       "challengerReward()": {

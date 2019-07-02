@@ -7123,12 +7123,12 @@
         }
       },
       "links": {},
-      "address": "0x3011021598dF719BEa17eC8980B8CD4108dCe2bE",
-      "transactionHash": "0xc303c393ca17bf2e96364acd3984c8c9a19d1a72caed813e893f4c0c37609239"
+      "address": "0xC179B77470F87ef4677C42996a28f643e772131C",
+      "transactionHash": "0x8150e74f207c73523930ee1888521066cb060ea5542edec832667c525e112bd1"
     }
   },
   "schemaVersion": "3.0.10",
-  "updatedAt": "2019-07-01T12:48:23.144Z",
+  "updatedAt": "2019-07-02T16:11:40.524Z",
   "devdoc": {
     "methods": {}
   },

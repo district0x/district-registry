@@ -3757,7 +3757,7 @@
     }
   },
   "schemaVersion": "3.0.10",
-  "updatedAt": "2019-07-01T12:48:23.466Z",
+  "updatedAt": "2019-07-02T16:11:40.846Z",
   "devdoc": {
     "methods": {
       "register(bytes32,address)": {
