@@ -13,6 +13,7 @@
     [district.graphql-utils :as graphql-utils]
     [district.server.config :refer [config]]
     [district.server.graphql.utils :as utils]
+    [district.server.graphql]
     [district.server.logging]
     [district.server.middleware.logging :refer [logging-middlewares]]
     [district.server.web3-events]
