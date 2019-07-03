@@ -9,10 +9,6 @@ COPY server /registry/server
 COPY node_modules /registry/node_modules
 COPY resources /registry/resources
 
-### --- DEBUG
-RUN ls registry/
-RUN ls registry/server/
-
 WORKDIR registry
 
 ENTRYPOINT ["node", "server/district-registry.js"]
