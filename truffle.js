@@ -36,6 +36,7 @@ let parameters = {
     }
   },
   "qa" : {
+    DNT: "0xe450dcde6c059339a35eec0facbe62751cca6e8a",
     ENS: "0x98df287b6c145399aaa709692c8d308357bc085d",
     DAOFactory: "0x2298d27a9b847c681d2b2c2828ab9d79013f5f1d",
     FIFSResolvingRegistrar: "0x3665e7bfd4d3254ae7796779800f5b603c43c60d",

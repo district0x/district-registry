@@ -108,6 +108,7 @@ contract District is RegistryEntry {
   function unstake(uint _amount)
     public
   {
+    require(registryToken.transfer(msg.sender, _amount));
     stakeBank.unstake(msg.sender, _amount);
     maybeAdjustStakeDelta(msg.sender, int(_amount) * -1);
     registry.fireDistrictStakeChangedEvent(
