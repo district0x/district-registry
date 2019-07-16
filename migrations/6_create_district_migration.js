@@ -9,6 +9,7 @@ function requireContract(contractName, contractCopyName) {
 
 let DNT = requireContract("District0xNetworkToken");
 let DistrictFactory = requireContract("DistrictFactory");
+let DistrictRegistry = requireContract("Registry", "DistrictRegistry");
 
 /**
  * This migration does dry run to create a new district and see gas costs
@@ -31,6 +32,8 @@ module.exports = async function(deployer, network, accounts) {
 
   var dnt = await DNT.at(getSmartContractAddress(smartContracts, ":DNT"));
   var districtFactory = await DistrictFactory.at(getSmartContractAddress(smartContracts, ":district-factory"));
+  var districtRegistry = await DistrictRegistry.at(getSmartContractAddress(smartContracts, ":district-registry-fwd"));
+
 
   var metaHash = web3.utils.toHex("Qmdpe5HCmjieUaSYoedQYZkTRu7aax8719hLAFyMQhcJhD");
   var dntWeight = 1000000;
@@ -38,9 +41,9 @@ module.exports = async function(deployer, network, accounts) {
   var deposit = web3.utils.toHex(parameters.districtRegistryDb.deposit);
 
   var extraData = districtFactory.contract.methods.createDistrict(address, metaHash, dntWeight, aragonId).encodeABI();
-  var amount = await dnt.contract.methods.approveAndCall(districtFactory.address, deposit, extraData)
-                        .estimateGas({gas: 7500000});
+  await dnt.approveAndCall(districtFactory.address, deposit, extraData, {from: address, gas: 10000000});
 
-  console.log(amount);
+  var events = await districtRegistry.contract.getPastEvents("DistrictConstructedEvent", {fromBlock: 0});
 
+  console.log(events);
 };

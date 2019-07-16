@@ -325,7 +325,7 @@ async function deploy_DistrictFactory(deployer, opts) {
 
   linkBytecode(DistrictFactory, forwarder1TargetPlaceholder, district.address);
 
-  await deployer.deploy(DistrictFactory, districtRegistryForwarder.address, dnt.address, Object.assign({}, opts, {gas: 1e6}));
+  await deployer.deploy(DistrictFactory, districtRegistryForwarder.address, dnt.address, Object.assign({}, opts, {gas: 1.5e6}));
   const districtFactory = await DistrictFactory.deployed();
 
   console.log("Allowing new DistrictFactory in DistrictRegistryForwarder");
@@ -345,7 +345,7 @@ async function deploy_ParamChangeFactory(deployer, opts) {
 
   linkBytecode(ParamChangeFactory, forwarder1TargetPlaceholder, paramChange.address);
 
-  await deployer.deploy(ParamChangeFactory, paramChangeRegistryForwarder.address, dnt.address, Object.assign({}, opts, {gas: 1e6}));
+  await deployer.deploy(ParamChangeFactory, paramChangeRegistryForwarder.address, dnt.address, Object.assign({}, opts, {gas: 1.5e6}));
   const paramChangeFactory = await ParamChangeFactory.deployed();
   
   console.log("Allowing new ParamChangeFactory in ParamChangeRegistryForwarder");

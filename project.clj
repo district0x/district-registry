@@ -112,7 +112,8 @@
                        ["@aragon/apps-vault" "3.0.0"]
                        ["@aragon/apps-finance" "2.1.0"]
                        ["eth-ens-namehash" "2.0.8"]
-                       ["web3-utils" "1.0.0-beta.55"]]}
+                       ["web3-utils" "1.0.0-beta.55"]
+                       ["bluebird" "3.5.2"]]}
 
   :solc {:src-path "resources/public/contracts/src"
          :build-path "resources/public/contracts/build"
