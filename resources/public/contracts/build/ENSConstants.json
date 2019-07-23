@@ -12,14 +12,14 @@
     "absolutePath": "@aragon/os/contracts/ens/ENSConstants.sol",
     "exportedSymbols": {
       "ENSConstants": [
-        16447
+        16948
       ]
     },
-    "id": 16448,
+    "id": 16949,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16429,
+        "id": 16930,
         "literals": [
           "solidity",
           "^",
@@ -35,19 +35,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 16447,
+        "id": 16948,
         "linearizedBaseContracts": [
-          16447
+          16948
         ],
         "name": "ENSConstants",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 16434,
+            "id": 16935,
             "name": "ENS_ROOT",
             "nodeType": "VariableDeclaration",
-            "scope": 16447,
+            "scope": 16948,
             "src": "557:47:63",
             "stateVariable": true,
             "storageLocation": "default",
@@ -56,7 +56,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 16430,
+              "id": 16931,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "557:7:63",
@@ -71,7 +71,7 @@
                 {
                   "argumentTypes": null,
                   "hexValue": "30",
-                  "id": 16432,
+                  "id": 16933,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -94,7 +94,7 @@
                     "typeString": "int_const 0"
                   }
                 ],
-                "id": 16431,
+                "id": 16932,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -107,7 +107,7 @@
                 },
                 "typeName": "bytes32"
               },
-              "id": 16433,
+              "id": 16934,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -125,10 +125,10 @@
           },
           {
             "constant": true,
-            "id": 16437,
+            "id": 16938,
             "name": "ETH_TLD_LABEL",
             "nodeType": "VariableDeclaration",
-            "scope": 16447,
+            "scope": 16948,
             "src": "610:108:63",
             "stateVariable": true,
             "storageLocation": "default",
@@ -137,7 +137,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 16435,
+              "id": 16936,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "610:7:63",
@@ -149,7 +149,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307834663562383132373839666336303662653162336231363930386462313366633761396164663763613732363431663834643735623437303639643364376630",
-              "id": 16436,
+              "id": 16937,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -168,10 +168,10 @@
           },
           {
             "constant": true,
-            "id": 16440,
+            "id": 16941,
             "name": "ETH_TLD_NODE",
             "nodeType": "VariableDeclaration",
-            "scope": 16447,
+            "scope": 16948,
             "src": "724:107:63",
             "stateVariable": true,
             "storageLocation": "default",
@@ -180,7 +180,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 16438,
+              "id": 16939,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "724:7:63",
@@ -192,7 +192,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307839336364656237303862373534356463363638656239323830313736313639643163333363666438656436663034363930613062636338386139336663346165",
-              "id": 16439,
+              "id": 16940,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -211,10 +211,10 @@
           },
           {
             "constant": true,
-            "id": 16443,
+            "id": 16944,
             "name": "PUBLIC_RESOLVER_LABEL",
             "nodeType": "VariableDeclaration",
-            "scope": 16447,
+            "scope": 16948,
             "src": "837:116:63",
             "stateVariable": true,
             "storageLocation": "default",
@@ -223,7 +223,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 16441,
+              "id": 16942,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "837:7:63",
@@ -235,7 +235,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307833323935333961316432336166313831306334386130376665376663363661336233346662633862333765396233636462393762623838636561623765346266",
-              "id": 16442,
+              "id": 16943,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -254,10 +254,10 @@
           },
           {
             "constant": true,
-            "id": 16446,
+            "id": 16947,
             "name": "PUBLIC_RESOLVER_NODE",
             "nodeType": "VariableDeclaration",
-            "scope": 16447,
+            "scope": 16948,
             "src": "959:115:63",
             "stateVariable": true,
             "storageLocation": "default",
@@ -266,7 +266,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 16444,
+              "id": 16945,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "959:7:63",
@@ -278,7 +278,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307866646435643564653664643633646237326262633264343837393434626131336266373735623530613830383035666536666361626139623066626138386635",
-              "id": 16445,
+              "id": 16946,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -296,7 +296,7 @@
             "visibility": "internal"
           }
         ],
-        "scope": 16448,
+        "scope": 16949,
         "src": "71:1006:63"
       }
     ],
@@ -306,14 +306,14 @@
     "absolutePath": "@aragon/os/contracts/ens/ENSConstants.sol",
     "exportedSymbols": {
       "ENSConstants": [
-        16447
+        16948
       ]
     },
-    "id": 16448,
+    "id": 16949,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16429,
+        "id": 16930,
         "literals": [
           "solidity",
           "^",
@@ -329,19 +329,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 16447,
+        "id": 16948,
         "linearizedBaseContracts": [
-          16447
+          16948
         ],
         "name": "ENSConstants",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 16434,
+            "id": 16935,
             "name": "ENS_ROOT",
             "nodeType": "VariableDeclaration",
-            "scope": 16447,
+            "scope": 16948,
             "src": "557:47:63",
             "stateVariable": true,
             "storageLocation": "default",
@@ -350,7 +350,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 16430,
+              "id": 16931,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "557:7:63",
@@ -365,7 +365,7 @@
                 {
                   "argumentTypes": null,
                   "hexValue": "30",
-                  "id": 16432,
+                  "id": 16933,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -388,7 +388,7 @@
                     "typeString": "int_const 0"
                   }
                 ],
-                "id": 16431,
+                "id": 16932,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -401,7 +401,7 @@
                 },
                 "typeName": "bytes32"
               },
-              "id": 16433,
+              "id": 16934,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -419,10 +419,10 @@
           },
           {
             "constant": true,
-            "id": 16437,
+            "id": 16938,
             "name": "ETH_TLD_LABEL",
             "nodeType": "VariableDeclaration",
-            "scope": 16447,
+            "scope": 16948,
             "src": "610:108:63",
             "stateVariable": true,
             "storageLocation": "default",
@@ -431,7 +431,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 16435,
+              "id": 16936,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "610:7:63",
@@ -443,7 +443,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307834663562383132373839666336303662653162336231363930386462313366633761396164663763613732363431663834643735623437303639643364376630",
-              "id": 16436,
+              "id": 16937,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -462,10 +462,10 @@
           },
           {
             "constant": true,
-            "id": 16440,
+            "id": 16941,
             "name": "ETH_TLD_NODE",
             "nodeType": "VariableDeclaration",
-            "scope": 16447,
+            "scope": 16948,
             "src": "724:107:63",
             "stateVariable": true,
             "storageLocation": "default",
@@ -474,7 +474,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 16438,
+              "id": 16939,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "724:7:63",
@@ -486,7 +486,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307839336364656237303862373534356463363638656239323830313736313639643163333363666438656436663034363930613062636338386139336663346165",
-              "id": 16439,
+              "id": 16940,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -505,10 +505,10 @@
           },
           {
             "constant": true,
-            "id": 16443,
+            "id": 16944,
             "name": "PUBLIC_RESOLVER_LABEL",
             "nodeType": "VariableDeclaration",
-            "scope": 16447,
+            "scope": 16948,
             "src": "837:116:63",
             "stateVariable": true,
             "storageLocation": "default",
@@ -517,7 +517,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 16441,
+              "id": 16942,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "837:7:63",
@@ -529,7 +529,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307833323935333961316432336166313831306334386130376665376663363661336233346662633862333765396233636462393762623838636561623765346266",
-              "id": 16442,
+              "id": 16943,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -548,10 +548,10 @@
           },
           {
             "constant": true,
-            "id": 16446,
+            "id": 16947,
             "name": "PUBLIC_RESOLVER_NODE",
             "nodeType": "VariableDeclaration",
-            "scope": 16447,
+            "scope": 16948,
             "src": "959:115:63",
             "stateVariable": true,
             "storageLocation": "default",
@@ -560,7 +560,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 16444,
+              "id": 16945,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "959:7:63",
@@ -572,7 +572,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307866646435643564653664643633646237326262633264343837393434626131336266373735623530613830383035666536666361626139623066626138386635",
-              "id": 16445,
+              "id": 16946,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -590,7 +590,7 @@
             "visibility": "internal"
           }
         ],
-        "scope": 16448,
+        "scope": 16949,
         "src": "71:1006:63"
       }
     ],
@@ -601,8 +601,8 @@
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.10",
-  "updatedAt": "2019-06-29T10:51:09.504Z",
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2019-07-16T10:53:50.971Z",
   "devdoc": {
     "methods": {}
   },

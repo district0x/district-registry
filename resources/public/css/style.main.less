@@ -257,10 +257,6 @@ input {
   white-space: pre;
 }
 
-.help-block {
-
-}
-
 .dropzone {
   display: inline;
   img {
@@ -547,7 +543,7 @@ form {
   .toplinks a:hover {
     opacity: .5;
   }
-  #intro .subnav {
+  nav.subnav {
     .cta-btn:hover {
       background-color: #e5fefe;
     }
@@ -772,30 +768,6 @@ form {
 #intro {
   padding-top: 150px;
   overflow: visible;
-  .subnav {
-    margin-bottom: 50px;
-    li {
-      .inline-c;
-      +li {
-        margin-left: 20px;
-      }
-      &.on .cta-btn {
-        background-color: @blue;
-        color: @aqua;
-      }
-    }
-    .cta-btn {
-      width: 166px;
-      background-color: #fff;
-      color: @blue;
-      border: 1px solid @blue;
-    }
-    a:not(.cta-btn) {
-      .fils(14px);
-      text-decoration: underline;
-      margin-left: 10px;
-    }
-  }
   p {
     .fils(~"22px/1.45", 300);
   }
@@ -805,6 +777,31 @@ form {
       width: 2000px;
       margin-left: -260px;
     }
+  }
+}
+
+nav.subnav {
+  margin-bottom: 50px;
+  li {
+    .inline-c;
+    +li {
+      margin-left: 20px;
+    }
+    &.on .cta-btn {
+      background-color: @blue;
+      color: @aqua;
+    }
+  }
+  .cta-btn {
+    width: 166px;
+    background-color: #fff;
+    color: @blue;
+    border: 1px solid @blue;
+  }
+  a:not(.cta-btn) {
+    .fils(14px);
+    text-decoration: underline;
+    margin-left: 10px;
   }
 }
 
@@ -1159,9 +1156,17 @@ form {
   }
 }
 
-#page-my-activity {
+#page-my-account {
   .box-wrap {
     padding-top: 115px;
+  }
+
+  h1.email {
+    margin-bottom: 30px;
+  }
+
+  input.email {
+    max-width: 300px;
   }
 
   .tx-content {
@@ -1358,7 +1363,7 @@ form {
     }
   }
 
-  #page-details .box-wrap, #page-my-activity .box-wrap {
+  #page-details .box-wrap, #page-my-account .box-wrap {
     padding-top: 30px;
     &.overview {
       padding-top: 75px;
@@ -1482,9 +1487,10 @@ form {
 
   #intro {
     padding-top: 165px;
-    .subnav {
-      margin-bottom: 30px;
-    }
+  }
+
+  nav.subnav {
+    margin-bottom: 30px;
   }
 
   #main {
@@ -1579,7 +1585,7 @@ form {
       }
     }
   }
-  #page-my-activity {
+  #page-my-account {
     .box-wrap {
       padding-top: 30px;
     }
@@ -1614,6 +1620,16 @@ form {
     }
   }
 
+  nav.subnav .cta-btn {
+    width: 122px;
+    height: 40px;
+    padding: 14px 10px;
+    border-radius: 20px 20px 0px 0px;
+    border-bottom: none;
+    box-shadow: none;
+    font-size: 13px;
+  }
+
   #page-registry {
     background-color: #eff1f9;
     .bg-wrap {
@@ -1629,26 +1645,20 @@ form {
           display: none;
         }
       }
-      .subnav {
-        margin: 0px;
-        li+li {
-          margin-left: 0px;
-        }
-        a:not(.cta-btn) {
-          margin-left: 6px;
-          font-size: 12px;
-        }
-      }
-      .cta-btn {
-        width: 122px;
-        height: 40px;
-        padding: 14px 10px;
-        border-radius: 20px 20px 0px 0px;
-        border-bottom: none;
-        box-shadow: none;
-        font-size: 13px;
-      }
     }
+  }
+
+  nav.subnav {
+    margin: 0px;
+    li+li {
+      margin-left: 0px;
+    }
+    a:not(.cta-btn) {
+      margin-left: 6px;
+      font-size: 12px;
+    }
+
+
   }
 
   #registry-grid {
@@ -1761,7 +1771,7 @@ form {
     }
   }
 
-  #page-my-activity {
+  #page-my-account {
     .tx-log {
       .tx-content {
         margin-top: 20px;
@@ -2076,10 +2086,11 @@ input[type=number] {
     font-size: 12px;
     text-align: right;
     transition: color 0.3s ease;
+    min-height: 14px;
   }
   &.available {
     .help-block {
-      color: #26C485;
+      color: @darkerGreen;
     }
   }
   &.taken {
@@ -2092,4 +2103,18 @@ input[type=number] {
       color: fade(@bcblue, 40%);
     }
   }
+}
+
+.input-group {
+  font-size: 12px;
+  transition: color 0.3s ease;
+  &.has-error {
+    .help-block {
+      color: @violet;
+    }
+  }
+}
+
+.success {
+  color: @darkerGreen;
 }

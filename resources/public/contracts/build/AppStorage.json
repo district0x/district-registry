@@ -41,14 +41,14 @@
     "absolutePath": "@aragon/os/contracts/apps/AppStorage.sol",
     "exportedSymbols": {
       "AppStorage": [
-        15380
+        15881
       ]
     },
-    "id": 15381,
+    "id": 15882,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 15320,
+        "id": 15821,
         "literals": [
           "solidity",
           "^",
@@ -61,10 +61,10 @@
       {
         "absolutePath": "@aragon/os/contracts/common/UnstructuredStorage.sol",
         "file": "../common/UnstructuredStorage.sol",
-        "id": 15321,
+        "id": 15822,
         "nodeType": "ImportDirective",
-        "scope": 15381,
-        "sourceUnit": 16312,
+        "scope": 15882,
+        "sourceUnit": 16813,
         "src": "70:43:44",
         "symbolAliases": [],
         "unitAlias": ""
@@ -72,10 +72,10 @@
       {
         "absolutePath": "@aragon/os/contracts/kernel/IKernel.sol",
         "file": "../kernel/IKernel.sol",
-        "id": 15322,
+        "id": 15823,
         "nodeType": "ImportDirective",
-        "scope": 15381,
-        "sourceUnit": 18457,
+        "scope": 15882,
+        "sourceUnit": 18958,
         "src": "114:31:44",
         "symbolAliases": [],
         "unitAlias": ""
@@ -86,31 +86,31 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 15380,
+        "id": 15881,
         "linearizedBaseContracts": [
-          15380
+          15881
         ],
         "name": "AppStorage",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 15325,
+            "id": 15826,
             "libraryName": {
               "contractScope": null,
-              "id": 15323,
+              "id": 15824,
               "name": "UnstructuredStorage",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 16311,
+              "referencedDeclaration": 16812,
               "src": "180:19:44",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_UnstructuredStorage_$16311",
+                "typeIdentifier": "t_contract$_UnstructuredStorage_$16812",
                 "typeString": "library UnstructuredStorage"
               }
             },
             "nodeType": "UsingForDirective",
             "src": "174:38:44",
             "typeName": {
-              "id": 15324,
+              "id": 15825,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "204:7:44",
@@ -122,10 +122,10 @@
           },
           {
             "constant": true,
-            "id": 15328,
+            "id": 15829,
             "name": "KERNEL_POSITION",
             "nodeType": "VariableDeclaration",
-            "scope": 15380,
+            "scope": 15881,
             "src": "441:110:44",
             "stateVariable": true,
             "storageLocation": "default",
@@ -134,7 +134,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 15326,
+              "id": 15827,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "441:7:44",
@@ -146,7 +146,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307834313732663066376432323839313533303732623061366361333639353965306362653265666333616665353066633831363336636161393633333831333762",
-              "id": 15327,
+              "id": 15828,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -165,10 +165,10 @@
           },
           {
             "constant": true,
-            "id": 15331,
+            "id": 15832,
             "name": "APP_ID_POSITION",
             "nodeType": "VariableDeclaration",
-            "scope": 15380,
+            "scope": 15881,
             "src": "557:110:44",
             "stateVariable": true,
             "storageLocation": "default",
@@ -177,7 +177,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 15329,
+              "id": 15830,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "557:7:44",
@@ -189,7 +189,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307864363235343936323137616136613334353365656362396333343839646335613533653663363762343434333239656132623263626339666635343736333962",
-              "id": 15330,
+              "id": 15831,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -208,7 +208,7 @@
           },
           {
             "body": {
-              "id": 15342,
+              "id": 15843,
               "nodeType": "Block",
               "src": "722:68:44",
               "statements": [
@@ -223,32 +223,32 @@
                           "argumentTypes": [],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 15337,
+                            "id": 15838,
                             "name": "KERNEL_POSITION",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 15328,
+                            "referencedDeclaration": 15829,
                             "src": "747:15:44",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
                               "typeString": "bytes32"
                             }
                           },
-                          "id": 15338,
+                          "id": 15839,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "getStorageAddress",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 16256,
+                          "referencedDeclaration": 16757,
                           "src": "747:33:44",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$_t_bytes32_$returns$_t_address_$bound_to$_t_bytes32_$",
                             "typeString": "function (bytes32) view returns (address)"
                           }
                         },
-                        "id": 15339,
+                        "id": 15840,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -270,18 +270,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 15336,
+                      "id": 15837,
                       "name": "IKernel",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 18456,
+                      "referencedDeclaration": 18957,
                       "src": "739:7:44",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_IKernel_$18456_$",
+                        "typeIdentifier": "t_type$_t_contract$_IKernel_$18957_$",
                         "typeString": "type(contract IKernel)"
                       }
                     },
-                    "id": 15340,
+                    "id": 15841,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -291,19 +291,19 @@
                     "nodeType": "FunctionCall",
                     "src": "739:44:44",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IKernel_$18456",
+                      "typeIdentifier": "t_contract$_IKernel_$18957",
                       "typeString": "contract IKernel"
                     }
                   },
-                  "functionReturnParameters": 15335,
-                  "id": 15341,
+                  "functionReturnParameters": 15836,
+                  "id": 15842,
                   "nodeType": "Return",
                   "src": "732:51:44"
                 }
               ]
             },
             "documentation": null,
-            "id": 15343,
+            "id": 15844,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -311,38 +311,38 @@
             "name": "kernel",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15332,
+              "id": 15833,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "689:2:44"
             },
             "payable": false,
             "returnParameters": {
-              "id": 15335,
+              "id": 15836,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15334,
+                  "id": 15835,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15343,
+                  "scope": 15844,
                   "src": "713:7:44",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IKernel_$18456",
+                    "typeIdentifier": "t_contract$_IKernel_$18957",
                     "typeString": "contract IKernel"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 15333,
+                    "id": 15834,
                     "name": "IKernel",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 18456,
+                    "referencedDeclaration": 18957,
                     "src": "713:7:44",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IKernel_$18456",
+                      "typeIdentifier": "t_contract$_IKernel_$18957",
                       "typeString": "contract IKernel"
                     }
                   },
@@ -352,7 +352,7 @@
               ],
               "src": "712:9:44"
             },
-            "scope": 15380,
+            "scope": 15881,
             "src": "674:116:44",
             "stateMutability": "view",
             "superFunction": null,
@@ -360,7 +360,7 @@
           },
           {
             "body": {
-              "id": 15352,
+              "id": 15853,
               "nodeType": "Block",
               "src": "843:59:44",
               "statements": [
@@ -372,32 +372,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 15348,
+                        "id": 15849,
                         "name": "APP_ID_POSITION",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 15331,
+                        "referencedDeclaration": 15832,
                         "src": "860:15:44",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
                         }
                       },
-                      "id": 15349,
+                      "id": 15850,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "getStorageBytes32",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 16265,
+                      "referencedDeclaration": 16766,
                       "src": "860:33:44",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_view$_t_bytes32_$returns$_t_bytes32_$bound_to$_t_bytes32_$",
                         "typeString": "function (bytes32) view returns (bytes32)"
                       }
                     },
-                    "id": 15350,
+                    "id": 15851,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -411,15 +411,15 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "functionReturnParameters": 15347,
-                  "id": 15351,
+                  "functionReturnParameters": 15848,
+                  "id": 15852,
                   "nodeType": "Return",
                   "src": "853:42:44"
                 }
               ]
             },
             "documentation": null,
-            "id": 15353,
+            "id": 15854,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -427,22 +427,22 @@
             "name": "appId",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15344,
+              "id": 15845,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "810:2:44"
             },
             "payable": false,
             "returnParameters": {
-              "id": 15347,
+              "id": 15848,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15346,
+                  "id": 15847,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15353,
+                  "scope": 15854,
                   "src": "834:7:44",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -451,7 +451,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 15345,
+                    "id": 15846,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "834:7:44",
@@ -466,7 +466,7 @@
               ],
               "src": "833:9:44"
             },
-            "scope": 15380,
+            "scope": 15881,
             "src": "796:106:44",
             "stateMutability": "view",
             "superFunction": null,
@@ -474,7 +474,7 @@
           },
           {
             "body": {
-              "id": 15366,
+              "id": 15867,
               "nodeType": "Block",
               "src": "953:68:44",
               "statements": [
@@ -487,14 +487,14 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 15362,
+                            "id": 15863,
                             "name": "_kernel",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 15355,
+                            "referencedDeclaration": 15856,
                             "src": "1005:7:44",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IKernel_$18456",
+                              "typeIdentifier": "t_contract$_IKernel_$18957",
                               "typeString": "contract IKernel"
                             }
                           }
@@ -502,11 +502,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_IKernel_$18456",
+                              "typeIdentifier": "t_contract$_IKernel_$18957",
                               "typeString": "contract IKernel"
                             }
                           ],
-                          "id": 15361,
+                          "id": 15862,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -519,7 +519,7 @@
                           },
                           "typeName": "address"
                         },
-                        "id": 15363,
+                        "id": 15864,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -543,32 +543,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 15358,
+                        "id": 15859,
                         "name": "KERNEL_POSITION",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 15328,
+                        "referencedDeclaration": 15829,
                         "src": "963:15:44",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
                         }
                       },
-                      "id": 15360,
+                      "id": 15861,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "setStorageAddress",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 16292,
+                      "referencedDeclaration": 16793,
                       "src": "963:33:44",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_bytes32_$_t_address_$returns$__$bound_to$_t_bytes32_$",
                         "typeString": "function (bytes32,address)"
                       }
                     },
-                    "id": 15364,
+                    "id": 15865,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -582,14 +582,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 15365,
+                  "id": 15866,
                   "nodeType": "ExpressionStatement",
                   "src": "963:51:44"
                 }
               ]
             },
             "documentation": null,
-            "id": 15367,
+            "id": 15868,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -597,31 +597,31 @@
             "name": "setKernel",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15356,
+              "id": 15857,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15355,
+                  "id": 15856,
                   "name": "_kernel",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15367,
+                  "scope": 15868,
                   "src": "927:15:44",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IKernel_$18456",
+                    "typeIdentifier": "t_contract$_IKernel_$18957",
                     "typeString": "contract IKernel"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 15354,
+                    "id": 15855,
                     "name": "IKernel",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 18456,
+                    "referencedDeclaration": 18957,
                     "src": "927:7:44",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IKernel_$18456",
+                      "typeIdentifier": "t_contract$_IKernel_$18957",
                       "typeString": "contract IKernel"
                     }
                   },
@@ -633,12 +633,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 15357,
+              "id": 15858,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "953:0:44"
             },
-            "scope": 15380,
+            "scope": 15881,
             "src": "908:113:44",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -646,7 +646,7 @@
           },
           {
             "body": {
-              "id": 15378,
+              "id": 15879,
               "nodeType": "Block",
               "src": "1070:58:44",
               "statements": [
@@ -656,11 +656,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 15375,
+                        "id": 15876,
                         "name": "_appId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 15369,
+                        "referencedDeclaration": 15870,
                         "src": "1114:6:44",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -677,32 +677,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 15372,
+                        "id": 15873,
                         "name": "APP_ID_POSITION",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 15331,
+                        "referencedDeclaration": 15832,
                         "src": "1080:15:44",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
                         }
                       },
-                      "id": 15374,
+                      "id": 15875,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "setStorageBytes32",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 16301,
+                      "referencedDeclaration": 16802,
                       "src": "1080:33:44",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_bytes32_$_t_bytes32_$returns$__$bound_to$_t_bytes32_$",
                         "typeString": "function (bytes32,bytes32)"
                       }
                     },
-                    "id": 15376,
+                    "id": 15877,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -716,14 +716,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 15377,
+                  "id": 15878,
                   "nodeType": "ExpressionStatement",
                   "src": "1080:41:44"
                 }
               ]
             },
             "documentation": null,
-            "id": 15379,
+            "id": 15880,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -731,15 +731,15 @@
             "name": "setAppId",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15370,
+              "id": 15871,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15369,
+                  "id": 15870,
                   "name": "_appId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15379,
+                  "scope": 15880,
                   "src": "1045:14:44",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -748,7 +748,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 15368,
+                    "id": 15869,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1045:7:44",
@@ -765,19 +765,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 15371,
+              "id": 15872,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1070:0:44"
             },
-            "scope": 15380,
+            "scope": 15881,
             "src": "1027:101:44",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "internal"
           }
         ],
-        "scope": 15381,
+        "scope": 15882,
         "src": "148:982:44"
       }
     ],
@@ -787,14 +787,14 @@
     "absolutePath": "@aragon/os/contracts/apps/AppStorage.sol",
     "exportedSymbols": {
       "AppStorage": [
-        15380
+        15881
       ]
     },
-    "id": 15381,
+    "id": 15882,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 15320,
+        "id": 15821,
         "literals": [
           "solidity",
           "^",
@@ -807,10 +807,10 @@
       {
         "absolutePath": "@aragon/os/contracts/common/UnstructuredStorage.sol",
         "file": "../common/UnstructuredStorage.sol",
-        "id": 15321,
+        "id": 15822,
         "nodeType": "ImportDirective",
-        "scope": 15381,
-        "sourceUnit": 16312,
+        "scope": 15882,
+        "sourceUnit": 16813,
         "src": "70:43:44",
         "symbolAliases": [],
         "unitAlias": ""
@@ -818,10 +818,10 @@
       {
         "absolutePath": "@aragon/os/contracts/kernel/IKernel.sol",
         "file": "../kernel/IKernel.sol",
-        "id": 15322,
+        "id": 15823,
         "nodeType": "ImportDirective",
-        "scope": 15381,
-        "sourceUnit": 18457,
+        "scope": 15882,
+        "sourceUnit": 18958,
         "src": "114:31:44",
         "symbolAliases": [],
         "unitAlias": ""
@@ -832,31 +832,31 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 15380,
+        "id": 15881,
         "linearizedBaseContracts": [
-          15380
+          15881
         ],
         "name": "AppStorage",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 15325,
+            "id": 15826,
             "libraryName": {
               "contractScope": null,
-              "id": 15323,
+              "id": 15824,
               "name": "UnstructuredStorage",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 16311,
+              "referencedDeclaration": 16812,
               "src": "180:19:44",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_UnstructuredStorage_$16311",
+                "typeIdentifier": "t_contract$_UnstructuredStorage_$16812",
                 "typeString": "library UnstructuredStorage"
               }
             },
             "nodeType": "UsingForDirective",
             "src": "174:38:44",
             "typeName": {
-              "id": 15324,
+              "id": 15825,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "204:7:44",
@@ -868,10 +868,10 @@
           },
           {
             "constant": true,
-            "id": 15328,
+            "id": 15829,
             "name": "KERNEL_POSITION",
             "nodeType": "VariableDeclaration",
-            "scope": 15380,
+            "scope": 15881,
             "src": "441:110:44",
             "stateVariable": true,
             "storageLocation": "default",
@@ -880,7 +880,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 15326,
+              "id": 15827,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "441:7:44",
@@ -892,7 +892,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307834313732663066376432323839313533303732623061366361333639353965306362653265666333616665353066633831363336636161393633333831333762",
-              "id": 15327,
+              "id": 15828,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -911,10 +911,10 @@
           },
           {
             "constant": true,
-            "id": 15331,
+            "id": 15832,
             "name": "APP_ID_POSITION",
             "nodeType": "VariableDeclaration",
-            "scope": 15380,
+            "scope": 15881,
             "src": "557:110:44",
             "stateVariable": true,
             "storageLocation": "default",
@@ -923,7 +923,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 15329,
+              "id": 15830,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "557:7:44",
@@ -935,7 +935,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307864363235343936323137616136613334353365656362396333343839646335613533653663363762343434333239656132623263626339666635343736333962",
-              "id": 15330,
+              "id": 15831,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -954,7 +954,7 @@
           },
           {
             "body": {
-              "id": 15342,
+              "id": 15843,
               "nodeType": "Block",
               "src": "722:68:44",
               "statements": [
@@ -969,32 +969,32 @@
                           "argumentTypes": [],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 15337,
+                            "id": 15838,
                             "name": "KERNEL_POSITION",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 15328,
+                            "referencedDeclaration": 15829,
                             "src": "747:15:44",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
                               "typeString": "bytes32"
                             }
                           },
-                          "id": 15338,
+                          "id": 15839,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "getStorageAddress",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 16256,
+                          "referencedDeclaration": 16757,
                           "src": "747:33:44",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$_t_bytes32_$returns$_t_address_$bound_to$_t_bytes32_$",
                             "typeString": "function (bytes32) view returns (address)"
                           }
                         },
-                        "id": 15339,
+                        "id": 15840,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1016,18 +1016,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 15336,
+                      "id": 15837,
                       "name": "IKernel",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 18456,
+                      "referencedDeclaration": 18957,
                       "src": "739:7:44",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_IKernel_$18456_$",
+                        "typeIdentifier": "t_type$_t_contract$_IKernel_$18957_$",
                         "typeString": "type(contract IKernel)"
                       }
                     },
-                    "id": 15340,
+                    "id": 15841,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1037,19 +1037,19 @@
                     "nodeType": "FunctionCall",
                     "src": "739:44:44",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IKernel_$18456",
+                      "typeIdentifier": "t_contract$_IKernel_$18957",
                       "typeString": "contract IKernel"
                     }
                   },
-                  "functionReturnParameters": 15335,
-                  "id": 15341,
+                  "functionReturnParameters": 15836,
+                  "id": 15842,
                   "nodeType": "Return",
                   "src": "732:51:44"
                 }
               ]
             },
             "documentation": null,
-            "id": 15343,
+            "id": 15844,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -1057,38 +1057,38 @@
             "name": "kernel",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15332,
+              "id": 15833,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "689:2:44"
             },
             "payable": false,
             "returnParameters": {
-              "id": 15335,
+              "id": 15836,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15334,
+                  "id": 15835,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15343,
+                  "scope": 15844,
                   "src": "713:7:44",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IKernel_$18456",
+                    "typeIdentifier": "t_contract$_IKernel_$18957",
                     "typeString": "contract IKernel"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 15333,
+                    "id": 15834,
                     "name": "IKernel",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 18456,
+                    "referencedDeclaration": 18957,
                     "src": "713:7:44",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IKernel_$18456",
+                      "typeIdentifier": "t_contract$_IKernel_$18957",
                       "typeString": "contract IKernel"
                     }
                   },
@@ -1098,7 +1098,7 @@
               ],
               "src": "712:9:44"
             },
-            "scope": 15380,
+            "scope": 15881,
             "src": "674:116:44",
             "stateMutability": "view",
             "superFunction": null,
@@ -1106,7 +1106,7 @@
           },
           {
             "body": {
-              "id": 15352,
+              "id": 15853,
               "nodeType": "Block",
               "src": "843:59:44",
               "statements": [
@@ -1118,32 +1118,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 15348,
+                        "id": 15849,
                         "name": "APP_ID_POSITION",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 15331,
+                        "referencedDeclaration": 15832,
                         "src": "860:15:44",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
                         }
                       },
-                      "id": 15349,
+                      "id": 15850,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "getStorageBytes32",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 16265,
+                      "referencedDeclaration": 16766,
                       "src": "860:33:44",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_view$_t_bytes32_$returns$_t_bytes32_$bound_to$_t_bytes32_$",
                         "typeString": "function (bytes32) view returns (bytes32)"
                       }
                     },
-                    "id": 15350,
+                    "id": 15851,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1157,15 +1157,15 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "functionReturnParameters": 15347,
-                  "id": 15351,
+                  "functionReturnParameters": 15848,
+                  "id": 15852,
                   "nodeType": "Return",
                   "src": "853:42:44"
                 }
               ]
             },
             "documentation": null,
-            "id": 15353,
+            "id": 15854,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -1173,22 +1173,22 @@
             "name": "appId",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15344,
+              "id": 15845,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "810:2:44"
             },
             "payable": false,
             "returnParameters": {
-              "id": 15347,
+              "id": 15848,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15346,
+                  "id": 15847,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15353,
+                  "scope": 15854,
                   "src": "834:7:44",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1197,7 +1197,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 15345,
+                    "id": 15846,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "834:7:44",
@@ -1212,7 +1212,7 @@
               ],
               "src": "833:9:44"
             },
-            "scope": 15380,
+            "scope": 15881,
             "src": "796:106:44",
             "stateMutability": "view",
             "superFunction": null,
@@ -1220,7 +1220,7 @@
           },
           {
             "body": {
-              "id": 15366,
+              "id": 15867,
               "nodeType": "Block",
               "src": "953:68:44",
               "statements": [
@@ -1233,14 +1233,14 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 15362,
+                            "id": 15863,
                             "name": "_kernel",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 15355,
+                            "referencedDeclaration": 15856,
                             "src": "1005:7:44",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IKernel_$18456",
+                              "typeIdentifier": "t_contract$_IKernel_$18957",
                               "typeString": "contract IKernel"
                             }
                           }
@@ -1248,11 +1248,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_IKernel_$18456",
+                              "typeIdentifier": "t_contract$_IKernel_$18957",
                               "typeString": "contract IKernel"
                             }
                           ],
-                          "id": 15361,
+                          "id": 15862,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1265,7 +1265,7 @@
                           },
                           "typeName": "address"
                         },
-                        "id": 15363,
+                        "id": 15864,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1289,32 +1289,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 15358,
+                        "id": 15859,
                         "name": "KERNEL_POSITION",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 15328,
+                        "referencedDeclaration": 15829,
                         "src": "963:15:44",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
                         }
                       },
-                      "id": 15360,
+                      "id": 15861,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "setStorageAddress",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 16292,
+                      "referencedDeclaration": 16793,
                       "src": "963:33:44",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_bytes32_$_t_address_$returns$__$bound_to$_t_bytes32_$",
                         "typeString": "function (bytes32,address)"
                       }
                     },
-                    "id": 15364,
+                    "id": 15865,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1328,14 +1328,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 15365,
+                  "id": 15866,
                   "nodeType": "ExpressionStatement",
                   "src": "963:51:44"
                 }
               ]
             },
             "documentation": null,
-            "id": 15367,
+            "id": 15868,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -1343,31 +1343,31 @@
             "name": "setKernel",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15356,
+              "id": 15857,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15355,
+                  "id": 15856,
                   "name": "_kernel",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15367,
+                  "scope": 15868,
                   "src": "927:15:44",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IKernel_$18456",
+                    "typeIdentifier": "t_contract$_IKernel_$18957",
                     "typeString": "contract IKernel"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 15354,
+                    "id": 15855,
                     "name": "IKernel",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 18456,
+                    "referencedDeclaration": 18957,
                     "src": "927:7:44",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IKernel_$18456",
+                      "typeIdentifier": "t_contract$_IKernel_$18957",
                       "typeString": "contract IKernel"
                     }
                   },
@@ -1379,12 +1379,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 15357,
+              "id": 15858,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "953:0:44"
             },
-            "scope": 15380,
+            "scope": 15881,
             "src": "908:113:44",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1392,7 +1392,7 @@
           },
           {
             "body": {
-              "id": 15378,
+              "id": 15879,
               "nodeType": "Block",
               "src": "1070:58:44",
               "statements": [
@@ -1402,11 +1402,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 15375,
+                        "id": 15876,
                         "name": "_appId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 15369,
+                        "referencedDeclaration": 15870,
                         "src": "1114:6:44",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1423,32 +1423,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 15372,
+                        "id": 15873,
                         "name": "APP_ID_POSITION",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 15331,
+                        "referencedDeclaration": 15832,
                         "src": "1080:15:44",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
                         }
                       },
-                      "id": 15374,
+                      "id": 15875,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "setStorageBytes32",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 16301,
+                      "referencedDeclaration": 16802,
                       "src": "1080:33:44",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_bytes32_$_t_bytes32_$returns$__$bound_to$_t_bytes32_$",
                         "typeString": "function (bytes32,bytes32)"
                       }
                     },
-                    "id": 15376,
+                    "id": 15877,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1462,14 +1462,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 15377,
+                  "id": 15878,
                   "nodeType": "ExpressionStatement",
                   "src": "1080:41:44"
                 }
               ]
             },
             "documentation": null,
-            "id": 15379,
+            "id": 15880,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -1477,15 +1477,15 @@
             "name": "setAppId",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15370,
+              "id": 15871,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15369,
+                  "id": 15870,
                   "name": "_appId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15379,
+                  "scope": 15880,
                   "src": "1045:14:44",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1494,7 +1494,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 15368,
+                    "id": 15869,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1045:7:44",
@@ -1511,19 +1511,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 15371,
+              "id": 15872,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1070:0:44"
             },
-            "scope": 15380,
+            "scope": 15881,
             "src": "1027:101:44",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "internal"
           }
         ],
-        "scope": 15381,
+        "scope": 15882,
         "src": "148:982:44"
       }
     ],
@@ -1534,8 +1534,8 @@
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.10",
-  "updatedAt": "2019-06-29T10:51:09.493Z",
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2019-07-16T10:53:50.952Z",
   "devdoc": {
     "methods": {}
   },

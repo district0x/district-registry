@@ -34,7 +34,7 @@
        {:token-code :DNT
         :contract :DNT
         :locale "en-US"}]]
-     [nav/a {:route [:route/my-activity]}
+     [nav/a {:route [:route/my-account {:tab "activity"}]}
       [:div.select-menu
        [:div.select-choice.cta-btn
         [:div.select-text [active-account]]]]]]]])
@@ -94,7 +94,7 @@
                    :route/home "page-registry"
                    :route/submit "page-submit"
                    :route/edit "page-submit"
-                   :route/my-activity "page-my-activity"
+                   :route/my-account "page-my-account"
                    :route/not-found "not-found")}
        [header (:name @active-page)]
        (into [:div#page-content]

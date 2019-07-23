@@ -104,14 +104,14 @@
     "absolutePath": "@aragon/kits-base/contracts/KitBase.sol",
     "exportedSymbols": {
       "KitBase": [
-        12567
+        13068
       ]
     },
-    "id": 12568,
+    "id": 13069,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 12434,
+        "id": 12935,
         "literals": [
           "solidity",
           "0.4",
@@ -123,10 +123,10 @@
       {
         "absolutePath": "@aragon/os/contracts/factory/DAOFactory.sol",
         "file": "@aragon/os/contracts/factory/DAOFactory.sol",
-        "id": 12435,
+        "id": 12936,
         "nodeType": "ImportDirective",
-        "scope": 12568,
-        "sourceUnit": 18213,
+        "scope": 13069,
+        "sourceUnit": 18714,
         "src": "25:53:33",
         "symbolAliases": [],
         "unitAlias": ""
@@ -134,10 +134,10 @@
       {
         "absolutePath": "@aragon/os/contracts/apm/Repo.sol",
         "file": "@aragon/os/contracts/apm/Repo.sol",
-        "id": 12436,
+        "id": 12937,
         "nodeType": "ImportDirective",
-        "scope": 12568,
-        "sourceUnit": 15125,
+        "scope": 13069,
+        "sourceUnit": 15626,
         "src": "79:43:33",
         "symbolAliases": [],
         "unitAlias": ""
@@ -145,10 +145,10 @@
       {
         "absolutePath": "@aragon/os/contracts/lib/ens/ENS.sol",
         "file": "@aragon/os/contracts/lib/ens/ENS.sol",
-        "id": 12437,
+        "id": 12938,
         "nodeType": "ImportDirective",
-        "scope": 12568,
-        "sourceUnit": 19314,
+        "scope": 13069,
+        "sourceUnit": 19815,
         "src": "123:46:33",
         "symbolAliases": [],
         "unitAlias": ""
@@ -156,10 +156,10 @@
       {
         "absolutePath": "@aragon/os/contracts/lib/ens/PublicResolver.sol",
         "file": "@aragon/os/contracts/lib/ens/PublicResolver.sol",
-        "id": 12438,
+        "id": 12939,
         "nodeType": "ImportDirective",
-        "scope": 12568,
-        "sourceUnit": 19776,
+        "scope": 13069,
+        "sourceUnit": 20277,
         "src": "170:57:33",
         "symbolAliases": [],
         "unitAlias": ""
@@ -167,10 +167,10 @@
       {
         "absolutePath": "@aragon/os/contracts/evmscript/IEVMScriptRegistry.sol",
         "file": "@aragon/os/contracts/evmscript/IEVMScriptRegistry.sol",
-        "id": 12439,
+        "id": 12940,
         "nodeType": "ImportDirective",
-        "scope": 12568,
-        "sourceUnit": 17210,
+        "scope": 13069,
+        "sourceUnit": 17711,
         "src": "228:63:33",
         "symbolAliases": [],
         "unitAlias": ""
@@ -181,57 +181,57 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 12440,
+              "id": 12941,
               "name": "EVMScriptRegistryConstants",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 17189,
+              "referencedDeclaration": 17690,
               "src": "354:26:33",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_EVMScriptRegistryConstants_$17189",
+                "typeIdentifier": "t_contract$_EVMScriptRegistryConstants_$17690",
                 "typeString": "contract EVMScriptRegistryConstants"
               }
             },
-            "id": 12441,
+            "id": 12942,
             "nodeType": "InheritanceSpecifier",
             "src": "354:26:33"
           }
         ],
         "contractDependencies": [
-          17189
+          17690
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 12567,
+        "id": 13068,
         "linearizedBaseContracts": [
-          12567,
-          17189
+          13068,
+          17690
         ],
         "name": "KitBase",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 12443,
+            "id": 12944,
             "name": "ens",
             "nodeType": "VariableDeclaration",
-            "scope": 12567,
+            "scope": 13068,
             "src": "387:14:33",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_ENS_$19313",
+              "typeIdentifier": "t_contract$_ENS_$19814",
               "typeString": "contract ENS"
             },
             "typeName": {
               "contractScope": null,
-              "id": 12442,
+              "id": 12943,
               "name": "ENS",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19313,
+              "referencedDeclaration": 19814,
               "src": "387:3:33",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ENS_$19313",
+                "typeIdentifier": "t_contract$_ENS_$19814",
                 "typeString": "contract ENS"
               }
             },
@@ -240,26 +240,26 @@
           },
           {
             "constant": false,
-            "id": 12445,
+            "id": 12946,
             "name": "fac",
             "nodeType": "VariableDeclaration",
-            "scope": 12567,
+            "scope": 13068,
             "src": "407:21:33",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_DAOFactory_$18212",
+              "typeIdentifier": "t_contract$_DAOFactory_$18713",
               "typeString": "contract DAOFactory"
             },
             "typeName": {
               "contractScope": null,
-              "id": 12444,
+              "id": 12945,
               "name": "DAOFactory",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18212,
+              "referencedDeclaration": 18713,
               "src": "407:10:33",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_DAOFactory_$18212",
+                "typeIdentifier": "t_contract$_DAOFactory_$18713",
                 "typeString": "contract DAOFactory"
               }
             },
@@ -269,20 +269,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 12449,
+            "id": 12950,
             "name": "DeployInstance",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 12448,
+              "id": 12949,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12447,
+                  "id": 12948,
                   "indexed": false,
                   "name": "dao",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12449,
+                  "scope": 12950,
                   "src": "456:11:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -291,7 +291,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12446,
+                    "id": 12947,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "456:7:33",
@@ -311,20 +311,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 12455,
+            "id": 12956,
             "name": "InstalledApp",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 12454,
+              "id": 12955,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12451,
+                  "id": 12952,
                   "indexed": false,
                   "name": "appProxy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12455,
+                  "scope": 12956,
                   "src": "493:16:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -333,7 +333,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12450,
+                    "id": 12951,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "493:7:33",
@@ -347,11 +347,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 12453,
+                  "id": 12954,
                   "indexed": false,
                   "name": "appId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12455,
+                  "scope": 12956,
                   "src": "511:13:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -360,7 +360,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 12452,
+                    "id": 12953,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "511:7:33",
@@ -379,28 +379,28 @@
           },
           {
             "body": {
-              "id": 12470,
+              "id": 12971,
               "nodeType": "Block",
               "src": "572:47:33",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 12464,
+                    "id": 12965,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 12462,
+                      "id": 12963,
                       "name": "fac",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12445,
+                      "referencedDeclaration": 12946,
                       "src": "582:3:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_DAOFactory_$18212",
+                        "typeIdentifier": "t_contract$_DAOFactory_$18713",
                         "typeString": "contract DAOFactory"
                       }
                     },
@@ -408,45 +408,45 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 12463,
+                      "id": 12964,
                       "name": "_fac",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12457,
+                      "referencedDeclaration": 12958,
                       "src": "588:4:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_DAOFactory_$18212",
+                        "typeIdentifier": "t_contract$_DAOFactory_$18713",
                         "typeString": "contract DAOFactory"
                       }
                     },
                     "src": "582:10:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_DAOFactory_$18212",
+                      "typeIdentifier": "t_contract$_DAOFactory_$18713",
                       "typeString": "contract DAOFactory"
                     }
                   },
-                  "id": 12465,
+                  "id": 12966,
                   "nodeType": "ExpressionStatement",
                   "src": "582:10:33"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 12468,
+                    "id": 12969,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 12466,
+                      "id": 12967,
                       "name": "ens",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12443,
+                      "referencedDeclaration": 12944,
                       "src": "602:3:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ENS_$19313",
+                        "typeIdentifier": "t_contract$_ENS_$19814",
                         "typeString": "contract ENS"
                       }
                     },
@@ -454,31 +454,31 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 12467,
+                      "id": 12968,
                       "name": "_ens",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12459,
+                      "referencedDeclaration": 12960,
                       "src": "608:4:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ENS_$19313",
+                        "typeIdentifier": "t_contract$_ENS_$19814",
                         "typeString": "contract ENS"
                       }
                     },
                     "src": "602:10:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ENS_$19313",
+                      "typeIdentifier": "t_contract$_ENS_$19814",
                       "typeString": "contract ENS"
                     }
                   },
-                  "id": 12469,
+                  "id": 12970,
                   "nodeType": "ExpressionStatement",
                   "src": "602:10:33"
                 }
               ]
             },
             "documentation": null,
-            "id": 12471,
+            "id": 12972,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -486,31 +486,31 @@
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 12460,
+              "id": 12961,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12457,
+                  "id": 12958,
                   "name": "_fac",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12471,
+                  "scope": 12972,
                   "src": "545:15:33",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_DAOFactory_$18212",
+                    "typeIdentifier": "t_contract$_DAOFactory_$18713",
                     "typeString": "contract DAOFactory"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 12456,
+                    "id": 12957,
                     "name": "DAOFactory",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 18212,
+                    "referencedDeclaration": 18713,
                     "src": "545:10:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_DAOFactory_$18212",
+                      "typeIdentifier": "t_contract$_DAOFactory_$18713",
                       "typeString": "contract DAOFactory"
                     }
                   },
@@ -519,26 +519,26 @@
                 },
                 {
                   "constant": false,
-                  "id": 12459,
+                  "id": 12960,
                   "name": "_ens",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12471,
+                  "scope": 12972,
                   "src": "562:8:33",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_ENS_$19313",
+                    "typeIdentifier": "t_contract$_ENS_$19814",
                     "typeString": "contract ENS"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 12458,
+                    "id": 12959,
                     "name": "ENS",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 19313,
+                    "referencedDeclaration": 19814,
                     "src": "562:3:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ENS_$19313",
+                      "typeIdentifier": "t_contract$_ENS_$19814",
                       "typeString": "contract ENS"
                     }
                   },
@@ -550,12 +550,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 12461,
+              "id": 12962,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "572:0:33"
             },
-            "scope": 12567,
+            "scope": 13068,
             "src": "532:87:33",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -563,37 +563,37 @@
           },
           {
             "body": {
-              "id": 12501,
+              "id": 13002,
               "nodeType": "Block",
               "src": "705:141:33",
               "statements": [
                 {
                   "assignments": [
-                    12479
+                    12980
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 12479,
+                      "id": 12980,
                       "name": "repo",
                       "nodeType": "VariableDeclaration",
-                      "scope": 12502,
+                      "scope": 13003,
                       "src": "715:9:33",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Repo_$15124",
+                        "typeIdentifier": "t_contract$_Repo_$15625",
                         "typeString": "contract Repo"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 12478,
+                        "id": 12979,
                         "name": "Repo",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 15124,
+                        "referencedDeclaration": 15625,
                         "src": "715:4:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Repo_$15124",
+                          "typeIdentifier": "t_contract$_Repo_$15625",
                           "typeString": "contract Repo"
                         }
                       },
@@ -601,7 +601,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 12491,
+                  "id": 12992,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -610,11 +610,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 12488,
+                            "id": 12989,
                             "name": "appId",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 12473,
+                            "referencedDeclaration": 12974,
                             "src": "773:5:33",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -637,11 +637,11 @@
                                 "arguments": [
                                   {
                                     "argumentTypes": null,
-                                    "id": 12484,
+                                    "id": 12985,
                                     "name": "appId",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 12473,
+                                    "referencedDeclaration": 12974,
                                     "src": "760:5:33",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_bytes32",
@@ -658,32 +658,32 @@
                                   ],
                                   "expression": {
                                     "argumentTypes": null,
-                                    "id": 12482,
+                                    "id": 12983,
                                     "name": "ens",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 12443,
+                                    "referencedDeclaration": 12944,
                                     "src": "747:3:33",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_contract$_ENS_$19313",
+                                      "typeIdentifier": "t_contract$_ENS_$19814",
                                       "typeString": "contract ENS"
                                     }
                                   },
-                                  "id": 12483,
+                                  "id": 12984,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "memberName": "resolver",
                                   "nodeType": "MemberAccess",
-                                  "referencedDeclaration": 19198,
+                                  "referencedDeclaration": 19699,
                                   "src": "747:12:33",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$",
                                     "typeString": "function (bytes32) view external returns (address)"
                                   }
                                 },
-                                "id": 12485,
+                                "id": 12986,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": false,
@@ -705,18 +705,18 @@
                                   "typeString": "address"
                                 }
                               ],
-                              "id": 12481,
+                              "id": 12982,
                               "name": "PublicResolver",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 19775,
+                              "referencedDeclaration": 20276,
                               "src": "732:14:33",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_contract$_PublicResolver_$19775_$",
+                                "typeIdentifier": "t_type$_t_contract$_PublicResolver_$20276_$",
                                 "typeString": "type(contract PublicResolver)"
                               }
                             },
-                            "id": 12486,
+                            "id": 12987,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -726,25 +726,25 @@
                             "nodeType": "FunctionCall",
                             "src": "732:35:33",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_PublicResolver_$19775",
+                              "typeIdentifier": "t_contract$_PublicResolver_$20276",
                               "typeString": "contract PublicResolver"
                             }
                           },
-                          "id": 12487,
+                          "id": 12988,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "addr",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 19481,
+                          "referencedDeclaration": 19982,
                           "src": "732:40:33",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$",
                             "typeString": "function (bytes32) view external returns (address)"
                           }
                         },
-                        "id": 12489,
+                        "id": 12990,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -766,18 +766,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 12480,
+                      "id": 12981,
                       "name": "Repo",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 15124,
+                      "referencedDeclaration": 15625,
                       "src": "727:4:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_Repo_$15124_$",
+                        "typeIdentifier": "t_type$_t_contract$_Repo_$15625_$",
                         "typeString": "type(contract Repo)"
                       }
                     },
-                    "id": 12490,
+                    "id": 12991,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -787,7 +787,7 @@
                     "nodeType": "FunctionCall",
                     "src": "727:53:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Repo_$15124",
+                      "typeIdentifier": "t_contract$_Repo_$15625",
                       "typeString": "contract Repo"
                     }
                   },
@@ -797,7 +797,7 @@
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 12497,
+                    "id": 12998,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -808,11 +808,11 @@
                         null,
                         {
                           "argumentTypes": null,
-                          "id": 12492,
+                          "id": 12993,
                           "name": "base",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 12476,
+                          "referencedDeclaration": 12977,
                           "src": "792:4:33",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -821,7 +821,7 @@
                         },
                         null
                       ],
-                      "id": 12493,
+                      "id": 12994,
                       "isConstant": false,
                       "isInlineArray": false,
                       "isLValue": true,
@@ -843,32 +843,32 @@
                         "argumentTypes": [],
                         "expression": {
                           "argumentTypes": null,
-                          "id": 12494,
+                          "id": 12995,
                           "name": "repo",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 12479,
+                          "referencedDeclaration": 12980,
                           "src": "801:4:33",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_contract$_Repo_$15124",
+                            "typeIdentifier": "t_contract$_Repo_$15625",
                             "typeString": "contract Repo"
                           }
                         },
-                        "id": 12495,
+                        "id": 12996,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "getLatest",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 14928,
+                        "referencedDeclaration": 15429,
                         "src": "801:14:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_external_view$__$returns$_t_array$_t_uint16_$3_memory_ptr_$_t_address_$_t_bytes_memory_ptr_$",
                           "typeString": "function () view external returns (uint16[3] memory,address,bytes memory)"
                         }
                       },
-                      "id": 12496,
+                      "id": 12997,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -888,33 +888,33 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12498,
+                  "id": 12999,
                   "nodeType": "ExpressionStatement",
                   "src": "790:27:33"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 12499,
+                    "id": 13000,
                     "name": "base",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 12476,
+                    "referencedDeclaration": 12977,
                     "src": "835:4:33",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
                     }
                   },
-                  "functionReturnParameters": 12477,
-                  "id": 12500,
+                  "functionReturnParameters": 12978,
+                  "id": 13001,
                   "nodeType": "Return",
                   "src": "828:11:33"
                 }
               ]
             },
             "documentation": null,
-            "id": 12502,
+            "id": 13003,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -922,15 +922,15 @@
             "name": "latestVersionAppBase",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 12474,
+              "id": 12975,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12473,
+                  "id": 12974,
                   "name": "appId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12502,
+                  "scope": 13003,
                   "src": "655:13:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -939,7 +939,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 12472,
+                    "id": 12973,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "655:7:33",
@@ -956,15 +956,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 12477,
+              "id": 12978,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12476,
+                  "id": 12977,
                   "name": "base",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12502,
+                  "scope": 13003,
                   "src": "691:12:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -973,7 +973,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12475,
+                    "id": 12976,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "691:7:33",
@@ -988,7 +988,7 @@
               ],
               "src": "690:14:33"
             },
-            "scope": 12567,
+            "scope": 13068,
             "src": "625:221:33",
             "stateMutability": "view",
             "superFunction": null,
@@ -996,7 +996,7 @@
           },
           {
             "body": {
-              "id": 12529,
+              "id": 13030,
               "nodeType": "Block",
               "src": "927:222:33",
               "statements": [
@@ -1006,24 +1006,24 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12512,
+                        "id": 13013,
                         "name": "acl",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12506,
+                        "referencedDeclaration": 13007,
                         "src": "993:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         }
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12513,
+                        "id": 13014,
                         "name": "root",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12508,
+                        "referencedDeclaration": 13009,
                         "src": "998:4:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1032,14 +1032,14 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12514,
+                        "id": 13015,
                         "name": "dao",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12504,
+                        "referencedDeclaration": 13005,
                         "src": "1004:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Kernel_$18948",
+                          "typeIdentifier": "t_contract$_Kernel_$19449",
                           "typeString": "contract Kernel"
                         }
                       },
@@ -1050,32 +1050,32 @@
                           "argumentTypes": [],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 12515,
+                            "id": 13016,
                             "name": "dao",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 12504,
+                            "referencedDeclaration": 13005,
                             "src": "1009:3:33",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_Kernel_$18948",
+                              "typeIdentifier": "t_contract$_Kernel_$19449",
                               "typeString": "contract Kernel"
                             }
                           },
-                          "id": 12516,
+                          "id": 13017,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "APP_MANAGER_ROLE",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 18490,
+                          "referencedDeclaration": 18991,
                           "src": "1009:20:33",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$__$returns$_t_bytes32_$",
                             "typeString": "function () view external returns (bytes32)"
                           }
                         },
-                        "id": 12517,
+                        "id": 13018,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1093,7 +1093,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         },
                         {
@@ -1101,7 +1101,7 @@
                           "typeString": "address"
                         },
                         {
-                          "typeIdentifier": "t_contract$_Kernel_$18948",
+                          "typeIdentifier": "t_contract$_Kernel_$19449",
                           "typeString": "contract Kernel"
                         },
                         {
@@ -1109,18 +1109,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 12511,
+                      "id": 13012,
                       "name": "cleanupPermission",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12566,
+                      "referencedDeclaration": 13067,
                       "src": "975:17:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_ACL_$13862_$_t_address_$_t_address_$_t_bytes32_$returns$__$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_ACL_$14363_$_t_address_$_t_address_$_t_bytes32_$returns$__$",
                         "typeString": "function (contract ACL,address,address,bytes32)"
                       }
                     },
-                    "id": 12518,
+                    "id": 13019,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1134,7 +1134,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12519,
+                  "id": 13020,
                   "nodeType": "ExpressionStatement",
                   "src": "975:57:33"
                 },
@@ -1144,24 +1144,24 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12521,
+                        "id": 13022,
                         "name": "acl",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12506,
+                        "referencedDeclaration": 13007,
                         "src": "1096:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         }
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12522,
+                        "id": 13023,
                         "name": "root",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12508,
+                        "referencedDeclaration": 13009,
                         "src": "1101:4:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1170,14 +1170,14 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12523,
+                        "id": 13024,
                         "name": "acl",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12506,
+                        "referencedDeclaration": 13007,
                         "src": "1107:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         }
                       },
@@ -1188,32 +1188,32 @@
                           "argumentTypes": [],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 12524,
+                            "id": 13025,
                             "name": "acl",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 12506,
+                            "referencedDeclaration": 13007,
                             "src": "1112:3:33",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_ACL_$13862",
+                              "typeIdentifier": "t_contract$_ACL_$14363",
                               "typeString": "contract ACL"
                             }
                           },
-                          "id": 12525,
+                          "id": 13026,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "CREATE_PERMISSIONS_ROLE",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 12586,
+                          "referencedDeclaration": 13087,
                           "src": "1112:27:33",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$__$returns$_t_bytes32_$",
                             "typeString": "function () view external returns (bytes32)"
                           }
                         },
-                        "id": 12526,
+                        "id": 13027,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1231,7 +1231,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         },
                         {
@@ -1239,7 +1239,7 @@
                           "typeString": "address"
                         },
                         {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         },
                         {
@@ -1247,18 +1247,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 12520,
+                      "id": 13021,
                       "name": "cleanupPermission",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12566,
+                      "referencedDeclaration": 13067,
                       "src": "1078:17:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_ACL_$13862_$_t_address_$_t_address_$_t_bytes32_$returns$__$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_ACL_$14363_$_t_address_$_t_address_$_t_bytes32_$returns$__$",
                         "typeString": "function (contract ACL,address,address,bytes32)"
                       }
                     },
-                    "id": 12527,
+                    "id": 13028,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1272,14 +1272,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12528,
+                  "id": 13029,
                   "nodeType": "ExpressionStatement",
                   "src": "1078:64:33"
                 }
               ]
             },
             "documentation": null,
-            "id": 12530,
+            "id": 13031,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -1287,31 +1287,31 @@
             "name": "cleanupDAOPermissions",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 12509,
+              "id": 13010,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12504,
+                  "id": 13005,
                   "name": "dao",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12530,
+                  "scope": 13031,
                   "src": "883:10:33",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_Kernel_$18948",
+                    "typeIdentifier": "t_contract$_Kernel_$19449",
                     "typeString": "contract Kernel"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 12503,
+                    "id": 13004,
                     "name": "Kernel",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 18948,
+                    "referencedDeclaration": 19449,
                     "src": "883:6:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Kernel_$18948",
+                      "typeIdentifier": "t_contract$_Kernel_$19449",
                       "typeString": "contract Kernel"
                     }
                   },
@@ -1320,26 +1320,26 @@
                 },
                 {
                   "constant": false,
-                  "id": 12506,
+                  "id": 13007,
                   "name": "acl",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12530,
+                  "scope": 13031,
                   "src": "895:7:33",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_ACL_$13862",
+                    "typeIdentifier": "t_contract$_ACL_$14363",
                     "typeString": "contract ACL"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 12505,
+                    "id": 13006,
                     "name": "ACL",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13862,
+                    "referencedDeclaration": 14363,
                     "src": "895:3:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ACL_$13862",
+                      "typeIdentifier": "t_contract$_ACL_$14363",
                       "typeString": "contract ACL"
                     }
                   },
@@ -1348,10 +1348,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 12508,
+                  "id": 13009,
                   "name": "root",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12530,
+                  "scope": 13031,
                   "src": "904:12:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1360,7 +1360,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12507,
+                    "id": 13008,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "904:7:33",
@@ -1377,12 +1377,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 12510,
+              "id": 13011,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "927:0:33"
             },
-            "scope": 12567,
+            "scope": 13068,
             "src": "852:297:33",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1390,7 +1390,7 @@
           },
           {
             "body": {
-              "id": 12565,
+              "id": 13066,
               "nodeType": "Block",
               "src": "1247:169:33",
               "statements": [
@@ -1400,11 +1400,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12544,
+                        "id": 13045,
                         "name": "root",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12534,
+                        "referencedDeclaration": 13035,
                         "src": "1277:4:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1413,11 +1413,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12545,
+                        "id": 13046,
                         "name": "app",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12536,
+                        "referencedDeclaration": 13037,
                         "src": "1283:3:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1426,11 +1426,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12546,
+                        "id": 13047,
                         "name": "permission",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12538,
+                        "referencedDeclaration": 13039,
                         "src": "1288:10:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1455,32 +1455,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 12541,
+                        "id": 13042,
                         "name": "acl",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12532,
+                        "referencedDeclaration": 13033,
                         "src": "1257:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         }
                       },
-                      "id": 12543,
+                      "id": 13044,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "grantPermission",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 12809,
+                      "referencedDeclaration": 13310,
                       "src": "1257:19:33",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_bytes32_$returns$__$",
                         "typeString": "function (address,address,bytes32) external"
                       }
                     },
-                    "id": 12547,
+                    "id": 13048,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1494,7 +1494,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12548,
+                  "id": 13049,
                   "nodeType": "ExpressionStatement",
                   "src": "1257:42:33"
                 },
@@ -1504,24 +1504,24 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12552,
+                        "id": 13053,
                         "name": "this",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 20324,
+                        "referencedDeclaration": 20825,
                         "src": "1330:4:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_KitBase_$12567",
+                          "typeIdentifier": "t_contract$_KitBase_$13068",
                           "typeString": "contract KitBase"
                         }
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12553,
+                        "id": 13054,
                         "name": "app",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12536,
+                        "referencedDeclaration": 13037,
                         "src": "1336:3:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1530,11 +1530,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12554,
+                        "id": 13055,
                         "name": "permission",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12538,
+                        "referencedDeclaration": 13039,
                         "src": "1341:10:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1545,7 +1545,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_contract$_KitBase_$12567",
+                          "typeIdentifier": "t_contract$_KitBase_$13068",
                           "typeString": "contract KitBase"
                         },
                         {
@@ -1559,32 +1559,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 12549,
+                        "id": 13050,
                         "name": "acl",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12532,
+                        "referencedDeclaration": 13033,
                         "src": "1309:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         }
                       },
-                      "id": 12551,
+                      "id": 13052,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "revokePermission",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 12866,
+                      "referencedDeclaration": 13367,
                       "src": "1309:20:33",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_bytes32_$returns$__$",
                         "typeString": "function (address,address,bytes32) external"
                       }
                     },
-                    "id": 12555,
+                    "id": 13056,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1598,7 +1598,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12556,
+                  "id": 13057,
                   "nodeType": "ExpressionStatement",
                   "src": "1309:43:33"
                 },
@@ -1608,11 +1608,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12560,
+                        "id": 13061,
                         "name": "root",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12534,
+                        "referencedDeclaration": 13035,
                         "src": "1387:4:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1621,11 +1621,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12561,
+                        "id": 13062,
                         "name": "app",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12536,
+                        "referencedDeclaration": 13037,
                         "src": "1393:3:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1634,11 +1634,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12562,
+                        "id": 13063,
                         "name": "permission",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12538,
+                        "referencedDeclaration": 13039,
                         "src": "1398:10:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1663,32 +1663,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 12557,
+                        "id": 13058,
                         "name": "acl",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12532,
+                        "referencedDeclaration": 13033,
                         "src": "1362:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         }
                       },
-                      "id": 12559,
+                      "id": 13060,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "setPermissionManager",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 12886,
+                      "referencedDeclaration": 13387,
                       "src": "1362:24:33",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_bytes32_$returns$__$",
                         "typeString": "function (address,address,bytes32) external"
                       }
                     },
-                    "id": 12563,
+                    "id": 13064,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1702,14 +1702,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12564,
+                  "id": 13065,
                   "nodeType": "ExpressionStatement",
                   "src": "1362:47:33"
                 }
               ]
             },
             "documentation": null,
-            "id": 12566,
+            "id": 13067,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -1717,31 +1717,31 @@
             "name": "cleanupPermission",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 12539,
+              "id": 13040,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12532,
+                  "id": 13033,
                   "name": "acl",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12566,
+                  "scope": 13067,
                   "src": "1182:7:33",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_ACL_$13862",
+                    "typeIdentifier": "t_contract$_ACL_$14363",
                     "typeString": "contract ACL"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 12531,
+                    "id": 13032,
                     "name": "ACL",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13862,
+                    "referencedDeclaration": 14363,
                     "src": "1182:3:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ACL_$13862",
+                      "typeIdentifier": "t_contract$_ACL_$14363",
                       "typeString": "contract ACL"
                     }
                   },
@@ -1750,10 +1750,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 12534,
+                  "id": 13035,
                   "name": "root",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12566,
+                  "scope": 13067,
                   "src": "1191:12:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1762,7 +1762,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12533,
+                    "id": 13034,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1191:7:33",
@@ -1776,10 +1776,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 12536,
+                  "id": 13037,
                   "name": "app",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12566,
+                  "scope": 13067,
                   "src": "1205:11:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1788,7 +1788,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12535,
+                    "id": 13036,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1205:7:33",
@@ -1802,10 +1802,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 12538,
+                  "id": 13039,
                   "name": "permission",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12566,
+                  "scope": 13067,
                   "src": "1218:18:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1814,7 +1814,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 12537,
+                    "id": 13038,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1218:7:33",
@@ -1831,19 +1831,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 12540,
+              "id": 13041,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1247:0:33"
             },
-            "scope": 12567,
+            "scope": 13068,
             "src": "1155:261:33",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "internal"
           }
         ],
-        "scope": 12568,
+        "scope": 13069,
         "src": "334:1084:33"
       }
     ],
@@ -1853,14 +1853,14 @@
     "absolutePath": "@aragon/kits-base/contracts/KitBase.sol",
     "exportedSymbols": {
       "KitBase": [
-        12567
+        13068
       ]
     },
-    "id": 12568,
+    "id": 13069,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 12434,
+        "id": 12935,
         "literals": [
           "solidity",
           "0.4",
@@ -1872,10 +1872,10 @@
       {
         "absolutePath": "@aragon/os/contracts/factory/DAOFactory.sol",
         "file": "@aragon/os/contracts/factory/DAOFactory.sol",
-        "id": 12435,
+        "id": 12936,
         "nodeType": "ImportDirective",
-        "scope": 12568,
-        "sourceUnit": 18213,
+        "scope": 13069,
+        "sourceUnit": 18714,
         "src": "25:53:33",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1883,10 +1883,10 @@
       {
         "absolutePath": "@aragon/os/contracts/apm/Repo.sol",
         "file": "@aragon/os/contracts/apm/Repo.sol",
-        "id": 12436,
+        "id": 12937,
         "nodeType": "ImportDirective",
-        "scope": 12568,
-        "sourceUnit": 15125,
+        "scope": 13069,
+        "sourceUnit": 15626,
         "src": "79:43:33",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1894,10 +1894,10 @@
       {
         "absolutePath": "@aragon/os/contracts/lib/ens/ENS.sol",
         "file": "@aragon/os/contracts/lib/ens/ENS.sol",
-        "id": 12437,
+        "id": 12938,
         "nodeType": "ImportDirective",
-        "scope": 12568,
-        "sourceUnit": 19314,
+        "scope": 13069,
+        "sourceUnit": 19815,
         "src": "123:46:33",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1905,10 +1905,10 @@
       {
         "absolutePath": "@aragon/os/contracts/lib/ens/PublicResolver.sol",
         "file": "@aragon/os/contracts/lib/ens/PublicResolver.sol",
-        "id": 12438,
+        "id": 12939,
         "nodeType": "ImportDirective",
-        "scope": 12568,
-        "sourceUnit": 19776,
+        "scope": 13069,
+        "sourceUnit": 20277,
         "src": "170:57:33",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1916,10 +1916,10 @@
       {
         "absolutePath": "@aragon/os/contracts/evmscript/IEVMScriptRegistry.sol",
         "file": "@aragon/os/contracts/evmscript/IEVMScriptRegistry.sol",
-        "id": 12439,
+        "id": 12940,
         "nodeType": "ImportDirective",
-        "scope": 12568,
-        "sourceUnit": 17210,
+        "scope": 13069,
+        "sourceUnit": 17711,
         "src": "228:63:33",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1930,57 +1930,57 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 12440,
+              "id": 12941,
               "name": "EVMScriptRegistryConstants",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 17189,
+              "referencedDeclaration": 17690,
               "src": "354:26:33",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_EVMScriptRegistryConstants_$17189",
+                "typeIdentifier": "t_contract$_EVMScriptRegistryConstants_$17690",
                 "typeString": "contract EVMScriptRegistryConstants"
               }
             },
-            "id": 12441,
+            "id": 12942,
             "nodeType": "InheritanceSpecifier",
             "src": "354:26:33"
           }
         ],
         "contractDependencies": [
-          17189
+          17690
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 12567,
+        "id": 13068,
         "linearizedBaseContracts": [
-          12567,
-          17189
+          13068,
+          17690
         ],
         "name": "KitBase",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 12443,
+            "id": 12944,
             "name": "ens",
             "nodeType": "VariableDeclaration",
-            "scope": 12567,
+            "scope": 13068,
             "src": "387:14:33",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_ENS_$19313",
+              "typeIdentifier": "t_contract$_ENS_$19814",
               "typeString": "contract ENS"
             },
             "typeName": {
               "contractScope": null,
-              "id": 12442,
+              "id": 12943,
               "name": "ENS",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19313,
+              "referencedDeclaration": 19814,
               "src": "387:3:33",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ENS_$19313",
+                "typeIdentifier": "t_contract$_ENS_$19814",
                 "typeString": "contract ENS"
               }
             },
@@ -1989,26 +1989,26 @@
           },
           {
             "constant": false,
-            "id": 12445,
+            "id": 12946,
             "name": "fac",
             "nodeType": "VariableDeclaration",
-            "scope": 12567,
+            "scope": 13068,
             "src": "407:21:33",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_DAOFactory_$18212",
+              "typeIdentifier": "t_contract$_DAOFactory_$18713",
               "typeString": "contract DAOFactory"
             },
             "typeName": {
               "contractScope": null,
-              "id": 12444,
+              "id": 12945,
               "name": "DAOFactory",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18212,
+              "referencedDeclaration": 18713,
               "src": "407:10:33",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_DAOFactory_$18212",
+                "typeIdentifier": "t_contract$_DAOFactory_$18713",
                 "typeString": "contract DAOFactory"
               }
             },
@@ -2018,20 +2018,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 12449,
+            "id": 12950,
             "name": "DeployInstance",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 12448,
+              "id": 12949,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12447,
+                  "id": 12948,
                   "indexed": false,
                   "name": "dao",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12449,
+                  "scope": 12950,
                   "src": "456:11:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2040,7 +2040,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12446,
+                    "id": 12947,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "456:7:33",
@@ -2060,20 +2060,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 12455,
+            "id": 12956,
             "name": "InstalledApp",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 12454,
+              "id": 12955,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12451,
+                  "id": 12952,
                   "indexed": false,
                   "name": "appProxy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12455,
+                  "scope": 12956,
                   "src": "493:16:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2082,7 +2082,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12450,
+                    "id": 12951,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "493:7:33",
@@ -2096,11 +2096,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 12453,
+                  "id": 12954,
                   "indexed": false,
                   "name": "appId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12455,
+                  "scope": 12956,
                   "src": "511:13:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2109,7 +2109,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 12452,
+                    "id": 12953,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "511:7:33",
@@ -2128,28 +2128,28 @@
           },
           {
             "body": {
-              "id": 12470,
+              "id": 12971,
               "nodeType": "Block",
               "src": "572:47:33",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 12464,
+                    "id": 12965,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 12462,
+                      "id": 12963,
                       "name": "fac",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12445,
+                      "referencedDeclaration": 12946,
                       "src": "582:3:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_DAOFactory_$18212",
+                        "typeIdentifier": "t_contract$_DAOFactory_$18713",
                         "typeString": "contract DAOFactory"
                       }
                     },
@@ -2157,45 +2157,45 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 12463,
+                      "id": 12964,
                       "name": "_fac",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12457,
+                      "referencedDeclaration": 12958,
                       "src": "588:4:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_DAOFactory_$18212",
+                        "typeIdentifier": "t_contract$_DAOFactory_$18713",
                         "typeString": "contract DAOFactory"
                       }
                     },
                     "src": "582:10:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_DAOFactory_$18212",
+                      "typeIdentifier": "t_contract$_DAOFactory_$18713",
                       "typeString": "contract DAOFactory"
                     }
                   },
-                  "id": 12465,
+                  "id": 12966,
                   "nodeType": "ExpressionStatement",
                   "src": "582:10:33"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 12468,
+                    "id": 12969,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 12466,
+                      "id": 12967,
                       "name": "ens",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12443,
+                      "referencedDeclaration": 12944,
                       "src": "602:3:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ENS_$19313",
+                        "typeIdentifier": "t_contract$_ENS_$19814",
                         "typeString": "contract ENS"
                       }
                     },
@@ -2203,31 +2203,31 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 12467,
+                      "id": 12968,
                       "name": "_ens",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12459,
+                      "referencedDeclaration": 12960,
                       "src": "608:4:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ENS_$19313",
+                        "typeIdentifier": "t_contract$_ENS_$19814",
                         "typeString": "contract ENS"
                       }
                     },
                     "src": "602:10:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ENS_$19313",
+                      "typeIdentifier": "t_contract$_ENS_$19814",
                       "typeString": "contract ENS"
                     }
                   },
-                  "id": 12469,
+                  "id": 12970,
                   "nodeType": "ExpressionStatement",
                   "src": "602:10:33"
                 }
               ]
             },
             "documentation": null,
-            "id": 12471,
+            "id": 12972,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -2235,31 +2235,31 @@
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 12460,
+              "id": 12961,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12457,
+                  "id": 12958,
                   "name": "_fac",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12471,
+                  "scope": 12972,
                   "src": "545:15:33",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_DAOFactory_$18212",
+                    "typeIdentifier": "t_contract$_DAOFactory_$18713",
                     "typeString": "contract DAOFactory"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 12456,
+                    "id": 12957,
                     "name": "DAOFactory",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 18212,
+                    "referencedDeclaration": 18713,
                     "src": "545:10:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_DAOFactory_$18212",
+                      "typeIdentifier": "t_contract$_DAOFactory_$18713",
                       "typeString": "contract DAOFactory"
                     }
                   },
@@ -2268,26 +2268,26 @@
                 },
                 {
                   "constant": false,
-                  "id": 12459,
+                  "id": 12960,
                   "name": "_ens",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12471,
+                  "scope": 12972,
                   "src": "562:8:33",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_ENS_$19313",
+                    "typeIdentifier": "t_contract$_ENS_$19814",
                     "typeString": "contract ENS"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 12458,
+                    "id": 12959,
                     "name": "ENS",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 19313,
+                    "referencedDeclaration": 19814,
                     "src": "562:3:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ENS_$19313",
+                      "typeIdentifier": "t_contract$_ENS_$19814",
                       "typeString": "contract ENS"
                     }
                   },
@@ -2299,12 +2299,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 12461,
+              "id": 12962,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "572:0:33"
             },
-            "scope": 12567,
+            "scope": 13068,
             "src": "532:87:33",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2312,37 +2312,37 @@
           },
           {
             "body": {
-              "id": 12501,
+              "id": 13002,
               "nodeType": "Block",
               "src": "705:141:33",
               "statements": [
                 {
                   "assignments": [
-                    12479
+                    12980
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 12479,
+                      "id": 12980,
                       "name": "repo",
                       "nodeType": "VariableDeclaration",
-                      "scope": 12502,
+                      "scope": 13003,
                       "src": "715:9:33",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Repo_$15124",
+                        "typeIdentifier": "t_contract$_Repo_$15625",
                         "typeString": "contract Repo"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 12478,
+                        "id": 12979,
                         "name": "Repo",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 15124,
+                        "referencedDeclaration": 15625,
                         "src": "715:4:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Repo_$15124",
+                          "typeIdentifier": "t_contract$_Repo_$15625",
                           "typeString": "contract Repo"
                         }
                       },
@@ -2350,7 +2350,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 12491,
+                  "id": 12992,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -2359,11 +2359,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 12488,
+                            "id": 12989,
                             "name": "appId",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 12473,
+                            "referencedDeclaration": 12974,
                             "src": "773:5:33",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -2386,11 +2386,11 @@
                                 "arguments": [
                                   {
                                     "argumentTypes": null,
-                                    "id": 12484,
+                                    "id": 12985,
                                     "name": "appId",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 12473,
+                                    "referencedDeclaration": 12974,
                                     "src": "760:5:33",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_bytes32",
@@ -2407,32 +2407,32 @@
                                   ],
                                   "expression": {
                                     "argumentTypes": null,
-                                    "id": 12482,
+                                    "id": 12983,
                                     "name": "ens",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 12443,
+                                    "referencedDeclaration": 12944,
                                     "src": "747:3:33",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_contract$_ENS_$19313",
+                                      "typeIdentifier": "t_contract$_ENS_$19814",
                                       "typeString": "contract ENS"
                                     }
                                   },
-                                  "id": 12483,
+                                  "id": 12984,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "memberName": "resolver",
                                   "nodeType": "MemberAccess",
-                                  "referencedDeclaration": 19198,
+                                  "referencedDeclaration": 19699,
                                   "src": "747:12:33",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$",
                                     "typeString": "function (bytes32) view external returns (address)"
                                   }
                                 },
-                                "id": 12485,
+                                "id": 12986,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": false,
@@ -2454,18 +2454,18 @@
                                   "typeString": "address"
                                 }
                               ],
-                              "id": 12481,
+                              "id": 12982,
                               "name": "PublicResolver",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 19775,
+                              "referencedDeclaration": 20276,
                               "src": "732:14:33",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_contract$_PublicResolver_$19775_$",
+                                "typeIdentifier": "t_type$_t_contract$_PublicResolver_$20276_$",
                                 "typeString": "type(contract PublicResolver)"
                               }
                             },
-                            "id": 12486,
+                            "id": 12987,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -2475,25 +2475,25 @@
                             "nodeType": "FunctionCall",
                             "src": "732:35:33",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_PublicResolver_$19775",
+                              "typeIdentifier": "t_contract$_PublicResolver_$20276",
                               "typeString": "contract PublicResolver"
                             }
                           },
-                          "id": 12487,
+                          "id": 12988,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "addr",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 19481,
+                          "referencedDeclaration": 19982,
                           "src": "732:40:33",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$",
                             "typeString": "function (bytes32) view external returns (address)"
                           }
                         },
-                        "id": 12489,
+                        "id": 12990,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2515,18 +2515,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 12480,
+                      "id": 12981,
                       "name": "Repo",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 15124,
+                      "referencedDeclaration": 15625,
                       "src": "727:4:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_Repo_$15124_$",
+                        "typeIdentifier": "t_type$_t_contract$_Repo_$15625_$",
                         "typeString": "type(contract Repo)"
                       }
                     },
-                    "id": 12490,
+                    "id": 12991,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2536,7 +2536,7 @@
                     "nodeType": "FunctionCall",
                     "src": "727:53:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Repo_$15124",
+                      "typeIdentifier": "t_contract$_Repo_$15625",
                       "typeString": "contract Repo"
                     }
                   },
@@ -2546,7 +2546,7 @@
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 12497,
+                    "id": 12998,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2557,11 +2557,11 @@
                         null,
                         {
                           "argumentTypes": null,
-                          "id": 12492,
+                          "id": 12993,
                           "name": "base",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 12476,
+                          "referencedDeclaration": 12977,
                           "src": "792:4:33",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -2570,7 +2570,7 @@
                         },
                         null
                       ],
-                      "id": 12493,
+                      "id": 12994,
                       "isConstant": false,
                       "isInlineArray": false,
                       "isLValue": true,
@@ -2592,32 +2592,32 @@
                         "argumentTypes": [],
                         "expression": {
                           "argumentTypes": null,
-                          "id": 12494,
+                          "id": 12995,
                           "name": "repo",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 12479,
+                          "referencedDeclaration": 12980,
                           "src": "801:4:33",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_contract$_Repo_$15124",
+                            "typeIdentifier": "t_contract$_Repo_$15625",
                             "typeString": "contract Repo"
                           }
                         },
-                        "id": 12495,
+                        "id": 12996,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "getLatest",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 14928,
+                        "referencedDeclaration": 15429,
                         "src": "801:14:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_external_view$__$returns$_t_array$_t_uint16_$3_memory_ptr_$_t_address_$_t_bytes_memory_ptr_$",
                           "typeString": "function () view external returns (uint16[3] memory,address,bytes memory)"
                         }
                       },
-                      "id": 12496,
+                      "id": 12997,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2637,33 +2637,33 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12498,
+                  "id": 12999,
                   "nodeType": "ExpressionStatement",
                   "src": "790:27:33"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 12499,
+                    "id": 13000,
                     "name": "base",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 12476,
+                    "referencedDeclaration": 12977,
                     "src": "835:4:33",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
                     }
                   },
-                  "functionReturnParameters": 12477,
-                  "id": 12500,
+                  "functionReturnParameters": 12978,
+                  "id": 13001,
                   "nodeType": "Return",
                   "src": "828:11:33"
                 }
               ]
             },
             "documentation": null,
-            "id": 12502,
+            "id": 13003,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -2671,15 +2671,15 @@
             "name": "latestVersionAppBase",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 12474,
+              "id": 12975,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12473,
+                  "id": 12974,
                   "name": "appId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12502,
+                  "scope": 13003,
                   "src": "655:13:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2688,7 +2688,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 12472,
+                    "id": 12973,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "655:7:33",
@@ -2705,15 +2705,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 12477,
+              "id": 12978,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12476,
+                  "id": 12977,
                   "name": "base",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12502,
+                  "scope": 13003,
                   "src": "691:12:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2722,7 +2722,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12475,
+                    "id": 12976,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "691:7:33",
@@ -2737,7 +2737,7 @@
               ],
               "src": "690:14:33"
             },
-            "scope": 12567,
+            "scope": 13068,
             "src": "625:221:33",
             "stateMutability": "view",
             "superFunction": null,
@@ -2745,7 +2745,7 @@
           },
           {
             "body": {
-              "id": 12529,
+              "id": 13030,
               "nodeType": "Block",
               "src": "927:222:33",
               "statements": [
@@ -2755,24 +2755,24 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12512,
+                        "id": 13013,
                         "name": "acl",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12506,
+                        "referencedDeclaration": 13007,
                         "src": "993:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         }
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12513,
+                        "id": 13014,
                         "name": "root",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12508,
+                        "referencedDeclaration": 13009,
                         "src": "998:4:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2781,14 +2781,14 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12514,
+                        "id": 13015,
                         "name": "dao",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12504,
+                        "referencedDeclaration": 13005,
                         "src": "1004:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Kernel_$18948",
+                          "typeIdentifier": "t_contract$_Kernel_$19449",
                           "typeString": "contract Kernel"
                         }
                       },
@@ -2799,32 +2799,32 @@
                           "argumentTypes": [],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 12515,
+                            "id": 13016,
                             "name": "dao",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 12504,
+                            "referencedDeclaration": 13005,
                             "src": "1009:3:33",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_Kernel_$18948",
+                              "typeIdentifier": "t_contract$_Kernel_$19449",
                               "typeString": "contract Kernel"
                             }
                           },
-                          "id": 12516,
+                          "id": 13017,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "APP_MANAGER_ROLE",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 18490,
+                          "referencedDeclaration": 18991,
                           "src": "1009:20:33",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$__$returns$_t_bytes32_$",
                             "typeString": "function () view external returns (bytes32)"
                           }
                         },
-                        "id": 12517,
+                        "id": 13018,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2842,7 +2842,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         },
                         {
@@ -2850,7 +2850,7 @@
                           "typeString": "address"
                         },
                         {
-                          "typeIdentifier": "t_contract$_Kernel_$18948",
+                          "typeIdentifier": "t_contract$_Kernel_$19449",
                           "typeString": "contract Kernel"
                         },
                         {
@@ -2858,18 +2858,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 12511,
+                      "id": 13012,
                       "name": "cleanupPermission",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12566,
+                      "referencedDeclaration": 13067,
                       "src": "975:17:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_ACL_$13862_$_t_address_$_t_address_$_t_bytes32_$returns$__$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_ACL_$14363_$_t_address_$_t_address_$_t_bytes32_$returns$__$",
                         "typeString": "function (contract ACL,address,address,bytes32)"
                       }
                     },
-                    "id": 12518,
+                    "id": 13019,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2883,7 +2883,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12519,
+                  "id": 13020,
                   "nodeType": "ExpressionStatement",
                   "src": "975:57:33"
                 },
@@ -2893,24 +2893,24 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12521,
+                        "id": 13022,
                         "name": "acl",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12506,
+                        "referencedDeclaration": 13007,
                         "src": "1096:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         }
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12522,
+                        "id": 13023,
                         "name": "root",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12508,
+                        "referencedDeclaration": 13009,
                         "src": "1101:4:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2919,14 +2919,14 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12523,
+                        "id": 13024,
                         "name": "acl",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12506,
+                        "referencedDeclaration": 13007,
                         "src": "1107:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         }
                       },
@@ -2937,32 +2937,32 @@
                           "argumentTypes": [],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 12524,
+                            "id": 13025,
                             "name": "acl",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 12506,
+                            "referencedDeclaration": 13007,
                             "src": "1112:3:33",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_ACL_$13862",
+                              "typeIdentifier": "t_contract$_ACL_$14363",
                               "typeString": "contract ACL"
                             }
                           },
-                          "id": 12525,
+                          "id": 13026,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "CREATE_PERMISSIONS_ROLE",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 12586,
+                          "referencedDeclaration": 13087,
                           "src": "1112:27:33",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$__$returns$_t_bytes32_$",
                             "typeString": "function () view external returns (bytes32)"
                           }
                         },
-                        "id": 12526,
+                        "id": 13027,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2980,7 +2980,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         },
                         {
@@ -2988,7 +2988,7 @@
                           "typeString": "address"
                         },
                         {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         },
                         {
@@ -2996,18 +2996,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 12520,
+                      "id": 13021,
                       "name": "cleanupPermission",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12566,
+                      "referencedDeclaration": 13067,
                       "src": "1078:17:33",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_ACL_$13862_$_t_address_$_t_address_$_t_bytes32_$returns$__$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_ACL_$14363_$_t_address_$_t_address_$_t_bytes32_$returns$__$",
                         "typeString": "function (contract ACL,address,address,bytes32)"
                       }
                     },
-                    "id": 12527,
+                    "id": 13028,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3021,14 +3021,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12528,
+                  "id": 13029,
                   "nodeType": "ExpressionStatement",
                   "src": "1078:64:33"
                 }
               ]
             },
             "documentation": null,
-            "id": 12530,
+            "id": 13031,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -3036,31 +3036,31 @@
             "name": "cleanupDAOPermissions",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 12509,
+              "id": 13010,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12504,
+                  "id": 13005,
                   "name": "dao",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12530,
+                  "scope": 13031,
                   "src": "883:10:33",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_Kernel_$18948",
+                    "typeIdentifier": "t_contract$_Kernel_$19449",
                     "typeString": "contract Kernel"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 12503,
+                    "id": 13004,
                     "name": "Kernel",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 18948,
+                    "referencedDeclaration": 19449,
                     "src": "883:6:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Kernel_$18948",
+                      "typeIdentifier": "t_contract$_Kernel_$19449",
                       "typeString": "contract Kernel"
                     }
                   },
@@ -3069,26 +3069,26 @@
                 },
                 {
                   "constant": false,
-                  "id": 12506,
+                  "id": 13007,
                   "name": "acl",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12530,
+                  "scope": 13031,
                   "src": "895:7:33",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_ACL_$13862",
+                    "typeIdentifier": "t_contract$_ACL_$14363",
                     "typeString": "contract ACL"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 12505,
+                    "id": 13006,
                     "name": "ACL",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13862,
+                    "referencedDeclaration": 14363,
                     "src": "895:3:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ACL_$13862",
+                      "typeIdentifier": "t_contract$_ACL_$14363",
                       "typeString": "contract ACL"
                     }
                   },
@@ -3097,10 +3097,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 12508,
+                  "id": 13009,
                   "name": "root",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12530,
+                  "scope": 13031,
                   "src": "904:12:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3109,7 +3109,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12507,
+                    "id": 13008,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "904:7:33",
@@ -3126,12 +3126,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 12510,
+              "id": 13011,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "927:0:33"
             },
-            "scope": 12567,
+            "scope": 13068,
             "src": "852:297:33",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3139,7 +3139,7 @@
           },
           {
             "body": {
-              "id": 12565,
+              "id": 13066,
               "nodeType": "Block",
               "src": "1247:169:33",
               "statements": [
@@ -3149,11 +3149,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12544,
+                        "id": 13045,
                         "name": "root",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12534,
+                        "referencedDeclaration": 13035,
                         "src": "1277:4:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3162,11 +3162,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12545,
+                        "id": 13046,
                         "name": "app",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12536,
+                        "referencedDeclaration": 13037,
                         "src": "1283:3:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3175,11 +3175,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12546,
+                        "id": 13047,
                         "name": "permission",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12538,
+                        "referencedDeclaration": 13039,
                         "src": "1288:10:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -3204,32 +3204,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 12541,
+                        "id": 13042,
                         "name": "acl",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12532,
+                        "referencedDeclaration": 13033,
                         "src": "1257:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         }
                       },
-                      "id": 12543,
+                      "id": 13044,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "grantPermission",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 12809,
+                      "referencedDeclaration": 13310,
                       "src": "1257:19:33",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_bytes32_$returns$__$",
                         "typeString": "function (address,address,bytes32) external"
                       }
                     },
-                    "id": 12547,
+                    "id": 13048,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3243,7 +3243,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12548,
+                  "id": 13049,
                   "nodeType": "ExpressionStatement",
                   "src": "1257:42:33"
                 },
@@ -3253,24 +3253,24 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12552,
+                        "id": 13053,
                         "name": "this",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 20324,
+                        "referencedDeclaration": 20825,
                         "src": "1330:4:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_KitBase_$12567",
+                          "typeIdentifier": "t_contract$_KitBase_$13068",
                           "typeString": "contract KitBase"
                         }
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12553,
+                        "id": 13054,
                         "name": "app",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12536,
+                        "referencedDeclaration": 13037,
                         "src": "1336:3:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3279,11 +3279,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12554,
+                        "id": 13055,
                         "name": "permission",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12538,
+                        "referencedDeclaration": 13039,
                         "src": "1341:10:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -3294,7 +3294,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_contract$_KitBase_$12567",
+                          "typeIdentifier": "t_contract$_KitBase_$13068",
                           "typeString": "contract KitBase"
                         },
                         {
@@ -3308,32 +3308,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 12549,
+                        "id": 13050,
                         "name": "acl",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12532,
+                        "referencedDeclaration": 13033,
                         "src": "1309:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         }
                       },
-                      "id": 12551,
+                      "id": 13052,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "revokePermission",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 12866,
+                      "referencedDeclaration": 13367,
                       "src": "1309:20:33",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_bytes32_$returns$__$",
                         "typeString": "function (address,address,bytes32) external"
                       }
                     },
-                    "id": 12555,
+                    "id": 13056,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3347,7 +3347,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12556,
+                  "id": 13057,
                   "nodeType": "ExpressionStatement",
                   "src": "1309:43:33"
                 },
@@ -3357,11 +3357,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12560,
+                        "id": 13061,
                         "name": "root",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12534,
+                        "referencedDeclaration": 13035,
                         "src": "1387:4:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3370,11 +3370,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12561,
+                        "id": 13062,
                         "name": "app",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12536,
+                        "referencedDeclaration": 13037,
                         "src": "1393:3:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3383,11 +3383,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 12562,
+                        "id": 13063,
                         "name": "permission",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12538,
+                        "referencedDeclaration": 13039,
                         "src": "1398:10:33",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -3412,32 +3412,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 12557,
+                        "id": 13058,
                         "name": "acl",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12532,
+                        "referencedDeclaration": 13033,
                         "src": "1362:3:33",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ACL_$13862",
+                          "typeIdentifier": "t_contract$_ACL_$14363",
                           "typeString": "contract ACL"
                         }
                       },
-                      "id": 12559,
+                      "id": 13060,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "setPermissionManager",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 12886,
+                      "referencedDeclaration": 13387,
                       "src": "1362:24:33",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_bytes32_$returns$__$",
                         "typeString": "function (address,address,bytes32) external"
                       }
                     },
-                    "id": 12563,
+                    "id": 13064,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3451,14 +3451,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12564,
+                  "id": 13065,
                   "nodeType": "ExpressionStatement",
                   "src": "1362:47:33"
                 }
               ]
             },
             "documentation": null,
-            "id": 12566,
+            "id": 13067,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -3466,31 +3466,31 @@
             "name": "cleanupPermission",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 12539,
+              "id": 13040,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12532,
+                  "id": 13033,
                   "name": "acl",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12566,
+                  "scope": 13067,
                   "src": "1182:7:33",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_ACL_$13862",
+                    "typeIdentifier": "t_contract$_ACL_$14363",
                     "typeString": "contract ACL"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 12531,
+                    "id": 13032,
                     "name": "ACL",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13862,
+                    "referencedDeclaration": 14363,
                     "src": "1182:3:33",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ACL_$13862",
+                      "typeIdentifier": "t_contract$_ACL_$14363",
                       "typeString": "contract ACL"
                     }
                   },
@@ -3499,10 +3499,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 12534,
+                  "id": 13035,
                   "name": "root",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12566,
+                  "scope": 13067,
                   "src": "1191:12:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3511,7 +3511,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12533,
+                    "id": 13034,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1191:7:33",
@@ -3525,10 +3525,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 12536,
+                  "id": 13037,
                   "name": "app",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12566,
+                  "scope": 13067,
                   "src": "1205:11:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3537,7 +3537,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12535,
+                    "id": 13036,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1205:7:33",
@@ -3551,10 +3551,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 12538,
+                  "id": 13039,
                   "name": "permission",
                   "nodeType": "VariableDeclaration",
-                  "scope": 12566,
+                  "scope": 13067,
                   "src": "1218:18:33",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3563,7 +3563,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 12537,
+                    "id": 13038,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1218:7:33",
@@ -3580,19 +3580,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 12540,
+              "id": 13041,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1247:0:33"
             },
-            "scope": 12567,
+            "scope": 13068,
             "src": "1155:261:33",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "internal"
           }
         ],
-        "scope": 12568,
+        "scope": 13069,
         "src": "334:1084:33"
       }
     ],
@@ -3603,8 +3603,8 @@
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.10",
-  "updatedAt": "2019-06-29T10:51:09.467Z",
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2019-07-16T10:53:50.888Z",
   "devdoc": {
     "methods": {}
   },

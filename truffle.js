@@ -41,6 +41,7 @@ let parameters = {
     DAOFactory: "0x2298d27a9b847c681d2b2c2828ab9d79013f5f1d",
     FIFSResolvingRegistrar: "0x3665e7bfd4d3254ae7796779800f5b603c43c60d",
     KitDistrict : {includeApps: ["voting"]},
+    District0xEmails: "0x3e6e8cdac0abab167644811b331594a500e8df7f",
     districtRegistryDb : {
       challengePeriodDuration : 0,
       commitPeriodDuration : 200, // seconds
@@ -66,6 +67,7 @@ let parameters = {
     DAOFactory: "0x595b34c93aa2c2ba0a38daeede629a0dfbdcc559",
     FIFSResolvingRegistrar: "0x546aa2eae2514494eeadb7bbb35243348983c59d",
     KitDistrict : {includeApps: ["voting", "vault", "finance"]},
+    District0xEmails: "0x5065ef0724b76421aeaafa87ba752d6c5d5499b5",
     districtRegistryDb : {
       challengePeriodDuration : 0,
       commitPeriodDuration : 600, // seconds

@@ -219,6 +219,7 @@
 
 (def insert-district! (create-insert-fn :districts districts-column-names))
 (def update-district! (create-update-fn :districts districts-column-names :reg-entry/address))
+(def get-district (create-get-fn :districts :reg-entry/address))
 
 (def insert-param-change! (create-insert-fn :param-changes param-change-column-names))
 (def update-param-change! (create-update-fn :param-changes param-change-column-names :reg-entry/address))

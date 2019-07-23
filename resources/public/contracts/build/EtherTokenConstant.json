@@ -12,14 +12,14 @@
     "absolutePath": "@aragon/os/contracts/common/EtherTokenConstant.sol",
     "exportedSymbols": {
       "EtherTokenConstant": [
-        15700
+        16201
       ]
     },
-    "id": 15701,
+    "id": 16202,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 15694,
+        "id": 16195,
         "literals": [
           "solidity",
           "^",
@@ -35,19 +35,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 15700,
+        "id": 16201,
         "linearizedBaseContracts": [
-          15700
+          16201
         ],
         "name": "EtherTokenConstant",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 15699,
+            "id": 16200,
             "name": "ETH",
             "nodeType": "VariableDeclaration",
-            "scope": 15700,
+            "scope": 16201,
             "src": "229:42:51",
             "stateVariable": true,
             "storageLocation": "default",
@@ -56,7 +56,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 15695,
+              "id": 16196,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "229:7:51",
@@ -71,7 +71,7 @@
                 {
                   "argumentTypes": null,
                   "hexValue": "30",
-                  "id": 15697,
+                  "id": 16198,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -94,7 +94,7 @@
                     "typeString": "int_const 0"
                   }
                 ],
-                "id": 15696,
+                "id": 16197,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -107,7 +107,7 @@
                 },
                 "typeName": "address"
               },
-              "id": 15698,
+              "id": 16199,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -124,7 +124,7 @@
             "visibility": "internal"
           }
         ],
-        "scope": 15701,
+        "scope": 16202,
         "src": "195:79:51"
       }
     ],
@@ -134,14 +134,14 @@
     "absolutePath": "@aragon/os/contracts/common/EtherTokenConstant.sol",
     "exportedSymbols": {
       "EtherTokenConstant": [
-        15700
+        16201
       ]
     },
-    "id": 15701,
+    "id": 16202,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 15694,
+        "id": 16195,
         "literals": [
           "solidity",
           "^",
@@ -157,19 +157,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 15700,
+        "id": 16201,
         "linearizedBaseContracts": [
-          15700
+          16201
         ],
         "name": "EtherTokenConstant",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 15699,
+            "id": 16200,
             "name": "ETH",
             "nodeType": "VariableDeclaration",
-            "scope": 15700,
+            "scope": 16201,
             "src": "229:42:51",
             "stateVariable": true,
             "storageLocation": "default",
@@ -178,7 +178,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 15695,
+              "id": 16196,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "229:7:51",
@@ -193,7 +193,7 @@
                 {
                   "argumentTypes": null,
                   "hexValue": "30",
-                  "id": 15697,
+                  "id": 16198,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": true,
@@ -216,7 +216,7 @@
                     "typeString": "int_const 0"
                   }
                 ],
-                "id": 15696,
+                "id": 16197,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -229,7 +229,7 @@
                 },
                 "typeName": "address"
               },
-              "id": 15698,
+              "id": 16199,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -246,7 +246,7 @@
             "visibility": "internal"
           }
         ],
-        "scope": 15701,
+        "scope": 16202,
         "src": "195:79:51"
       }
     ],
@@ -257,8 +257,8 @@
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.10",
-  "updatedAt": "2019-06-29T10:51:09.497Z",
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2019-07-16T10:53:50.959Z",
   "devdoc": {
     "methods": {}
   },

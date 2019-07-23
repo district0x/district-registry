@@ -19,3 +19,8 @@
   ::aragon-url
   (fn [_ [_ aragon-id]]
     (str (format/ensure-trailing-slash (:aragon-url config/config-map)) aragon-id)))
+
+(re-frame/reg-sub
+  ::active-account-has-email?
+  (fn [db]
+    (boolean (seq (get-in db [:district-registry.ui.my-account (account-queries/active-account db) :encrypted-email])))))

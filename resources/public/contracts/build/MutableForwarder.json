@@ -126,14 +126,14 @@
     "absolutePath": "/Users/matus/www/district0x/district-registry/contracts/proxy/MutableForwarder.sol",
     "exportedSymbols": {
       "MutableForwarder": [
-        8028
+        8529
       ]
     },
-    "id": 8029,
+    "id": 8530,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7996,
+        "id": 8497,
         "literals": [
           "solidity",
           "^",
@@ -146,10 +146,10 @@
       {
         "absolutePath": "/Users/matus/www/district0x/district-registry/contracts/proxy/ForwarderDelegateProxy.sol",
         "file": "./ForwarderDelegateProxy.sol",
-        "id": 7997,
+        "id": 8498,
         "nodeType": "ImportDirective",
-        "scope": 8029,
-        "sourceUnit": 7995,
+        "scope": 8530,
+        "sourceUnit": 8496,
         "src": "26:39:23",
         "symbolAliases": [],
         "unitAlias": ""
@@ -157,10 +157,10 @@
       {
         "absolutePath": "/Users/matus/www/district0x/district-registry/contracts/auth/DSAuth.sol",
         "file": "../auth/DSAuth.sol",
-        "id": 7998,
+        "id": 8499,
         "nodeType": "ImportDirective",
-        "scope": 8029,
-        "sourceUnit": 5817,
+        "scope": 8530,
+        "sourceUnit": 6318,
         "src": "66:28:23",
         "symbolAliases": [],
         "unitAlias": ""
@@ -171,17 +171,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 7999,
+              "id": 8500,
               "name": "ForwarderDelegateProxy",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7994,
+              "referencedDeclaration": 8495,
               "src": "727:22:23",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ForwarderDelegateProxy_$7994",
+                "typeIdentifier": "t_contract$_ForwarderDelegateProxy_$8495",
                 "typeString": "contract ForwarderDelegateProxy"
               }
             },
-            "id": 8000,
+            "id": 8501,
             "nodeType": "InheritanceSpecifier",
             "src": "727:22:23"
           },
@@ -189,45 +189,45 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 8001,
+              "id": 8502,
               "name": "DSAuth",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5816,
+              "referencedDeclaration": 6317,
               "src": "751:6:23",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_DSAuth_$5816",
+                "typeIdentifier": "t_contract$_DSAuth_$6317",
                 "typeString": "contract DSAuth"
               }
             },
-            "id": 8002,
+            "id": 8503,
             "nodeType": "InheritanceSpecifier",
             "src": "751:6:23"
           }
         ],
         "contractDependencies": [
-          5707,
-          5816,
-          7994
+          6208,
+          6317,
+          8495
         ],
         "contractKind": "contract",
         "documentation": "@title Forwarder proxy contract with editable target\n * @dev For TCR Registry contracts (Registry.sol, ParamChangeRegistry.sol) we use mutable forwarders instead of using\ncontracts directly. This is for better upgradeability. Since registry contracts fire all events related to registry\nentries, we want to be able to access whole history of events always on the same address. Which would be address of\na MutableForwarder. When a registry contract is replaced with updated one, mutable forwarder just replaces target\nand all events stay still accessible on the same address.",
         "fullyImplemented": true,
-        "id": 8028,
+        "id": 8529,
         "linearizedBaseContracts": [
-          8028,
-          5816,
-          5707,
-          7994
+          8529,
+          6317,
+          6208,
+          8495
         ],
         "name": "MutableForwarder",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 8005,
+            "id": 8506,
             "name": "target",
             "nodeType": "VariableDeclaration",
-            "scope": 8028,
+            "scope": 8529,
             "src": "763:66:23",
             "stateVariable": true,
             "storageLocation": "default",
@@ -236,7 +236,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 8003,
+              "id": 8504,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "763:7:23",
@@ -248,7 +248,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307842456546626565666245656662654546626545666245456642456546626545664265456642656566",
-              "id": 8004,
+              "id": 8505,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -267,25 +267,25 @@
           },
           {
             "body": {
-              "id": 8016,
+              "id": 8517,
               "nodeType": "Block",
               "src": "1080:27:23",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 8014,
+                    "id": 8515,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 8012,
+                      "id": 8513,
                       "name": "target",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8005,
+                      "referencedDeclaration": 8506,
                       "src": "1086:6:23",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -296,11 +296,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 8013,
+                      "id": 8514,
                       "name": "_target",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8007,
+                      "referencedDeclaration": 8508,
                       "src": "1095:7:23",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -313,28 +313,28 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 8015,
+                  "id": 8516,
                   "nodeType": "ExpressionStatement",
                   "src": "1086:16:23"
                 }
               ]
             },
             "documentation": "@dev Replaces targer forwarder contract is pointing to\nOnly authenticated user can replace target\n@param _target New target to proxy into",
-            "id": 8017,
+            "id": 8518,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
             "modifiers": [
               {
                 "arguments": null,
-                "id": 8010,
+                "id": 8511,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 8009,
+                  "id": 8510,
                   "name": "auth",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 5772,
+                  "referencedDeclaration": 6273,
                   "src": "1075:4:23",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -348,15 +348,15 @@
             "name": "setTarget",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 8008,
+              "id": 8509,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8007,
+                  "id": 8508,
                   "name": "_target",
                   "nodeType": "VariableDeclaration",
-                  "scope": 8017,
+                  "scope": 8518,
                   "src": "1051:15:23",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -365,7 +365,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 8006,
+                    "id": 8507,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1051:7:23",
@@ -382,12 +382,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 8011,
+              "id": 8512,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1080:0:23"
             },
-            "scope": 8028,
+            "scope": 8529,
             "src": "1032:75:23",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -395,7 +395,7 @@
           },
           {
             "body": {
-              "id": 8026,
+              "id": 8527,
               "nodeType": "Block",
               "src": "1137:41:23",
               "statements": [
@@ -405,11 +405,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 8021,
+                        "id": 8522,
                         "name": "target",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 8005,
+                        "referencedDeclaration": 8506,
                         "src": "1156:6:23",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -420,18 +420,18 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 8022,
+                          "id": 8523,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 20165,
+                          "referencedDeclaration": 20666,
                           "src": "1164:3:23",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 8023,
+                        "id": 8524,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -457,18 +457,18 @@
                           "typeString": "bytes calldata"
                         }
                       ],
-                      "id": 8020,
+                      "id": 8521,
                       "name": "delegatedFwd",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7977,
+                      "referencedDeclaration": 8478,
                       "src": "1143:12:23",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_bytes_memory_ptr_$returns$__$",
                         "typeString": "function (address,bytes memory)"
                       }
                     },
-                    "id": 8024,
+                    "id": 8525,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -482,14 +482,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 8025,
+                  "id": 8526,
                   "nodeType": "ExpressionStatement",
                   "src": "1143:30:23"
                 }
               ]
             },
             "documentation": null,
-            "id": 8027,
+            "id": 8528,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -497,26 +497,26 @@
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 8018,
+              "id": 8519,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1119:2:23"
             },
             "payable": true,
             "returnParameters": {
-              "id": 8019,
+              "id": 8520,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1137:0:23"
             },
-            "scope": 8028,
+            "scope": 8529,
             "src": "1111:67:23",
             "stateMutability": "payable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 8029,
+        "scope": 8530,
         "src": "698:483:23"
       }
     ],
@@ -526,14 +526,14 @@
     "absolutePath": "/Users/matus/www/district0x/district-registry/contracts/proxy/MutableForwarder.sol",
     "exportedSymbols": {
       "MutableForwarder": [
-        8028
+        8529
       ]
     },
-    "id": 8029,
+    "id": 8530,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7996,
+        "id": 8497,
         "literals": [
           "solidity",
           "^",
@@ -546,10 +546,10 @@
       {
         "absolutePath": "/Users/matus/www/district0x/district-registry/contracts/proxy/ForwarderDelegateProxy.sol",
         "file": "./ForwarderDelegateProxy.sol",
-        "id": 7997,
+        "id": 8498,
         "nodeType": "ImportDirective",
-        "scope": 8029,
-        "sourceUnit": 7995,
+        "scope": 8530,
+        "sourceUnit": 8496,
         "src": "26:39:23",
         "symbolAliases": [],
         "unitAlias": ""
@@ -557,10 +557,10 @@
       {
         "absolutePath": "/Users/matus/www/district0x/district-registry/contracts/auth/DSAuth.sol",
         "file": "../auth/DSAuth.sol",
-        "id": 7998,
+        "id": 8499,
         "nodeType": "ImportDirective",
-        "scope": 8029,
-        "sourceUnit": 5817,
+        "scope": 8530,
+        "sourceUnit": 6318,
         "src": "66:28:23",
         "symbolAliases": [],
         "unitAlias": ""
@@ -571,17 +571,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 7999,
+              "id": 8500,
               "name": "ForwarderDelegateProxy",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7994,
+              "referencedDeclaration": 8495,
               "src": "727:22:23",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ForwarderDelegateProxy_$7994",
+                "typeIdentifier": "t_contract$_ForwarderDelegateProxy_$8495",
                 "typeString": "contract ForwarderDelegateProxy"
               }
             },
-            "id": 8000,
+            "id": 8501,
             "nodeType": "InheritanceSpecifier",
             "src": "727:22:23"
           },
@@ -589,45 +589,45 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 8001,
+              "id": 8502,
               "name": "DSAuth",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5816,
+              "referencedDeclaration": 6317,
               "src": "751:6:23",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_DSAuth_$5816",
+                "typeIdentifier": "t_contract$_DSAuth_$6317",
                 "typeString": "contract DSAuth"
               }
             },
-            "id": 8002,
+            "id": 8503,
             "nodeType": "InheritanceSpecifier",
             "src": "751:6:23"
           }
         ],
         "contractDependencies": [
-          5707,
-          5816,
-          7994
+          6208,
+          6317,
+          8495
         ],
         "contractKind": "contract",
         "documentation": "@title Forwarder proxy contract with editable target\n * @dev For TCR Registry contracts (Registry.sol, ParamChangeRegistry.sol) we use mutable forwarders instead of using\ncontracts directly. This is for better upgradeability. Since registry contracts fire all events related to registry\nentries, we want to be able to access whole history of events always on the same address. Which would be address of\na MutableForwarder. When a registry contract is replaced with updated one, mutable forwarder just replaces target\nand all events stay still accessible on the same address.",
         "fullyImplemented": true,
-        "id": 8028,
+        "id": 8529,
         "linearizedBaseContracts": [
-          8028,
-          5816,
-          5707,
-          7994
+          8529,
+          6317,
+          6208,
+          8495
         ],
         "name": "MutableForwarder",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 8005,
+            "id": 8506,
             "name": "target",
             "nodeType": "VariableDeclaration",
-            "scope": 8028,
+            "scope": 8529,
             "src": "763:66:23",
             "stateVariable": true,
             "storageLocation": "default",
@@ -636,7 +636,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 8003,
+              "id": 8504,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "763:7:23",
@@ -648,7 +648,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307842456546626565666245656662654546626545666245456642456546626545664265456642656566",
-              "id": 8004,
+              "id": 8505,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -667,25 +667,25 @@
           },
           {
             "body": {
-              "id": 8016,
+              "id": 8517,
               "nodeType": "Block",
               "src": "1080:27:23",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 8014,
+                    "id": 8515,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 8012,
+                      "id": 8513,
                       "name": "target",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8005,
+                      "referencedDeclaration": 8506,
                       "src": "1086:6:23",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -696,11 +696,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 8013,
+                      "id": 8514,
                       "name": "_target",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8007,
+                      "referencedDeclaration": 8508,
                       "src": "1095:7:23",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -713,28 +713,28 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 8015,
+                  "id": 8516,
                   "nodeType": "ExpressionStatement",
                   "src": "1086:16:23"
                 }
               ]
             },
             "documentation": "@dev Replaces targer forwarder contract is pointing to\nOnly authenticated user can replace target\n@param _target New target to proxy into",
-            "id": 8017,
+            "id": 8518,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
             "modifiers": [
               {
                 "arguments": null,
-                "id": 8010,
+                "id": 8511,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 8009,
+                  "id": 8510,
                   "name": "auth",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 5772,
+                  "referencedDeclaration": 6273,
                   "src": "1075:4:23",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -748,15 +748,15 @@
             "name": "setTarget",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 8008,
+              "id": 8509,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8007,
+                  "id": 8508,
                   "name": "_target",
                   "nodeType": "VariableDeclaration",
-                  "scope": 8017,
+                  "scope": 8518,
                   "src": "1051:15:23",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -765,7 +765,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 8006,
+                    "id": 8507,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1051:7:23",
@@ -782,12 +782,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 8011,
+              "id": 8512,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1080:0:23"
             },
-            "scope": 8028,
+            "scope": 8529,
             "src": "1032:75:23",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -795,7 +795,7 @@
           },
           {
             "body": {
-              "id": 8026,
+              "id": 8527,
               "nodeType": "Block",
               "src": "1137:41:23",
               "statements": [
@@ -805,11 +805,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 8021,
+                        "id": 8522,
                         "name": "target",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 8005,
+                        "referencedDeclaration": 8506,
                         "src": "1156:6:23",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -820,18 +820,18 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 8022,
+                          "id": 8523,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 20165,
+                          "referencedDeclaration": 20666,
                           "src": "1164:3:23",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 8023,
+                        "id": 8524,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -857,18 +857,18 @@
                           "typeString": "bytes calldata"
                         }
                       ],
-                      "id": 8020,
+                      "id": 8521,
                       "name": "delegatedFwd",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7977,
+                      "referencedDeclaration": 8478,
                       "src": "1143:12:23",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_bytes_memory_ptr_$returns$__$",
                         "typeString": "function (address,bytes memory)"
                       }
                     },
-                    "id": 8024,
+                    "id": 8525,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -882,14 +882,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 8025,
+                  "id": 8526,
                   "nodeType": "ExpressionStatement",
                   "src": "1143:30:23"
                 }
               ]
             },
             "documentation": null,
-            "id": 8027,
+            "id": 8528,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -897,26 +897,26 @@
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 8018,
+              "id": 8519,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1119:2:23"
             },
             "payable": true,
             "returnParameters": {
-              "id": 8019,
+              "id": 8520,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1137:0:23"
             },
-            "scope": 8028,
+            "scope": 8529,
             "src": "1111:67:23",
             "stateMutability": "payable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 8029,
+        "scope": 8530,
         "src": "698:483:23"
       }
     ],
@@ -927,8 +927,8 @@
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.10",
-  "updatedAt": "2019-06-29T10:51:09.405Z",
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2019-07-16T10:53:50.781Z",
   "devdoc": {
     "methods": {
       "setTarget(address)": {

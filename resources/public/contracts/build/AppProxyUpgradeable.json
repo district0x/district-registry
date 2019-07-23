@@ -124,14 +124,14 @@
     "absolutePath": "@aragon/os/contracts/apps/AppProxyUpgradeable.sol",
     "exportedSymbols": {
       "AppProxyUpgradeable": [
-        15318
+        15819
       ]
     },
-    "id": 15319,
+    "id": 15820,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 15280,
+        "id": 15781,
         "literals": [
           "solidity",
           "0.4",
@@ -143,10 +143,10 @@
       {
         "absolutePath": "@aragon/os/contracts/apps/AppProxyBase.sol",
         "file": "./AppProxyBase.sol",
-        "id": 15281,
+        "id": 15782,
         "nodeType": "ImportDirective",
-        "scope": 15319,
-        "sourceUnit": 15196,
+        "scope": 15820,
+        "sourceUnit": 15697,
         "src": "25:28:43",
         "symbolAliases": [],
         "unitAlias": ""
@@ -157,58 +157,58 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 15282,
+              "id": 15783,
               "name": "AppProxyBase",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 15195,
+              "referencedDeclaration": 15696,
               "src": "88:12:43",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_AppProxyBase_$15195",
+                "typeIdentifier": "t_contract$_AppProxyBase_$15696",
                 "typeString": "contract AppProxyBase"
               }
             },
-            "id": 15283,
+            "id": 15784,
             "nodeType": "InheritanceSpecifier",
             "src": "88:12:43"
           }
         ],
         "contractDependencies": [
-          15195,
-          15380,
-          15598,
-          15660,
-          15692,
-          15876,
-          18970,
-          20081
+          15696,
+          15881,
+          16099,
+          16161,
+          16193,
+          16377,
+          19471,
+          20582
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 15318,
+        "id": 15819,
         "linearizedBaseContracts": [
-          15318,
-          15195,
-          18970,
-          15660,
-          15598,
-          15876,
-          20081,
-          15692,
-          15380
+          15819,
+          15696,
+          19471,
+          16161,
+          16099,
+          16377,
+          20582,
+          16193,
+          15881
         ],
         "name": "AppProxyUpgradeable",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 15297,
+              "id": 15798,
               "nodeType": "Block",
               "src": "580:63:43",
               "statements": []
             },
             "documentation": "@dev Initialize AppProxyUpgradeable (makes it an upgradeable Aragon app)\n@param _kernel Reference to organization kernel for the app\n@param _appId Identifier for app\n@param _initializePayload Payload for call to be made after setup to initialize",
-            "id": 15298,
+            "id": 15799,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -217,24 +217,24 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 15292,
+                    "id": 15793,
                     "name": "_kernel",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 15285,
+                    "referencedDeclaration": 15786,
                     "src": "484:7:43",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IKernel_$18456",
+                      "typeIdentifier": "t_contract$_IKernel_$18957",
                       "typeString": "contract IKernel"
                     }
                   },
                   {
                     "argumentTypes": null,
-                    "id": 15293,
+                    "id": 15794,
                     "name": "_appId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 15287,
+                    "referencedDeclaration": 15788,
                     "src": "493:6:43",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
@@ -243,11 +243,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 15294,
+                    "id": 15795,
                     "name": "_initializePayload",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 15289,
+                    "referencedDeclaration": 15790,
                     "src": "501:18:43",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_memory_ptr",
@@ -255,17 +255,17 @@
                     }
                   }
                 ],
-                "id": 15295,
+                "id": 15796,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 15291,
+                  "id": 15792,
                   "name": "AppProxyBase",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 15195,
+                  "referencedDeclaration": 15696,
                   "src": "471:12:43",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_AppProxyBase_$15195_$",
+                    "typeIdentifier": "t_type$_t_contract$_AppProxyBase_$15696_$",
                     "typeString": "type(contract AppProxyBase)"
                   }
                 },
@@ -276,31 +276,31 @@
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15290,
+              "id": 15791,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15285,
+                  "id": 15786,
                   "name": "_kernel",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15298,
+                  "scope": 15799,
                   "src": "404:15:43",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IKernel_$18456",
+                    "typeIdentifier": "t_contract$_IKernel_$18957",
                     "typeString": "contract IKernel"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 15284,
+                    "id": 15785,
                     "name": "IKernel",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 18456,
+                    "referencedDeclaration": 18957,
                     "src": "404:7:43",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IKernel_$18456",
+                      "typeIdentifier": "t_contract$_IKernel_$18957",
                       "typeString": "contract IKernel"
                     }
                   },
@@ -309,10 +309,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 15287,
+                  "id": 15788,
                   "name": "_appId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15298,
+                  "scope": 15799,
                   "src": "421:14:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -321,7 +321,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 15286,
+                    "id": 15787,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "421:7:43",
@@ -335,10 +335,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 15289,
+                  "id": 15790,
                   "name": "_initializePayload",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15298,
+                  "scope": 15799,
                   "src": "437:24:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -347,7 +347,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 15288,
+                    "id": 15789,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "437:5:43",
@@ -364,12 +364,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 15296,
+              "id": 15797,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "580:0:43"
             },
-            "scope": 15318,
+            "scope": 15819,
             "src": "392:251:43",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -377,7 +377,7 @@
           },
           {
             "body": {
-              "id": 15308,
+              "id": 15809,
               "nodeType": "Block",
               "src": "787:43:43",
               "statements": [
@@ -390,18 +390,18 @@
                         "arguments": [],
                         "expression": {
                           "argumentTypes": [],
-                          "id": 15304,
+                          "id": 15805,
                           "name": "appId",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 15353,
+                          "referencedDeclaration": 15854,
                           "src": "815:5:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$__$returns$_t_bytes32_$",
                             "typeString": "function () view returns (bytes32)"
                           }
                         },
-                        "id": 15305,
+                        "id": 15806,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -423,18 +423,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 15303,
+                      "id": 15804,
                       "name": "getAppBase",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 15194,
+                      "referencedDeclaration": 15695,
                       "src": "804:10:43",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_view$_t_bytes32_$returns$_t_address_$",
                         "typeString": "function (bytes32) view returns (address)"
                       }
                     },
-                    "id": 15306,
+                    "id": 15807,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -448,15 +448,15 @@
                       "typeString": "address"
                     }
                   },
-                  "functionReturnParameters": 15302,
-                  "id": 15307,
+                  "functionReturnParameters": 15803,
+                  "id": 15808,
                   "nodeType": "Return",
                   "src": "797:26:43"
                 }
               ]
             },
             "documentation": "@dev ERC897, the address the proxy would delegate calls to",
-            "id": 15309,
+            "id": 15810,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -464,22 +464,22 @@
             "name": "implementation",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15299,
+              "id": 15800,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "754:2:43"
             },
             "payable": false,
             "returnParameters": {
-              "id": 15302,
+              "id": 15803,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15301,
+                  "id": 15802,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15309,
+                  "scope": 15810,
                   "src": "778:7:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -488,7 +488,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 15300,
+                    "id": 15801,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "778:7:43",
@@ -503,41 +503,41 @@
               ],
               "src": "777:9:43"
             },
-            "scope": 15318,
+            "scope": 15819,
             "src": "731:99:43",
             "stateMutability": "view",
-            "superFunction": 20080,
+            "superFunction": 20581,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 15316,
+              "id": 15817,
               "nodeType": "Block",
               "src": "994:35:43",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 15314,
+                    "id": 15815,
                     "name": "UPGRADEABLE",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 20070,
+                    "referencedDeclaration": 20571,
                     "src": "1011:11:43",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 15313,
-                  "id": 15315,
+                  "functionReturnParameters": 15814,
+                  "id": 15816,
                   "nodeType": "Return",
                   "src": "1004:18:43"
                 }
               ]
             },
             "documentation": "@dev ERC897, whether it is a forwarding (1) or an upgradeable (2) proxy",
-            "id": 15317,
+            "id": 15818,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -545,22 +545,22 @@
             "name": "proxyType",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15310,
+              "id": 15811,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "949:2:43"
             },
             "payable": false,
             "returnParameters": {
-              "id": 15313,
+              "id": 15814,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15312,
+                  "id": 15813,
                   "name": "proxyTypeId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15317,
+                  "scope": 15818,
                   "src": "973:19:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -569,7 +569,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 15311,
+                    "id": 15812,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "973:7:43",
@@ -584,14 +584,14 @@
               ],
               "src": "972:21:43"
             },
-            "scope": 15318,
+            "scope": 15819,
             "src": "931:98:43",
             "stateMutability": "pure",
-            "superFunction": 20075,
+            "superFunction": 20576,
             "visibility": "public"
           }
         ],
-        "scope": 15319,
+        "scope": 15820,
         "src": "56:975:43"
       }
     ],
@@ -601,14 +601,14 @@
     "absolutePath": "@aragon/os/contracts/apps/AppProxyUpgradeable.sol",
     "exportedSymbols": {
       "AppProxyUpgradeable": [
-        15318
+        15819
       ]
     },
-    "id": 15319,
+    "id": 15820,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 15280,
+        "id": 15781,
         "literals": [
           "solidity",
           "0.4",
@@ -620,10 +620,10 @@
       {
         "absolutePath": "@aragon/os/contracts/apps/AppProxyBase.sol",
         "file": "./AppProxyBase.sol",
-        "id": 15281,
+        "id": 15782,
         "nodeType": "ImportDirective",
-        "scope": 15319,
-        "sourceUnit": 15196,
+        "scope": 15820,
+        "sourceUnit": 15697,
         "src": "25:28:43",
         "symbolAliases": [],
         "unitAlias": ""
@@ -634,58 +634,58 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 15282,
+              "id": 15783,
               "name": "AppProxyBase",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 15195,
+              "referencedDeclaration": 15696,
               "src": "88:12:43",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_AppProxyBase_$15195",
+                "typeIdentifier": "t_contract$_AppProxyBase_$15696",
                 "typeString": "contract AppProxyBase"
               }
             },
-            "id": 15283,
+            "id": 15784,
             "nodeType": "InheritanceSpecifier",
             "src": "88:12:43"
           }
         ],
         "contractDependencies": [
-          15195,
-          15380,
-          15598,
-          15660,
-          15692,
-          15876,
-          18970,
-          20081
+          15696,
+          15881,
+          16099,
+          16161,
+          16193,
+          16377,
+          19471,
+          20582
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 15318,
+        "id": 15819,
         "linearizedBaseContracts": [
-          15318,
-          15195,
-          18970,
-          15660,
-          15598,
-          15876,
-          20081,
-          15692,
-          15380
+          15819,
+          15696,
+          19471,
+          16161,
+          16099,
+          16377,
+          20582,
+          16193,
+          15881
         ],
         "name": "AppProxyUpgradeable",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 15297,
+              "id": 15798,
               "nodeType": "Block",
               "src": "580:63:43",
               "statements": []
             },
             "documentation": "@dev Initialize AppProxyUpgradeable (makes it an upgradeable Aragon app)\n@param _kernel Reference to organization kernel for the app\n@param _appId Identifier for app\n@param _initializePayload Payload for call to be made after setup to initialize",
-            "id": 15298,
+            "id": 15799,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -694,24 +694,24 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 15292,
+                    "id": 15793,
                     "name": "_kernel",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 15285,
+                    "referencedDeclaration": 15786,
                     "src": "484:7:43",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IKernel_$18456",
+                      "typeIdentifier": "t_contract$_IKernel_$18957",
                       "typeString": "contract IKernel"
                     }
                   },
                   {
                     "argumentTypes": null,
-                    "id": 15293,
+                    "id": 15794,
                     "name": "_appId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 15287,
+                    "referencedDeclaration": 15788,
                     "src": "493:6:43",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
@@ -720,11 +720,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 15294,
+                    "id": 15795,
                     "name": "_initializePayload",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 15289,
+                    "referencedDeclaration": 15790,
                     "src": "501:18:43",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_memory_ptr",
@@ -732,17 +732,17 @@
                     }
                   }
                 ],
-                "id": 15295,
+                "id": 15796,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 15291,
+                  "id": 15792,
                   "name": "AppProxyBase",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 15195,
+                  "referencedDeclaration": 15696,
                   "src": "471:12:43",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_AppProxyBase_$15195_$",
+                    "typeIdentifier": "t_type$_t_contract$_AppProxyBase_$15696_$",
                     "typeString": "type(contract AppProxyBase)"
                   }
                 },
@@ -753,31 +753,31 @@
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15290,
+              "id": 15791,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15285,
+                  "id": 15786,
                   "name": "_kernel",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15298,
+                  "scope": 15799,
                   "src": "404:15:43",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IKernel_$18456",
+                    "typeIdentifier": "t_contract$_IKernel_$18957",
                     "typeString": "contract IKernel"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 15284,
+                    "id": 15785,
                     "name": "IKernel",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 18456,
+                    "referencedDeclaration": 18957,
                     "src": "404:7:43",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IKernel_$18456",
+                      "typeIdentifier": "t_contract$_IKernel_$18957",
                       "typeString": "contract IKernel"
                     }
                   },
@@ -786,10 +786,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 15287,
+                  "id": 15788,
                   "name": "_appId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15298,
+                  "scope": 15799,
                   "src": "421:14:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -798,7 +798,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 15286,
+                    "id": 15787,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "421:7:43",
@@ -812,10 +812,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 15289,
+                  "id": 15790,
                   "name": "_initializePayload",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15298,
+                  "scope": 15799,
                   "src": "437:24:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -824,7 +824,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 15288,
+                    "id": 15789,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "437:5:43",
@@ -841,12 +841,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 15296,
+              "id": 15797,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "580:0:43"
             },
-            "scope": 15318,
+            "scope": 15819,
             "src": "392:251:43",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -854,7 +854,7 @@
           },
           {
             "body": {
-              "id": 15308,
+              "id": 15809,
               "nodeType": "Block",
               "src": "787:43:43",
               "statements": [
@@ -867,18 +867,18 @@
                         "arguments": [],
                         "expression": {
                           "argumentTypes": [],
-                          "id": 15304,
+                          "id": 15805,
                           "name": "appId",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 15353,
+                          "referencedDeclaration": 15854,
                           "src": "815:5:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$__$returns$_t_bytes32_$",
                             "typeString": "function () view returns (bytes32)"
                           }
                         },
-                        "id": 15305,
+                        "id": 15806,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -900,18 +900,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 15303,
+                      "id": 15804,
                       "name": "getAppBase",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 15194,
+                      "referencedDeclaration": 15695,
                       "src": "804:10:43",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_view$_t_bytes32_$returns$_t_address_$",
                         "typeString": "function (bytes32) view returns (address)"
                       }
                     },
-                    "id": 15306,
+                    "id": 15807,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -925,15 +925,15 @@
                       "typeString": "address"
                     }
                   },
-                  "functionReturnParameters": 15302,
-                  "id": 15307,
+                  "functionReturnParameters": 15803,
+                  "id": 15808,
                   "nodeType": "Return",
                   "src": "797:26:43"
                 }
               ]
             },
             "documentation": "@dev ERC897, the address the proxy would delegate calls to",
-            "id": 15309,
+            "id": 15810,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -941,22 +941,22 @@
             "name": "implementation",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15299,
+              "id": 15800,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "754:2:43"
             },
             "payable": false,
             "returnParameters": {
-              "id": 15302,
+              "id": 15803,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15301,
+                  "id": 15802,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15309,
+                  "scope": 15810,
                   "src": "778:7:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -965,7 +965,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 15300,
+                    "id": 15801,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "778:7:43",
@@ -980,41 +980,41 @@
               ],
               "src": "777:9:43"
             },
-            "scope": 15318,
+            "scope": 15819,
             "src": "731:99:43",
             "stateMutability": "view",
-            "superFunction": 20080,
+            "superFunction": 20581,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 15316,
+              "id": 15817,
               "nodeType": "Block",
               "src": "994:35:43",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 15314,
+                    "id": 15815,
                     "name": "UPGRADEABLE",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 20070,
+                    "referencedDeclaration": 20571,
                     "src": "1011:11:43",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 15313,
-                  "id": 15315,
+                  "functionReturnParameters": 15814,
+                  "id": 15816,
                   "nodeType": "Return",
                   "src": "1004:18:43"
                 }
               ]
             },
             "documentation": "@dev ERC897, whether it is a forwarding (1) or an upgradeable (2) proxy",
-            "id": 15317,
+            "id": 15818,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -1022,22 +1022,22 @@
             "name": "proxyType",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15310,
+              "id": 15811,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "949:2:43"
             },
             "payable": false,
             "returnParameters": {
-              "id": 15313,
+              "id": 15814,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15312,
+                  "id": 15813,
                   "name": "proxyTypeId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15317,
+                  "scope": 15818,
                   "src": "973:19:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1046,7 +1046,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 15311,
+                    "id": 15812,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "973:7:43",
@@ -1061,14 +1061,14 @@
               ],
               "src": "972:21:43"
             },
-            "scope": 15318,
+            "scope": 15819,
             "src": "931:98:43",
             "stateMutability": "pure",
-            "superFunction": 20075,
+            "superFunction": 20576,
             "visibility": "public"
           }
         ],
-        "scope": 15319,
+        "scope": 15820,
         "src": "56:975:43"
       }
     ],
@@ -1079,8 +1079,8 @@
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.10",
-  "updatedAt": "2019-06-29T10:51:09.493Z",
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2019-07-16T10:53:50.951Z",
   "devdoc": {
     "methods": {
       "implementation()": {

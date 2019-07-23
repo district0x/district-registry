@@ -9,6 +9,7 @@
    [clojure.string :as str]
    [district-registry.server.constants :as constants]
    [district-registry.server.db]
+   [district-registry.server.emailer]
    [district-registry.server.graphql-resolvers :refer [resolvers-map]]
    [district-registry.server.ipfs]
    [district-registry.server.syncer]
@@ -79,7 +80,13 @@
                             :web3 {:port 8549}
                             :ipfs {:host "http://127.0.0.1:5001"
                                    :endpoint "/api/v0"
-                                   :gateway "http://127.0.0.1:8080/ipfs"}}}
+                                   :gateway "http://127.0.0.1:8080/ipfs"}
+                            :emailer {:private-key "PLACEHOLDER"
+                                      :api-key "PLACEHOLDER"
+                                      :template-id "PLACEHOLDER"
+                                      :from "registry@district0x.io"
+                                      :print-mode? true}
+                            :ui {:root-url "http://0.0.0.0:4177/#/"}}}
          :smart-contracts {:contracts-var contracts-var}
          :web3-events {:events constants/web3-events}})
     (mount/start)

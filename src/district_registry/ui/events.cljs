@@ -1,13 +1,20 @@
 (ns district-registry.ui.events
   (:require
     [cljsjs.buffer]
-    [clojure.pprint :refer [pprint]]
+    [clojure.string :as string]
+    [district-registry.ui.config :as config]
     [district-registry.ui.contract.district-factory :as district-factory]
     [district-registry.ui.contract.registry-entry :as registry-entry]
+    [district.encryption :as encryption]
+    [district.ui.logging.events :as logging]
+    [district.ui.smart-contracts.queries :as contract-queries]
+    [district.ui.web3-accounts.queries :as account-queries]
+    [district.ui.web3-tx.events :as tx-events]
+    [district.ui.web3.queries :as web3-queries]
+    [medley.core :as medley]
     [print.foo :refer [look] :include-macros true]
     [re-frame.core :as re-frame]
-    [medley.core :as medley]
-    [clojure.string :as string]))
+    [taoensso.timbre :as log]))
 
 (def interceptors [re-frame/trim-v])
 
@@ -89,3 +96,66 @@
                                  [::registry-entry/set-meta-hash data]
                                  [::district-factory/approve-and-create-district data])
                    :on-error ::error}})))
+
+
+(re-frame/reg-event-fx
+  ::load-email-settings
+  (fn [{:keys [db]} _]
+    (let [active-account (account-queries/active-account db)
+          instance (contract-queries/instance db :district0x-emails)]
+      (when (and active-account instance)
+        {:web3/call {:web3 (web3-queries/web3 db)
+                     :fns [{:instance instance
+                            :fn :get-email
+                            :args [active-account]
+                            :on-success [::encrypted-email-found active-account]
+                            :on-error [::logging/error "Error loading user encrypted email"
+                                       {:user {:id active-account}}
+                                       ::load-email-settings]}]}}))))
+
+
+(re-frame/reg-event-db
+  ::encrypted-email-found
+  interceptors
+  (fn [db [address encrypted-email]]
+    (if (or (not encrypted-email)
+            (string/blank? encrypted-email))
+      (do
+        (log/info "No encrypted email found for user" {:user {:id address}
+                                                       :encrypted-email encrypted-email})
+        db)
+      (do (log/info "Loaded user encrypted email" {:user {:id address}
+                                                   :encrypted-email encrypted-email})
+          (assoc-in db [:district-registry.ui.my-account address :encrypted-email] encrypted-email)))))
+
+
+(re-frame/reg-event-fx
+  ::set-email
+  interceptors
+  (fn [{:keys [:db]} [email]]
+    (let [public-key (:district0x-emails-public-key config/config-map)
+          encrypted-email (if (empty? email)
+                            ""
+                            (encryption/encrypt-encode public-key email))
+          active-account (account-queries/active-account db)]
+      (log/debug (str "Encypted " email " with " public-key) ::save-settings)
+      {:dispatch [::tx-events/send-tx
+                  {:instance (contract-queries/instance db :district0x-emails)
+                   :fn :set-email
+                   :args [encrypted-email]
+                   :tx-opts {:from active-account}
+                   :tx-id {:set-email active-account}
+                   :tx-log {:name (if (empty? email)
+                                    "Erase email"
+                                    (str "Set email to " email)) :related-href {:name :route/my-account}}
+                   :on-tx-success [::set-email-success active-account encrypted-email]
+                   :on-tx-hash-error [::logging/error [::set-email email]]
+                   :on-tx-error [::logging/error [::set-email-error]]}]})))
+
+
+(re-frame/reg-event-fx
+  ::set-email-success
+  [interceptors (re-frame/inject-cofx :store)]
+  (fn [{:keys [store db]} [account encrypted-email]]
+    {:store (assoc-in store [:district-registry.ui.my-account account :encrypted-email] encrypted-email)
+     :db (assoc-in db [:district-registry.ui.my-account account :encrypted-email] encrypted-email)}))

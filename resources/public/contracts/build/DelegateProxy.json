@@ -41,14 +41,14 @@
     "absolutePath": "@aragon/os/contracts/common/DelegateProxy.sol",
     "exportedSymbols": {
       "DelegateProxy": [
-        15598
+        16099
       ]
     },
-    "id": 15599,
+    "id": 16100,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 15569,
+        "id": 16070,
         "literals": [
           "solidity",
           "0.4",
@@ -60,10 +60,10 @@
       {
         "absolutePath": "@aragon/os/contracts/common/IsContract.sol",
         "file": "../common/IsContract.sol",
-        "id": 15570,
+        "id": 16071,
         "nodeType": "ImportDirective",
-        "scope": 15599,
-        "sourceUnit": 15877,
+        "scope": 16100,
+        "sourceUnit": 16378,
         "src": "25:34:48",
         "symbolAliases": [],
         "unitAlias": ""
@@ -71,10 +71,10 @@
       {
         "absolutePath": "@aragon/os/contracts/lib/misc/ERCProxy.sol",
         "file": "../lib/misc/ERCProxy.sol",
-        "id": 15571,
+        "id": 16072,
         "nodeType": "ImportDirective",
-        "scope": 15599,
-        "sourceUnit": 20082,
+        "scope": 16100,
+        "sourceUnit": 20583,
         "src": "60:34:48",
         "symbolAliases": [],
         "unitAlias": ""
@@ -85,17 +85,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 15572,
+              "id": 16073,
               "name": "ERCProxy",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20081,
+              "referencedDeclaration": 20582,
               "src": "123:8:48",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERCProxy_$20081",
+                "typeIdentifier": "t_contract$_ERCProxy_$20582",
                 "typeString": "contract ERCProxy"
               }
             },
-            "id": 15573,
+            "id": 16074,
             "nodeType": "InheritanceSpecifier",
             "src": "123:8:48"
           },
@@ -103,43 +103,43 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 15574,
+              "id": 16075,
               "name": "IsContract",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 15876,
+              "referencedDeclaration": 16377,
               "src": "133:10:48",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IsContract_$15876",
+                "typeIdentifier": "t_contract$_IsContract_$16377",
                 "typeString": "contract IsContract"
               }
             },
-            "id": 15575,
+            "id": 16076,
             "nodeType": "InheritanceSpecifier",
             "src": "133:10:48"
           }
         ],
         "contractDependencies": [
-          15876,
-          20081
+          16377,
+          20582
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 15598,
+        "id": 16099,
         "linearizedBaseContracts": [
-          15598,
-          15876,
-          20081
+          16099,
+          16377,
+          20582
         ],
         "name": "DelegateProxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 15578,
+            "id": 16079,
             "name": "FWD_GAS_LIMIT",
             "nodeType": "VariableDeclaration",
-            "scope": 15598,
+            "scope": 16099,
             "src": "150:47:48",
             "stateVariable": true,
             "storageLocation": "default",
@@ -148,7 +148,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 15576,
+              "id": 16077,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "150:7:48",
@@ -160,7 +160,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "3130303030",
-              "id": 15577,
+              "id": 16078,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -179,7 +179,7 @@
           },
           {
             "body": {
-              "id": 15596,
+              "id": 16097,
               "nodeType": "Block",
               "src": "522:617:48",
               "statements": [
@@ -192,11 +192,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 15587,
+                            "id": 16088,
                             "name": "_dst",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 15580,
+                            "referencedDeclaration": 16081,
                             "src": "551:4:48",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -211,18 +211,18 @@
                               "typeString": "address"
                             }
                           ],
-                          "id": 15586,
+                          "id": 16087,
                           "name": "isContract",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 15875,
+                          "referencedDeclaration": 16376,
                           "src": "540:10:48",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$_t_address_$returns$_t_bool_$",
                             "typeString": "function (address) view returns (bool)"
                           }
                         },
-                        "id": 15588,
+                        "id": 16089,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -244,21 +244,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 15585,
+                      "id": 16086,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        20168,
-                        20169
+                        20669,
+                        20670
                       ],
-                      "referencedDeclaration": 20168,
+                      "referencedDeclaration": 20669,
                       "src": "532:7:48",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 15589,
+                    "id": 16090,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -272,21 +272,21 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 15590,
+                  "id": 16091,
                   "nodeType": "ExpressionStatement",
                   "src": "532:25:48"
                 },
                 {
                   "assignments": [
-                    15592
+                    16093
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 15592,
+                      "id": 16093,
                       "name": "fwdGasLimit",
                       "nodeType": "VariableDeclaration",
-                      "scope": 15597,
+                      "scope": 16098,
                       "src": "567:19:48",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -295,7 +295,7 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 15591,
+                        "id": 16092,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
                         "src": "567:7:48",
@@ -308,14 +308,14 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 15594,
+                  "id": 16095,
                   "initialValue": {
                     "argumentTypes": null,
-                    "id": 15593,
+                    "id": 16094,
                     "name": "FWD_GAS_LIMIT",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 15578,
+                    "referencedDeclaration": 16079,
                     "src": "589:13:48",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -329,7 +329,7 @@
                   "externalReferences": [
                     {
                       "fwdGasLimit": {
-                        "declaration": 15592,
+                        "declaration": 16093,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "672:11:48",
@@ -338,7 +338,7 @@
                     },
                     {
                       "_calldata": {
-                        "declaration": 15582,
+                        "declaration": 16083,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "720:9:48",
@@ -347,7 +347,7 @@
                     },
                     {
                       "_calldata": {
-                        "declaration": 15582,
+                        "declaration": 16083,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "696:9:48",
@@ -356,7 +356,7 @@
                     },
                     {
                       "_dst": {
-                        "declaration": 15580,
+                        "declaration": 16081,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "686:4:48",
@@ -364,7 +364,7 @@
                       }
                     }
                   ],
-                  "id": 15595,
+                  "id": 16096,
                   "nodeType": "InlineAssembly",
                   "operations": "{\n    let result := delegatecall(sub(gas(), fwdGasLimit), _dst, add(_calldata, 0x20), mload(_calldata), 0, 0)\n    let size := returndatasize()\n    let ptr := mload(0x40)\n    returndatacopy(ptr, 0, size)\n    switch result\n    case 0 {\n        revert(ptr, size)\n    }\n    default {\n        return(ptr, size)\n    }\n}",
                   "src": "613:526:48"
@@ -372,7 +372,7 @@
               ]
             },
             "documentation": "@dev Performs a delegatecall and returns whatever the delegatecall returned (entire context execution will return!)\n@param _dst Destination address to perform the delegatecall\n@param _calldata Calldata for the delegatecall",
-            "id": 15597,
+            "id": 16098,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -380,15 +380,15 @@
             "name": "delegatedFwd",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15583,
+              "id": 16084,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15580,
+                  "id": 16081,
                   "name": "_dst",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15597,
+                  "scope": 16098,
                   "src": "482:12:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -397,7 +397,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 15579,
+                    "id": 16080,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "482:7:48",
@@ -411,10 +411,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 15582,
+                  "id": 16083,
                   "name": "_calldata",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15597,
+                  "scope": 16098,
                   "src": "496:15:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -423,7 +423,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 15581,
+                    "id": 16082,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "496:5:48",
@@ -440,19 +440,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 15584,
+              "id": 16085,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "522:0:48"
             },
-            "scope": 15598,
+            "scope": 16099,
             "src": "460:679:48",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "internal"
           }
         ],
-        "scope": 15599,
+        "scope": 16100,
         "src": "97:1044:48"
       }
     ],
@@ -462,14 +462,14 @@
     "absolutePath": "@aragon/os/contracts/common/DelegateProxy.sol",
     "exportedSymbols": {
       "DelegateProxy": [
-        15598
+        16099
       ]
     },
-    "id": 15599,
+    "id": 16100,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 15569,
+        "id": 16070,
         "literals": [
           "solidity",
           "0.4",
@@ -481,10 +481,10 @@
       {
         "absolutePath": "@aragon/os/contracts/common/IsContract.sol",
         "file": "../common/IsContract.sol",
-        "id": 15570,
+        "id": 16071,
         "nodeType": "ImportDirective",
-        "scope": 15599,
-        "sourceUnit": 15877,
+        "scope": 16100,
+        "sourceUnit": 16378,
         "src": "25:34:48",
         "symbolAliases": [],
         "unitAlias": ""
@@ -492,10 +492,10 @@
       {
         "absolutePath": "@aragon/os/contracts/lib/misc/ERCProxy.sol",
         "file": "../lib/misc/ERCProxy.sol",
-        "id": 15571,
+        "id": 16072,
         "nodeType": "ImportDirective",
-        "scope": 15599,
-        "sourceUnit": 20082,
+        "scope": 16100,
+        "sourceUnit": 20583,
         "src": "60:34:48",
         "symbolAliases": [],
         "unitAlias": ""
@@ -506,17 +506,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 15572,
+              "id": 16073,
               "name": "ERCProxy",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20081,
+              "referencedDeclaration": 20582,
               "src": "123:8:48",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERCProxy_$20081",
+                "typeIdentifier": "t_contract$_ERCProxy_$20582",
                 "typeString": "contract ERCProxy"
               }
             },
-            "id": 15573,
+            "id": 16074,
             "nodeType": "InheritanceSpecifier",
             "src": "123:8:48"
           },
@@ -524,43 +524,43 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 15574,
+              "id": 16075,
               "name": "IsContract",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 15876,
+              "referencedDeclaration": 16377,
               "src": "133:10:48",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IsContract_$15876",
+                "typeIdentifier": "t_contract$_IsContract_$16377",
                 "typeString": "contract IsContract"
               }
             },
-            "id": 15575,
+            "id": 16076,
             "nodeType": "InheritanceSpecifier",
             "src": "133:10:48"
           }
         ],
         "contractDependencies": [
-          15876,
-          20081
+          16377,
+          20582
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 15598,
+        "id": 16099,
         "linearizedBaseContracts": [
-          15598,
-          15876,
-          20081
+          16099,
+          16377,
+          20582
         ],
         "name": "DelegateProxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 15578,
+            "id": 16079,
             "name": "FWD_GAS_LIMIT",
             "nodeType": "VariableDeclaration",
-            "scope": 15598,
+            "scope": 16099,
             "src": "150:47:48",
             "stateVariable": true,
             "storageLocation": "default",
@@ -569,7 +569,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 15576,
+              "id": 16077,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "150:7:48",
@@ -581,7 +581,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "3130303030",
-              "id": 15577,
+              "id": 16078,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -600,7 +600,7 @@
           },
           {
             "body": {
-              "id": 15596,
+              "id": 16097,
               "nodeType": "Block",
               "src": "522:617:48",
               "statements": [
@@ -613,11 +613,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 15587,
+                            "id": 16088,
                             "name": "_dst",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 15580,
+                            "referencedDeclaration": 16081,
                             "src": "551:4:48",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -632,18 +632,18 @@
                               "typeString": "address"
                             }
                           ],
-                          "id": 15586,
+                          "id": 16087,
                           "name": "isContract",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 15875,
+                          "referencedDeclaration": 16376,
                           "src": "540:10:48",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$_t_address_$returns$_t_bool_$",
                             "typeString": "function (address) view returns (bool)"
                           }
                         },
-                        "id": 15588,
+                        "id": 16089,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -665,21 +665,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 15585,
+                      "id": 16086,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        20168,
-                        20169
+                        20669,
+                        20670
                       ],
-                      "referencedDeclaration": 20168,
+                      "referencedDeclaration": 20669,
                       "src": "532:7:48",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 15589,
+                    "id": 16090,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -693,21 +693,21 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 15590,
+                  "id": 16091,
                   "nodeType": "ExpressionStatement",
                   "src": "532:25:48"
                 },
                 {
                   "assignments": [
-                    15592
+                    16093
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 15592,
+                      "id": 16093,
                       "name": "fwdGasLimit",
                       "nodeType": "VariableDeclaration",
-                      "scope": 15597,
+                      "scope": 16098,
                       "src": "567:19:48",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -716,7 +716,7 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 15591,
+                        "id": 16092,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
                         "src": "567:7:48",
@@ -729,14 +729,14 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 15594,
+                  "id": 16095,
                   "initialValue": {
                     "argumentTypes": null,
-                    "id": 15593,
+                    "id": 16094,
                     "name": "FWD_GAS_LIMIT",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 15578,
+                    "referencedDeclaration": 16079,
                     "src": "589:13:48",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -750,7 +750,7 @@
                   "externalReferences": [
                     {
                       "fwdGasLimit": {
-                        "declaration": 15592,
+                        "declaration": 16093,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "672:11:48",
@@ -759,7 +759,7 @@
                     },
                     {
                       "_calldata": {
-                        "declaration": 15582,
+                        "declaration": 16083,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "720:9:48",
@@ -768,7 +768,7 @@
                     },
                     {
                       "_calldata": {
-                        "declaration": 15582,
+                        "declaration": 16083,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "696:9:48",
@@ -777,7 +777,7 @@
                     },
                     {
                       "_dst": {
-                        "declaration": 15580,
+                        "declaration": 16081,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "686:4:48",
@@ -785,7 +785,7 @@
                       }
                     }
                   ],
-                  "id": 15595,
+                  "id": 16096,
                   "nodeType": "InlineAssembly",
                   "operations": "{\n    let result := delegatecall(sub(gas(), fwdGasLimit), _dst, add(_calldata, 0x20), mload(_calldata), 0, 0)\n    let size := returndatasize()\n    let ptr := mload(0x40)\n    returndatacopy(ptr, 0, size)\n    switch result\n    case 0 {\n        revert(ptr, size)\n    }\n    default {\n        return(ptr, size)\n    }\n}",
                   "src": "613:526:48"
@@ -793,7 +793,7 @@
               ]
             },
             "documentation": "@dev Performs a delegatecall and returns whatever the delegatecall returned (entire context execution will return!)\n@param _dst Destination address to perform the delegatecall\n@param _calldata Calldata for the delegatecall",
-            "id": 15597,
+            "id": 16098,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -801,15 +801,15 @@
             "name": "delegatedFwd",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 15583,
+              "id": 16084,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 15580,
+                  "id": 16081,
                   "name": "_dst",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15597,
+                  "scope": 16098,
                   "src": "482:12:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -818,7 +818,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 15579,
+                    "id": 16080,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "482:7:48",
@@ -832,10 +832,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 15582,
+                  "id": 16083,
                   "name": "_calldata",
                   "nodeType": "VariableDeclaration",
-                  "scope": 15597,
+                  "scope": 16098,
                   "src": "496:15:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -844,7 +844,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 15581,
+                    "id": 16082,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "496:5:48",
@@ -861,19 +861,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 15584,
+              "id": 16085,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "522:0:48"
             },
-            "scope": 15598,
+            "scope": 16099,
             "src": "460:679:48",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "internal"
           }
         ],
-        "scope": 15599,
+        "scope": 16100,
         "src": "97:1044:48"
       }
     ],
@@ -884,8 +884,8 @@
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.10",
-  "updatedAt": "2019-06-29T10:51:09.495Z",
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2019-07-16T10:53:50.957Z",
   "devdoc": {
     "methods": {}
   },

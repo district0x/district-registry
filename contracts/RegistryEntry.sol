@@ -172,7 +172,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
       version,
       _challengeIndex,
       _voter,
-      _amount
+      _amount,
+      challenge.commitPeriodEnd()
     );
   }
 
@@ -212,7 +213,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
       _challengeIndex,
       _voter,
       uint(_voteOption),
-      amount
+      amount,
+      challenge.revealPeriodEnd()
     );
   }
 
@@ -239,7 +241,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
     uint challengerReward = challenge.safeClaimChallengerReward(_user);
     if (challengerReward > 0) {
       require(registryToken.transfer(challenge.challenger(), challengerReward));
-      registry.fireChallengerRewardClaimedEvent(version, _challengeIndex, challenge.challenger(), creatorReward);
+      registry.fireChallengerRewardClaimedEvent(version, _challengeIndex, challenge.challenger(), challengerReward);
     }
 
     uint creatorReward = challenge.safeClaimCreatorReward(_user);

@@ -23,8 +23,8 @@ contract Registry is DSAuth {
   event DistrictStakeChangedEvent(address registryEntry, uint version, uint dntTotalStaked, uint votingTokenTotalSupply, address staker, uint stakerDntStaked, uint stakerVotingTokenBalance, uint stakedAmount, bool isUnstake, uint timestamp);
   event DistrictMetaHashChangedEvent(address registryEntry, uint version, bytes metaHash, uint timestamp);
   event VotesReclaimedEvent(address registryEntry, uint version, uint index, address voter, uint amount, uint timestamp);
-  event VoteCommittedEvent(address registryEntry, uint version, uint index, address voter, uint amount, uint timestamp);
-  event VoteRevealedEvent(address registryEntry, uint version, uint index, address voter, uint option, uint amount, uint timestamp);
+  event VoteCommittedEvent(address registryEntry, uint version, uint index, address voter, uint amount, uint commitPeriodEnd, uint timestamp);
+  event VoteRevealedEvent(address registryEntry, uint version, uint index, address voter, uint option, uint amount, uint revealPeriodEnd, uint timestamp);
   event VoteRewardClaimedEvent(address registryEntry, uint version, uint index, address voter, uint amount, uint timestamp);
 
   bytes32 public constant challengeDispensationKey = keccak256("challengeDispensation");
@@ -184,18 +184,18 @@ contract Registry is DSAuth {
     emit ChallengeCreatedEvent(msg.sender, version, index, challenger, commitPeriodEnd, revealPeriodEnd, rewardPool, metaHash, now);
   }
 
-  function fireVoteCommittedEvent(uint version, uint index, address voter, uint amount)
+  function fireVoteCommittedEvent(uint version, uint index, address voter, uint amount, uint commitPeriodEnd)
     public
     onlyRegistryEntry
   {
-    emit VoteCommittedEvent(msg.sender, version, index, voter, amount, now);
+    emit VoteCommittedEvent(msg.sender, version, index, voter, amount, commitPeriodEnd, now);
   }
 
-  function fireVoteRevealedEvent(uint version, uint index, address voter, uint option, uint amount)
+  function fireVoteRevealedEvent(uint version, uint index, address voter, uint option, uint amount, uint revealPeriodEnd)
     public
     onlyRegistryEntry
   {
-    emit VoteRevealedEvent(msg.sender, version, index, voter, option, amount, now);
+    emit VoteRevealedEvent(msg.sender, version, index, voter, option, amount, revealPeriodEnd, now);
   }
 
   function fireVotesReclaimedEvent(uint version, uint index, address voter, uint amount)

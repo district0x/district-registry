@@ -8,7 +8,7 @@
     [mount.core :refer [defstate]])
   (:require-macros [district-registry.shared.macros :refer [get-environment]]))
 
-(def contracts-to-load [:DNT :district :param-change :district-factory :param-change-factory :ENS])
+(def contracts-to-load [:DNT :district :param-change :district-factory :param-change-factory :ENS :district0x-emails])
 
 (def development-config
   {:debug? true
@@ -29,7 +29,8 @@
           :gateway "http://127.0.0.1:8080/ipfs"}
    :router {:html5? false}
    :router-google-analytics {:enabled? false}
-   :aragon-url "https://rinkeby.aragon.org/#/"})
+   :aragon-url "https://rinkeby.aragon.org/#/"
+   :district0x-emails-public-key "2564e15aaf9593acfdc633bd08f1fc5c089aa43972dd7e8a36d67825cd0154602da47d02f30e1f74e7e72c81ba5f0b3dd20d4d4f0cc6652a2e719a0e9d4c7f10943"})
 
 (def qa-config
   {:logging {:level :warn
@@ -51,7 +52,8 @@
           :gateway "https://ipfs.qa.district0x.io/gateway/ipfs"}
    :router {:html5? true}
    :router-google-analytics {:enabled? false}
-   :aragon-url "https://rinkeby.aragon.org/#/"})
+   :aragon-url "https://rinkeby.aragon.org/#/"
+   :district0x-emails-public-key "2564e15aaf9593acfdc633bd08f1fc5c089aa43972dd7e8a36d67825cd0154602da47d02f30e1f74e7e72c81ba5f0b3dd20d4d4f0cc6652a2e719a0e9d4c7f10943"})
 
 (def qa-dev-config (merge (assoc-in qa-config [:router :html5?] false)
                           {:ipfs {:host "http://127.0.0.1:5001"
@@ -81,7 +83,8 @@
           :gateway "https://ipfs.district0x.io/gateway/ipfs"}
    :router {:html5? true}
    :router-google-analytics {:enabled? true}
-   :aragon-url "https://mainnet.aragon.org/#/"})
+   :aragon-url "https://mainnet.aragon.org/#/"
+   :district0x-emails-public-key "2564e15aaf9593acfdc633bd08f1fc5c089aa43972dd7e8a36d67825cd0154602da47d02f30e1f74e7e72c81ba5f0b3dd20d4d4f0cc6652a2e719a0e9d4c7f10943"})
 
 (def config-map
   (condp = (get-environment)

@@ -3,6 +3,7 @@
     [cljs.nodejs :as nodejs]
     [district-registry.server.constants :as constants]
     [district-registry.server.db]
+    [district-registry.server.emailer]
     [district-registry.server.graphql-resolvers :refer [resolvers-map]]
     [district-registry.server.ipfs]
     [district-registry.server.syncer]

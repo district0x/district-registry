@@ -2,7 +2,6 @@
   (:require
     [bignumber.core :as bn]
     [cljs-web3.core :as web3]
-    [clojure.pprint :refer [pprint]]
     [district-registry.ui.contract.district :as district]
     [district.format :as format]
     [district.parsers :as parsers]

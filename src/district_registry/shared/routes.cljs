@@ -5,4 +5,4 @@
              ["/submit" :route/submit]
              ["/detail/:address" :route/detail]
              ["/edit/:address" :route/edit]
-             ["/my-activity" :route/my-activity]])
+             ["/my-account/:tab" :route/my-account]])

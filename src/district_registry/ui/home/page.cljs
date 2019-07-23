@@ -2,7 +2,6 @@
   (:require
     [bignumber.core :as bn]
     [cljs-web3.core :as web3]
-    [clojure.pprint :refer [pprint]]
     [district-registry.ui.components.app-layout :refer [app-layout]]
     [district-registry.ui.components.nav :as nav]
     [district-registry.ui.components.stake :as stake]

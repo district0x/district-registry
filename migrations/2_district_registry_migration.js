@@ -42,6 +42,7 @@ let Challenge = requireContract("Challenge");
 let DistrictChallenge = requireContract("DistrictChallenge");
 let DistrictRegistryDb = requireContract("EternalDb", "DistrictRegistryDb");
 let KitDistrict = requireContract("KitDistrict", "KitDistrict");
+let District0xEmails = requireContract("District0xEmails");
 
 // Aragon Contracts
 let Kernel = requireContract("Kernel", "Kernel");
@@ -553,7 +554,7 @@ async function deploy_Vault(deployer, opts) {
 async function deploy_Finance(deployer, opts) {
   console.log("Deploying Aragon Finance");
 
-  await deployer.deploy(Finance, Object.assign({}, opts, {gas: 8.7e6}));
+  await deployer.deploy(Finance, Object.assign({}, opts, {gas: 8.9e6}));
   const finance = await Finance.deployed();
 
   console.log("Creating finance.aragonpm.eth repo");
@@ -602,6 +603,21 @@ async function deploy_KitDistrict(deployer, opts) {
   await kitDistrict.setAuthority(dsGuard.address, Object.assign({}, opts, {gas: 0.5e6}));
 
   assignContract(kitDistrict, "KitDistrict", "kit-district");
+}
+
+async function deploy_District0xEmails(deployer, opts) {
+  var district0xEmails;
+
+  if (parameters.District0xEmails) {
+    console.log("Using existing District0xEmails");
+    district0xEmails = await District0xEmails.at(parameters.District0xEmails);
+  } else {
+    console.log("Deploying District0xEmails");
+    await deployer.deploy(District0xEmails, Object.assign({}, opts, {gas: 2e6}));
+    district0xEmails = await District0xEmails.deployed();
+  }
+
+  assignContract(district0xEmails, "District0xEmails", "district0x-emails");
 }
 
 async function setInitialParameters(instance, parametersKey, opts) {
@@ -676,6 +692,8 @@ async function deployAll(deployer, opts) {
 
   await deploy_DistrictFactory(deployer, opts);
   await deploy_ParamChangeFactory(deployer, opts);
+
+  await deploy_District0xEmails(deployer, opts);
 
   writeSmartContracts(smartContractsPath, smartContractsList, env)
 }

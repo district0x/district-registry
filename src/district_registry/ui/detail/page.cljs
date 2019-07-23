@@ -2,7 +2,6 @@
   (:require
     [bignumber.core :as bn]
     [cljsjs.bignumber]
-    [clojure.pprint :refer [pprint]]
     [clojure.string :as str]
     [district-registry.ui.components.app-layout :refer [app-layout]]
     [district-registry.ui.components.donut-chart :refer [donut-chart]]

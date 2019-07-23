@@ -1,12 +1,10 @@
 (ns district-registry.server.graphql-resolvers
   (:require
-    [clojure.pprint :refer [pprint]]
     [district-registry.server.utils :as server-utils]
     [district-registry.shared.utils :refer [vote-option->kw]]
     [district.cljs-utils :as cljs-utils]
     [district.graphql-utils :as graphql-utils]
     [district.parsers :as parsers]
-    [district.server.config :refer [config]]
     [district.server.db :as db]
     [district.server.smart-contracts :as smart-contracts]
     [district.shared.error-handling :refer [try-catch-throw]]
@@ -15,15 +13,8 @@
     [honeysql.helpers :as sqlh]
     [taoensso.timbre :as log]))
 
-(def whitelisted-config-keys [:ipfs])
-
-(defn config-query-resolver []
-  (log/debug "config-query-resolver")
-  (try-catch-throw
-    (select-keys @config whitelisted-config-keys)))
 
 (def enum graphql-utils/kw->gql-name)
-
 
 (defn paged-query
   "Execute a paged query.
@@ -387,8 +378,7 @@
              :order-by [[:challenges.challenge/index :asc]]})))
 
 (def Query
-  {:config config-query-resolver
-   :district district-query-resolver
+  {:district district-query-resolver
    :search-districts search-districts-query-resolver
    :param-change param-change-query-resolver
    :search-param-changes search-param-changes-query-resolver

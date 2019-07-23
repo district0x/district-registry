@@ -12,14 +12,14 @@
     "absolutePath": "@aragon/os/contracts/apm/APMNamehash.sol",
     "exportedSymbols": {
       "APMNamehash": [
-        14426
+        14927
       ]
     },
-    "id": 14427,
+    "id": 14928,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 14402,
+        "id": 14903,
         "literals": [
           "solidity",
           "^",
@@ -35,19 +35,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 14426,
+        "id": 14927,
         "linearizedBaseContracts": [
-          14426
+          14927
         ],
         "name": "APMNamehash",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 14405,
+            "id": 14906,
             "name": "APM_NODE",
             "nodeType": "VariableDeclaration",
-            "scope": 14426,
+            "scope": 14927,
             "src": "269:103:38",
             "stateVariable": true,
             "storageLocation": "default",
@@ -56,7 +56,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 14403,
+              "id": 14904,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "269:7:38",
@@ -68,7 +68,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307839303635633365376637623765663165663465353364326430623865306365663032383734616230323063316563653739643566306433643031313163306261",
-              "id": 14404,
+              "id": 14905,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -87,7 +87,7 @@
           },
           {
             "body": {
-              "id": 14424,
+              "id": 14925,
               "nodeType": "Block",
               "src": "445:85:38",
               "statements": [
@@ -100,11 +100,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 14415,
+                            "id": 14916,
                             "name": "APM_NODE",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 14405,
+                            "referencedDeclaration": 14906,
                             "src": "489:8:38",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -119,11 +119,11 @@
                                 "arguments": [
                                   {
                                     "argumentTypes": null,
-                                    "id": 14418,
+                                    "id": 14919,
                                     "name": "name",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 14407,
+                                    "referencedDeclaration": 14908,
                                     "src": "515:4:38",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_string_memory_ptr",
@@ -138,7 +138,7 @@
                                       "typeString": "string memory"
                                     }
                                   ],
-                                  "id": 14417,
+                                  "id": 14918,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": true,
@@ -151,7 +151,7 @@
                                   },
                                   "typeName": "bytes"
                                 },
-                                "id": 14419,
+                                "id": 14920,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": false,
@@ -173,18 +173,18 @@
                                   "typeString": "bytes memory"
                                 }
                               ],
-                              "id": 14416,
+                              "id": 14917,
                               "name": "keccak256",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 20159,
+                              "referencedDeclaration": 20660,
                               "src": "499:9:38",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                                 "typeString": "function () pure returns (bytes32)"
                               }
                             },
-                            "id": 14420,
+                            "id": 14921,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -212,18 +212,18 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 14413,
+                            "id": 14914,
                             "name": "abi",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 20152,
+                            "referencedDeclaration": 20653,
                             "src": "472:3:38",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_abi",
                               "typeString": "abi"
                             }
                           },
-                          "id": 14414,
+                          "id": 14915,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -237,7 +237,7 @@
                             "typeString": "function () pure returns (bytes memory)"
                           }
                         },
-                        "id": 14421,
+                        "id": 14922,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -259,18 +259,18 @@
                           "typeString": "bytes memory"
                         }
                       ],
-                      "id": 14412,
+                      "id": 14913,
                       "name": "keccak256",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 20159,
+                      "referencedDeclaration": 20660,
                       "src": "462:9:38",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                         "typeString": "function () pure returns (bytes32)"
                       }
                     },
-                    "id": 14422,
+                    "id": 14923,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -284,15 +284,15 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "functionReturnParameters": 14411,
-                  "id": 14423,
+                  "functionReturnParameters": 14912,
+                  "id": 14924,
                   "nodeType": "Return",
                   "src": "455:68:38"
                 }
               ]
             },
             "documentation": null,
-            "id": 14425,
+            "id": 14926,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -300,15 +300,15 @@
             "name": "apmNamehash",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 14408,
+              "id": 14909,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14407,
+                  "id": 14908,
                   "name": "name",
                   "nodeType": "VariableDeclaration",
-                  "scope": 14425,
+                  "scope": 14926,
                   "src": "400:11:38",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -317,7 +317,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 14406,
+                    "id": 14907,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "400:6:38",
@@ -334,15 +334,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 14411,
+              "id": 14912,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14410,
+                  "id": 14911,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 14425,
+                  "scope": 14926,
                   "src": "436:7:38",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -351,7 +351,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 14409,
+                    "id": 14910,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "436:7:38",
@@ -366,14 +366,14 @@
               ],
               "src": "435:9:38"
             },
-            "scope": 14426,
+            "scope": 14927,
             "src": "379:151:38",
             "stateMutability": "pure",
             "superFunction": null,
             "visibility": "internal"
           }
         ],
-        "scope": 14427,
+        "scope": 14928,
         "src": "71:461:38"
       }
     ],
@@ -383,14 +383,14 @@
     "absolutePath": "@aragon/os/contracts/apm/APMNamehash.sol",
     "exportedSymbols": {
       "APMNamehash": [
-        14426
+        14927
       ]
     },
-    "id": 14427,
+    "id": 14928,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 14402,
+        "id": 14903,
         "literals": [
           "solidity",
           "^",
@@ -406,19 +406,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 14426,
+        "id": 14927,
         "linearizedBaseContracts": [
-          14426
+          14927
         ],
         "name": "APMNamehash",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 14405,
+            "id": 14906,
             "name": "APM_NODE",
             "nodeType": "VariableDeclaration",
-            "scope": 14426,
+            "scope": 14927,
             "src": "269:103:38",
             "stateVariable": true,
             "storageLocation": "default",
@@ -427,7 +427,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 14403,
+              "id": 14904,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "269:7:38",
@@ -439,7 +439,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307839303635633365376637623765663165663465353364326430623865306365663032383734616230323063316563653739643566306433643031313163306261",
-              "id": 14404,
+              "id": 14905,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -458,7 +458,7 @@
           },
           {
             "body": {
-              "id": 14424,
+              "id": 14925,
               "nodeType": "Block",
               "src": "445:85:38",
               "statements": [
@@ -471,11 +471,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 14415,
+                            "id": 14916,
                             "name": "APM_NODE",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 14405,
+                            "referencedDeclaration": 14906,
                             "src": "489:8:38",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -490,11 +490,11 @@
                                 "arguments": [
                                   {
                                     "argumentTypes": null,
-                                    "id": 14418,
+                                    "id": 14919,
                                     "name": "name",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 14407,
+                                    "referencedDeclaration": 14908,
                                     "src": "515:4:38",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_string_memory_ptr",
@@ -509,7 +509,7 @@
                                       "typeString": "string memory"
                                     }
                                   ],
-                                  "id": 14417,
+                                  "id": 14918,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": true,
@@ -522,7 +522,7 @@
                                   },
                                   "typeName": "bytes"
                                 },
-                                "id": 14419,
+                                "id": 14920,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": false,
@@ -544,18 +544,18 @@
                                   "typeString": "bytes memory"
                                 }
                               ],
-                              "id": 14416,
+                              "id": 14917,
                               "name": "keccak256",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 20159,
+                              "referencedDeclaration": 20660,
                               "src": "499:9:38",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                                 "typeString": "function () pure returns (bytes32)"
                               }
                             },
-                            "id": 14420,
+                            "id": 14921,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -583,18 +583,18 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 14413,
+                            "id": 14914,
                             "name": "abi",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 20152,
+                            "referencedDeclaration": 20653,
                             "src": "472:3:38",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_abi",
                               "typeString": "abi"
                             }
                           },
-                          "id": 14414,
+                          "id": 14915,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -608,7 +608,7 @@
                             "typeString": "function () pure returns (bytes memory)"
                           }
                         },
-                        "id": 14421,
+                        "id": 14922,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -630,18 +630,18 @@
                           "typeString": "bytes memory"
                         }
                       ],
-                      "id": 14412,
+                      "id": 14913,
                       "name": "keccak256",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 20159,
+                      "referencedDeclaration": 20660,
                       "src": "462:9:38",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                         "typeString": "function () pure returns (bytes32)"
                       }
                     },
-                    "id": 14422,
+                    "id": 14923,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -655,15 +655,15 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "functionReturnParameters": 14411,
-                  "id": 14423,
+                  "functionReturnParameters": 14912,
+                  "id": 14924,
                   "nodeType": "Return",
                   "src": "455:68:38"
                 }
               ]
             },
             "documentation": null,
-            "id": 14425,
+            "id": 14926,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -671,15 +671,15 @@
             "name": "apmNamehash",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 14408,
+              "id": 14909,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14407,
+                  "id": 14908,
                   "name": "name",
                   "nodeType": "VariableDeclaration",
-                  "scope": 14425,
+                  "scope": 14926,
                   "src": "400:11:38",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -688,7 +688,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 14406,
+                    "id": 14907,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "400:6:38",
@@ -705,15 +705,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 14411,
+              "id": 14912,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14410,
+                  "id": 14911,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 14425,
+                  "scope": 14926,
                   "src": "436:7:38",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -722,7 +722,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 14409,
+                    "id": 14910,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "436:7:38",
@@ -737,14 +737,14 @@
               ],
               "src": "435:9:38"
             },
-            "scope": 14426,
+            "scope": 14927,
             "src": "379:151:38",
             "stateMutability": "pure",
             "superFunction": null,
             "visibility": "internal"
           }
         ],
-        "scope": 14427,
+        "scope": 14928,
         "src": "71:461:38"
       }
     ],
@@ -755,8 +755,8 @@
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.10",
-  "updatedAt": "2019-06-29T10:51:09.483Z",
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2019-07-16T10:53:50.930Z",
   "devdoc": {
     "methods": {}
   },

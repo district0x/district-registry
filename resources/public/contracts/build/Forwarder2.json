@@ -32,14 +32,14 @@
     "absolutePath": "/Users/matus/www/district0x/district-registry/contracts/proxy/Forwarder2.sol",
     "exportedSymbols": {
       "Forwarder2": [
-        7960
+        8461
       ]
     },
-    "id": 7961,
+    "id": 8462,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7943,
+        "id": 8444,
         "literals": [
           "solidity",
           "^",
@@ -52,10 +52,10 @@
       {
         "absolutePath": "/Users/matus/www/district0x/district-registry/contracts/proxy/ForwarderDelegateProxy.sol",
         "file": "./ForwarderDelegateProxy.sol",
-        "id": 7944,
+        "id": 8445,
         "nodeType": "ImportDirective",
-        "scope": 7961,
-        "sourceUnit": 7995,
+        "scope": 8462,
+        "sourceUnit": 8496,
         "src": "26:39:21",
         "symbolAliases": [],
         "unitAlias": ""
@@ -66,41 +66,41 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 7945,
+              "id": 8446,
               "name": "ForwarderDelegateProxy",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7994,
+              "referencedDeclaration": 8495,
               "src": "90:22:21",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ForwarderDelegateProxy_$7994",
+                "typeIdentifier": "t_contract$_ForwarderDelegateProxy_$8495",
                 "typeString": "contract ForwarderDelegateProxy"
               }
             },
-            "id": 7946,
+            "id": 8447,
             "nodeType": "InheritanceSpecifier",
             "src": "90:22:21"
           }
         ],
         "contractDependencies": [
-          7994
+          8495
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 7960,
+        "id": 8461,
         "linearizedBaseContracts": [
-          7960,
-          7994
+          8461,
+          8495
         ],
         "name": "Forwarder2",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 7949,
+            "id": 8450,
             "name": "target",
             "nodeType": "VariableDeclaration",
-            "scope": 7960,
+            "scope": 8461,
             "src": "217:75:21",
             "stateVariable": true,
             "storageLocation": "default",
@@ -109,7 +109,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 7947,
+              "id": 8448,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "217:7:21",
@@ -121,7 +121,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307846456562664565626665454266654542464565424645656266456542466565426645656246656562",
-              "id": 7948,
+              "id": 8449,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -140,7 +140,7 @@
           },
           {
             "body": {
-              "id": 7958,
+              "id": 8459,
               "nodeType": "Block",
               "src": "404:41:21",
               "statements": [
@@ -150,11 +150,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 7953,
+                        "id": 8454,
                         "name": "target",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7949,
+                        "referencedDeclaration": 8450,
                         "src": "423:6:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -165,18 +165,18 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 7954,
+                          "id": 8455,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 20165,
+                          "referencedDeclaration": 20666,
                           "src": "431:3:21",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 7955,
+                        "id": 8456,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -202,18 +202,18 @@
                           "typeString": "bytes calldata"
                         }
                       ],
-                      "id": 7952,
+                      "id": 8453,
                       "name": "delegatedFwd",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7977,
+                      "referencedDeclaration": 8478,
                       "src": "410:12:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_bytes_memory_ptr_$returns$__$",
                         "typeString": "function (address,bytes memory)"
                       }
                     },
-                    "id": 7956,
+                    "id": 8457,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -227,14 +227,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 7957,
+                  "id": 8458,
                   "nodeType": "ExpressionStatement",
                   "src": "410:30:21"
                 }
               ]
             },
             "documentation": null,
-            "id": 7959,
+            "id": 8460,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -242,26 +242,26 @@
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 7950,
+              "id": 8451,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "386:2:21"
             },
             "payable": true,
             "returnParameters": {
-              "id": 7951,
+              "id": 8452,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "404:0:21"
             },
-            "scope": 7960,
+            "scope": 8461,
             "src": "378:67:21",
             "stateMutability": "payable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 7961,
+        "scope": 8462,
         "src": "67:380:21"
       }
     ],
@@ -271,14 +271,14 @@
     "absolutePath": "/Users/matus/www/district0x/district-registry/contracts/proxy/Forwarder2.sol",
     "exportedSymbols": {
       "Forwarder2": [
-        7960
+        8461
       ]
     },
-    "id": 7961,
+    "id": 8462,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7943,
+        "id": 8444,
         "literals": [
           "solidity",
           "^",
@@ -291,10 +291,10 @@
       {
         "absolutePath": "/Users/matus/www/district0x/district-registry/contracts/proxy/ForwarderDelegateProxy.sol",
         "file": "./ForwarderDelegateProxy.sol",
-        "id": 7944,
+        "id": 8445,
         "nodeType": "ImportDirective",
-        "scope": 7961,
-        "sourceUnit": 7995,
+        "scope": 8462,
+        "sourceUnit": 8496,
         "src": "26:39:21",
         "symbolAliases": [],
         "unitAlias": ""
@@ -305,41 +305,41 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 7945,
+              "id": 8446,
               "name": "ForwarderDelegateProxy",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7994,
+              "referencedDeclaration": 8495,
               "src": "90:22:21",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ForwarderDelegateProxy_$7994",
+                "typeIdentifier": "t_contract$_ForwarderDelegateProxy_$8495",
                 "typeString": "contract ForwarderDelegateProxy"
               }
             },
-            "id": 7946,
+            "id": 8447,
             "nodeType": "InheritanceSpecifier",
             "src": "90:22:21"
           }
         ],
         "contractDependencies": [
-          7994
+          8495
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 7960,
+        "id": 8461,
         "linearizedBaseContracts": [
-          7960,
-          7994
+          8461,
+          8495
         ],
         "name": "Forwarder2",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 7949,
+            "id": 8450,
             "name": "target",
             "nodeType": "VariableDeclaration",
-            "scope": 7960,
+            "scope": 8461,
             "src": "217:75:21",
             "stateVariable": true,
             "storageLocation": "default",
@@ -348,7 +348,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 7947,
+              "id": 8448,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "217:7:21",
@@ -360,7 +360,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307846456562664565626665454266654542464565424645656266456542466565426645656246656562",
-              "id": 7948,
+              "id": 8449,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -379,7 +379,7 @@
           },
           {
             "body": {
-              "id": 7958,
+              "id": 8459,
               "nodeType": "Block",
               "src": "404:41:21",
               "statements": [
@@ -389,11 +389,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 7953,
+                        "id": 8454,
                         "name": "target",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7949,
+                        "referencedDeclaration": 8450,
                         "src": "423:6:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -404,18 +404,18 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 7954,
+                          "id": 8455,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 20165,
+                          "referencedDeclaration": 20666,
                           "src": "431:3:21",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 7955,
+                        "id": 8456,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -441,18 +441,18 @@
                           "typeString": "bytes calldata"
                         }
                       ],
-                      "id": 7952,
+                      "id": 8453,
                       "name": "delegatedFwd",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7977,
+                      "referencedDeclaration": 8478,
                       "src": "410:12:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_bytes_memory_ptr_$returns$__$",
                         "typeString": "function (address,bytes memory)"
                       }
                     },
-                    "id": 7956,
+                    "id": 8457,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -466,14 +466,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 7957,
+                  "id": 8458,
                   "nodeType": "ExpressionStatement",
                   "src": "410:30:21"
                 }
               ]
             },
             "documentation": null,
-            "id": 7959,
+            "id": 8460,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -481,26 +481,26 @@
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 7950,
+              "id": 8451,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "386:2:21"
             },
             "payable": true,
             "returnParameters": {
-              "id": 7951,
+              "id": 8452,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "404:0:21"
             },
-            "scope": 7960,
+            "scope": 8461,
             "src": "378:67:21",
             "stateMutability": "payable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 7961,
+        "scope": 8462,
         "src": "67:380:21"
       }
     ],
@@ -511,8 +511,8 @@
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.10",
-  "updatedAt": "2019-06-29T10:51:09.404Z",
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2019-07-16T10:53:50.780Z",
   "devdoc": {
     "methods": {}
   },
