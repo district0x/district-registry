@@ -18,6 +18,7 @@
 /npm-debug.log
 /resources/public/js/compiled
 /resources/public/css-compiled/
+/resources/public/contracts/build
 /server-tests/
 /server/
 /target

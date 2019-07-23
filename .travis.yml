@@ -14,8 +14,8 @@ before_install:
   - sudo apt-get -qq update
 before_script:
   - nvm use 11.0.0
-  - sudo apt-get --yes install solc
-  - lein solc
+  - sudo npm install -g truffle
+  - truffle compile --all
   - npm install -g ganache-cli
   - ganache-cli -p 8549 > /dev/null &
 env:
