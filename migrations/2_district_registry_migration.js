@@ -165,7 +165,7 @@ async function deploy_DistrictRegistry(deployer, opts) {
   await deployer.deploy(DistrictRegistry, Object.assign({}, opts, {gas: 3.2e6}));
   const districtRegistry = await DistrictRegistry.deployed();
 
-  assignContract(districtRegistry, "DistrictRegistry", "district-registry");
+  assignContract(districtRegistry, "Registry", "district-registry");
 }
 
 
