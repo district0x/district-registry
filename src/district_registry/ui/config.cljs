@@ -35,7 +35,7 @@
 (def qa-config
   {:logging {:level :warn
              :console? true
-             :sentry {:dsn "https://4bb89c9cdae14444819ff0ac3bcba253@sentry.io/1306960"
+             :sentry {:dsn "https://2388a41ba9c54e06a6373d47a69aa887@sentry.io/1494135"
                       :environment "QA"}}
    :time-source :js-date
    :smart-contracts {:contracts (select-keys smart-contracts-qa/smart-contracts contracts-to-load)}
@@ -66,7 +66,7 @@
 (def production-config
   {:logging {:level :warn
              :console? false
-             :sentry {:dsn "https://4bb89c9cdae14444819ff0ac3bcba253@sentry.io/1306960"
+             :sentry {:dsn "https://2388a41ba9c54e06a6373d47a69aa887@sentry.io/1494135"
                       :environment "PRODUCTION"}}
    :time-source :js-date
    :smart-contracts {:contracts (select-keys smart-contracts-prod/smart-contracts contracts-to-load)}

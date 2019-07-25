@@ -41,7 +41,6 @@ let parameters = {
     DAOFactory: "0x2298d27a9b847c681d2b2c2828ab9d79013f5f1d",
     FIFSResolvingRegistrar: "0x3665e7bfd4d3254ae7796779800f5b603c43c60d",
     KitDistrict : {includeApps: ["voting"]},
-    District0xEmails: "0x3e6e8cdac0abab167644811b331594a500e8df7f",
     districtRegistryDb : {
       challengePeriodDuration : 0,
       commitPeriodDuration : 200, // seconds
@@ -113,14 +112,14 @@ module.exports = {
       skipDryRun: true
     },
     "infura-rinkeby": {
-      provider: () => new HDWalletProvider(process.env.MNENOMIC, "https://rinkeby.infura.io/v3/" + process.env.INFURA_API_KEY),
+      provider: () => new HDWalletProvider(process.env.MNENOMIC || process.env.PRIV_KEY, "https://rinkeby.infura.io/v3/" + process.env.INFURA_API_KEY),
       network_id: 4,
       gas: 6e6,
-      gasPrice: 6e9,
+      gasPrice: 1e9,
       skipDryRun: true
     },
     "infura-mainnet": {
-      provider: () => new HDWalletProvider(process.env.MNENOMIC, "https://mainnet.infura.io/v3/" + process.env.INFURA_API_KEY),
+      provider: () => new HDWalletProvider(process.env.MNENOMIC || process.env.PRIV_KEY, "https://mainnet.infura.io/v3/" + process.env.INFURA_API_KEY),
       network_id: 1,
       gas: 6e6,
       gasPrice: 4e9,
