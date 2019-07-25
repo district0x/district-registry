@@ -27,7 +27,7 @@
                  [district0x/district-server-config "1.0.1"]
                  [district0x/district-server-db "1.0.4"]
                  [district0x/district-server-graphql "1.0.15"]
-                 [district0x/district-server-logging "1.0.1"]
+                 [district0x/district-server-logging "1.0.5"]
                  [district0x/district-server-middleware-logging "1.0.0"]
                  [district0x/district-server-smart-contracts "1.0.15"]
                  [district0x/district-server-web3 "1.0.1"]
@@ -41,7 +41,7 @@
                  [district0x/district-ui-conversion-rates "1.0.1"]
                  [district0x/district-ui-graphql "1.0.9"]
                  [district0x/district-ui-ipfs "1.0.0"]
-                 [district0x/district-ui-logging "1.0.1"]
+                 [district0x/district-ui-logging "1.1.0"]
                  [district0x/district-ui-notification "1.0.1"]
                  [district0x/district-ui-now "1.0.1"]
                  [district0x/district-ui-reagent-render "1.0.1"]
@@ -86,7 +86,11 @@
   :less4clj {:target-path "resources/public/css-compiled"
              :source-paths ["resources/public/css"]}
 
-  :npm {:dependencies [[cors "2.8.4"]
+  :npm {:dependencies [["@sentry/node" "4.2.1"]
+                       [better-sqlite3 "5.4.0"]
+                       [chalk "2.3.0"]
+                       [eccjs "0.3.1"]
+                       [cors "2.8.4"]
                        [express "4.15.3"]
                        ;; needed until v0.6.13 is officially released
                        [express-graphql "./resources/libs/express-graphql-0.6.13.tgz"]
