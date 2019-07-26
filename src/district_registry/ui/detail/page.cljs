@@ -19,6 +19,7 @@
     [district.ui.component.page :refer [page]]
     [district.ui.component.tx-button :refer [tx-button]]
     [district.ui.graphql.subs :as gql]
+    [district.ui.ipfs.subs :as ipfs-subs]
     [district.ui.now.subs :as now-subs]
     [district.ui.router.subs :as router-subs]
     [district.ui.web3-account-balances.subs :as account-balances-subs]
@@ -91,11 +92,11 @@
     :reg-entry.status/blacklisted :blacklisted))
 
 
-(defn district-background [image-hash]
-  (when image-hash
-    (let [gateway (subscribe [::gql/query {:queries [[:config [[:ipfs [:gateway]]]]]}])]
-      (when-not (:graphql/loading? @gateway)
-        (if-let [url (-> @gateway :config :ipfs :gateway)]
+(defn district-background []
+  (let [ipfs (subscribe [::ipfs-subs/ipfs])]
+    (fn [image-hash]
+      (when image-hash
+        (when-let [url (:gateway @ipfs)]
           [:div.background-image {:style {:background-image (str "url('" (format/ensure-trailing-slash url) image-hash "')")}}
            [:img {:src "/images/district-bg-mask.png"}]])))))
 

@@ -9,6 +9,7 @@
     [district.format :as format]
     [district.ui.component.page :refer [page]]
     [district.ui.graphql.subs :as gql]
+    [district.ui.ipfs.subs :as ipfs-subs]
     [district.ui.router.subs :as router-subs]
     [district.ui.web3-accounts.subs :as account-subs]
     [re-frame.core :refer [subscribe dispatch]]
@@ -53,14 +54,12 @@
              [:district/balance-of {:staker active-account}]]]]])
 
 
-(defn district-image [image-hash]
-  (when image-hash
-    (let [gateway (subscribe [::gql/query
-                              {:queries [[:config
-                                          [[:ipfs [:gateway]]]]]}])]
-      (when-not (:graphql/loading? @gateway)
-        (if-let [url (-> @gateway :config :ipfs :gateway)]
-          [:img.district-image {:src (str (format/ensure-trailing-slash url) image-hash)}])))))
+(defn district-image []
+  (let [ipfs (subscribe [::ipfs-subs/ipfs])]
+   (fn [image-hash]
+     (when image-hash
+       (when-let [url (:gateway @ipfs)]
+         [:img.district-image {:src (str (format/ensure-trailing-slash url) image-hash)}])))))
 
 
 (defn district-tile [{:keys [:district/background-image-hash
