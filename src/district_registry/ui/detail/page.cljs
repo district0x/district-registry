@@ -4,9 +4,9 @@
     [cljsjs.bignumber]
     [clojure.string :as str]
     [district-registry.ui.components.app-layout :refer [app-layout]]
-    [district-registry.ui.components.donut-chart :refer [donut-chart]]
     [district-registry.ui.components.nav :as nav]
     [district-registry.ui.components.stake :as stake]
+    [district-registry.ui.contract.district :as district]
     [district-registry.ui.contract.registry-entry :as reg-entry]
     [district-registry.ui.events :as events]
     [district-registry.ui.not-found.page :as not-found]
@@ -35,6 +35,19 @@
 (def format-dnt (comp format/format-dnt web3-utils/wei->eth-number))
 (def format-number (comp format/format-number web3-utils/wei->eth-number))
 (def format-date (comp format/format-local-date gql-utils/gql-date->date))
+
+(def pie-chart (r/adapt-react-class (aget js/Recharts "PieChart")))
+(def pie (r/adapt-react-class (aget js/Recharts "Pie")))
+(def cell (r/adapt-react-class (aget js/Recharts "Cell")))
+(def line-chart (r/adapt-react-class (aget js/Recharts "LineChart")))
+(def x-axis (r/adapt-react-class (aget js/Recharts "XAxis")))
+(def y-axis (r/adapt-react-class (aget js/Recharts "YAxis")))
+(def cartesian-grid (r/adapt-react-class (aget js/Recharts "CartesianGrid")))
+(def tooltip (r/adapt-react-class (aget js/Recharts "Tooltip")))
+(def legend (r/adapt-react-class (aget js/Recharts "Legend")))
+(def line (r/adapt-react-class (aget js/Recharts "Line")))
+(def responsive-container (r/adapt-react-class (aget js/Recharts "ResponsiveContainer")))
+
 
 (defn build-query [{:keys [:district :active-account]}]
   [:district {:reg-entry/address district}
@@ -186,11 +199,69 @@
          :reg-entry/status status}]]]]))
 
 
+(defn- stake-history-line [{:keys [:key :stroke]}]
+  [line {:type "monotone"
+         :dataKey (name key)
+         :stroke stroke
+         :activeDot {:r 8}
+         :strokeWidth 2}])
+
+
+(defn stake-history-chart [{:keys [:reg-entry/address]}]
+  (let [query (subscribe [::gql/query {:queries [[:stake-history {:reg-entry/address address}
+                                                  [:stake-history/staked-on
+                                                   :stake-history/stake-id
+                                                   :stake-history/dnt-total-staked
+                                                   :stake-history/voting-token-total-supply]]]}
+                          {:refetch-on #{::district/approve-and-stake-for-success
+                                         ::district/unstake-success}}])
+        ]
+    (fn []
+      (let [data (->> (:stake-history @query)
+                   (map #(update % :stake-history/staked-on format-date))
+                   (map #(update % :stake-history/dnt-total-staked web3-utils/wei->eth-number))
+                   (map #(update % :stake-history/voting-token-total-supply web3-utils/wei->eth-number)))]
+        (if (pos? (count data))
+          [responsive-container
+           {:width "100%"
+            :height 244
+            :class "stake-history-chart"}
+           [line-chart
+            {:data data
+             :margin {:bottom 0 :left 0}}
+            [x-axis
+             {:tick {:fill "#47608e"}
+              :dataKey (name :stake-history/staked-on)}]
+            [y-axis
+             {:tick {:fill "#47608e"}}]
+            [cartesian-grid {:strokeDasharray "3 3"}]
+            [tooltip
+             {:formatter (fn [value label]
+                           (clj->js
+                             [(get {"voting-token-total-supply" (format/format-token value {:token "DVT"})
+                                    "dnt-total-staked" (format/format-dnt value)}
+                                   label)
+                              (get {"voting-token-total-supply" "Voting Token Total Supply"
+                                    "dnt-total-staked" "Total DNT Staked"}
+                                   label)]))
+              :labelFormatter (fn [label]
+                                label)}]
+            (stake-history-line
+              {:key :stake-history/dnt-total-staked
+               :stroke "#47608e"})
+            (stake-history-line
+              {:key :stake-history/voting-token-total-supply
+               :stroke "#75da1a"})]]
+          [:p "No one has staked into this district yet"])))))
+
+
 (defn stake-section [{:keys [:reg-entry/address :reg-entry/status :district/dnt-weight]}]
   [:div
    [:h2 "Stake"]
-   [:p
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+   [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+   [:h3 "Stake History"]
+   [stake-history-chart
+    {:reg-entry/address address}]
    [:h3 "Voting Token Issuance Curve"]
    [:img.spacer {:src (str "/images/curve-graph-" dnt-weight "-l.svg")}]
    [:div.stake
@@ -473,6 +544,21 @@
        :else "You haven't voted")]))
 
 
+(defn votes-chart [{:keys [:challenge/votes-include :challenge/votes-exclude]}]
+  [pie-chart {:width 150
+              :height 150
+              :class "votes-chart"}
+   [pie {:data [{:name "YES"
+                 :value votes-include}
+                {:name "NO"
+                 :value votes-exclude}]
+         :dataKey "value"
+         :nameKey "name"
+         :outerRadius 70}
+    [cell {:fill "#23fdd8"}]
+    [cell {:fill "#2c398f"}]]])
+
+
 (defn vote-results-section []
   (fn [{:keys [:reg-entry/address :reg-entry/deposit :district/name :reg-entry/creator]}
        {:keys [:challenge/index
@@ -550,10 +636,9 @@
             :vote/amount amount}]]]
         (when (or (pos? votes-include)
                   (pos? votes-exclude))
-          [donut-chart {:reg-entry/address address
-                        :challenge/index index
-                        :challenge/votes-include votes-include
-                        :challenge/votes-exclude votes-exclude}])]])))
+          [votes-chart
+           {:challenge/votes-include votes-include
+            :challenge/votes-exclude votes-exclude}])]])))
 
 
 (defn main [props]

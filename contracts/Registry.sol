@@ -20,7 +20,7 @@ contract Registry is DSAuth {
   event ChallengerRewardClaimedEvent(address registryEntry, uint version, uint index, address challenger, uint amount, uint timestamp);
   event CreatorRewardClaimedEvent(address registryEntry, uint version, uint index, address creator, uint amount, uint timestamp);
   event DistrictConstructedEvent(address registryEntry, uint version, address creator, bytes metaHash, uint deposit, uint challengePeriodEnd, uint32 dntWeight, address aragonDao, string aragonId, uint timestamp);
-  event DistrictStakeChangedEvent(address registryEntry, uint version, uint dntTotalStaked, uint votingTokenTotalSupply, address staker, uint stakerDntStaked, uint stakerVotingTokenBalance, uint stakedAmount, bool isUnstake, uint timestamp);
+  event DistrictStakeChangedEvent(address registryEntry, uint version, uint stakeId, uint dntTotalStaked, uint votingTokenTotalSupply, address staker, uint stakerDntStaked, uint stakerVotingTokenBalance, uint stakedAmount, bool isUnstake, uint timestamp);
   event DistrictMetaHashChangedEvent(address registryEntry, uint version, bytes metaHash, uint timestamp);
   event VotesReclaimedEvent(address registryEntry, uint version, uint index, address voter, uint amount, uint timestamp);
   event VoteCommittedEvent(address registryEntry, uint version, uint index, address voter, uint amount, uint commitPeriodEnd, uint timestamp);
@@ -155,11 +155,11 @@ contract Registry is DSAuth {
   {
     emit DistrictConstructedEvent(msg.sender, version, creator, metaHash, deposit, challengePeriodEnd, dntWeight, aragonDao, aragonId, now);
   }
-  function fireDistrictStakeChangedEvent(uint version, uint dntTotalStaked, uint votingTokenTotalSupply, address staker, uint stakerDntStaked, uint stakerVotingTokenBalance, uint stakedAmount, bool isUnstake)
+  function fireDistrictStakeChangedEvent(uint version, uint stakeId, uint dntTotalStaked, uint votingTokenTotalSupply, address staker, uint stakerDntStaked, uint stakerVotingTokenBalance, uint stakedAmount, bool isUnstake)
     public
     onlyRegistryEntry
   {
-    emit DistrictStakeChangedEvent(msg.sender, version, dntTotalStaked, votingTokenTotalSupply, staker, stakerDntStaked, stakerVotingTokenBalance, stakedAmount, isUnstake, now);
+    emit DistrictStakeChangedEvent(msg.sender, version, stakeId, dntTotalStaked, votingTokenTotalSupply, staker, stakerDntStaked, stakerVotingTokenBalance, stakedAmount, isUnstake, now);
   }
 
   function fireDistrictMetaHashChangedEvent(uint version, bytes metahash)

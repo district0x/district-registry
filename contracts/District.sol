@@ -89,10 +89,11 @@ contract District is RegistryEntry {
     public
   {
     require(registryToken.transferFrom(_user, address(this), _amount));
-    stakeBank.stakeFor(_user, _amount);
+    uint stakeId = stakeBank.stakeFor(_user, _amount);
     maybeAdjustStakeDelta(_user, int(_amount));
     registry.fireDistrictStakeChangedEvent(
       version,
+      stakeId,
       stakeBank.totalStaked(),
       stakeBank.totalSupply(),
       _user,
@@ -109,10 +110,11 @@ contract District is RegistryEntry {
     public
   {
     require(registryToken.transfer(msg.sender, _amount));
-    stakeBank.unstake(msg.sender, _amount);
+    uint stakeId = stakeBank.unstake(msg.sender, _amount);
     maybeAdjustStakeDelta(msg.sender, int(_amount) * -1);
     registry.fireDistrictStakeChangedEvent(
       version,
+      stakeId,
       stakeBank.totalStaked(),
       stakeBank.totalSupply(),
       msg.sender,

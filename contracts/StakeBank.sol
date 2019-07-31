@@ -26,7 +26,7 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
 
   uint256[128] private maxExpArray;
 
-  StakeBankCheckpoint[] private stakeHistory;
+  StakeBankCheckpoint[] public stakeHistory;
   mapping (address => StakeBankCheckpoint[]) private stakesFor;
 
   Power private power;
@@ -114,7 +114,7 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     updateStakeBankCheckpointAtNow(stakesFor[user], amount, false);
     updateStakeBankCheckpointAtNow(stakeHistory, amount, false);
     require(generateTokens(user, estimateReturnForStake(amount)));
-    return amount;
+    return stakeHistory.length - 1;
   }
 
   function unstake(address user, uint256 amount) public onlyOwner returns (uint) {
@@ -125,7 +125,7 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     require(destroyTokens(user, toDestroy));
     updateStakeBankCheckpointAtNow(stakesFor[user], amount, true);
     updateStakeBankCheckpointAtNow(stakeHistory, amount, true);
-    return amount;
+    return stakeHistory.length - 1;
   }
 
   function totalStakedFor(address addr) public view returns (uint256) {

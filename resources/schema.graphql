@@ -23,6 +23,8 @@ type Query {
 
   param(db: String!, key: String!): Param
   params(db: String!, keys: [String!]): [Param]
+
+  stakeHistory(regEntry_address: ID!, from: Date): [StakeHistory]
 }
 
 enum ParamChangesOrderBy {
@@ -169,9 +171,15 @@ type Param {
   param_value: Float
 }
 
-type Ipfs {
-  host: String
-  endpoint: String
-  gateway: String
+type StakeHistory {
+  regEntry_address: ID
+  stakeHistory_stakeId: ID
+  stakeHistory_staker: String
+  stakeHistory_stakedOn: Date
+  stakeHistory_dntTotalStaked: Float
+  stakeHistory_votingTokenTotalSupply: Float
+  stakeHistory_stakerDntStaked: Float
+  stakeHistory_stakerVotingTokenBalance: Float
+  stakeHistory_stakedAmount: Float
+  stakeHistory_unstake_: Boolean
 }
-

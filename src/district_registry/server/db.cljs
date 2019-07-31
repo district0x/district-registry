@@ -107,6 +107,7 @@
 
 (def stake-history-columns
   [[:reg-entry/address address not-nil]
+   [:stake-history/stake-id :unsigned :integer not-nil]
    [:stake-history/staker address not-nil]
    [:stake-history/staked-on :unsigned :integer not-nil]
    [:stake-history/dnt-total-staked :BIG :INT not-nil]

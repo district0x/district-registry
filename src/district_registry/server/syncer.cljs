@@ -214,6 +214,7 @@
 (defn stake-changed-event [_ {:keys [:args]}]
   (try-catch
     (let [{:keys [:registry-entry
+                  :stake-id
                   :staker-voting-token-balance
                   :staker-dnt-staked
                   :dnt-total-staked
@@ -228,6 +229,7 @@
          :district/total-supply (bn/number voting-token-total-supply)})
       (db/insert-stake-history!
         {:reg-entry/address registry-entry
+         :stake-history/stake-id (bn/number stake-id)
          :stake-history/staker staker
          :stake-history/staked-on timestamp
          :stake-history/dnt-total-staked (bn/number dnt-total-staked)
@@ -240,7 +242,7 @@
 
 (defn eternal-db-event [_ {:keys [:args :address]}]
   (try-catch
-    (let [{:keys [:records :values :timestamp]} args
+    (let [{:keys [:records :values :timestamp ]} args
           records->values (zipmap records values)
           keys->values (->> #{"challengePeriodDuration" "commitPeriodDuration" "revealPeriodDuration" "deposit"
                               "challengeDispensation" "voteQuorum" "maxTotalSupply" "maxAuctionDuration"}

@@ -47,7 +47,7 @@
 (defn get-stake-history [{:keys [:challenge/commit-period-end :stake-history/staker :reg-entry/address]} & [fields]]
   (let [query (cond-> {:select (or fields [:*])
                        :from [:stake-history]
-                       :order-by [[:stake-history/staked-on :desc]]
+                       :order-by [[:stake-history/stake-id :desc]]
                        :where [:= :reg-entry/address address]
                        :limit 1}
                 staker (sqlh/merge-where [:= :stake-history/staker staker])
@@ -89,6 +89,7 @@
     [:< now :c.challenge/reveal-period-end] (enum :reg-entry.status/reveal-period)
     [:or
      [:< :c.challenge/votes-exclude
+      ;; Count staked DNT as votes-include
       (sql/raw
         (str (sql-format/*name-transform-fn* (cljs-utils/kw->str :c.challenge/votes-include)) " + ("
              (first (sql/format
@@ -142,7 +143,7 @@
 (defn search-param-changes-query-resolver [_ {:keys [:key :db :order-by :order-dir :group-by :first :after]
                                               :or {order-dir :asc}
                                               :as args}]
-  (log/info "search-param-changes args" args)
+  (log/debug "search-param-changes args" args)
   (try-catch-throw
     (let [db (if (contains? #{"districtRegistryDb" "paramChangeRegistryDb"} db)
                (smart-contracts/contract-address (graphql-utils/gql-name->kw db))
@@ -206,6 +207,17 @@
                                      [:in :param-changes.param-change/key keys]]
                              :order-by [:param-changes.param-change/applied-on]})]
       (log/debug "params-query-resolver" sql-query)
+      sql-query)))
+
+
+(defn stake-history-resolver [_ {:keys [:reg-entry/address :from]
+                                 :as args}]
+  (log/info "stake-history-resolver args" args)
+  (try-catch-throw
+    (let [sql-query (db/all {:select [:*]
+                             :from [:stake-history]
+                             :order-by [[:stake-history/stake-id :asc]]
+                             :where [:= :reg-entry/address address]})]
       sql-query)))
 
 
@@ -377,13 +389,15 @@
              :where [:= :challenges.reg-entry/address address]
              :order-by [[:challenges.challenge/index :asc]]})))
 
+
 (def Query
   {:district district-query-resolver
    :search-districts search-districts-query-resolver
    :param-change param-change-query-resolver
    :search-param-changes search-param-changes-query-resolver
    :param param-query-resolver
-   :params params-query-resolver})
+   :params params-query-resolver
+   :stake-history stake-history-resolver})
 
 
 (def RegEntry
