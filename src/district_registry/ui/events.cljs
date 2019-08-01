@@ -1,7 +1,9 @@
 (ns district-registry.ui.events
   (:require
+    [cljs.reader :as reader]
     [cljsjs.buffer]
     [clojure.string :as string]
+    [district-registry.shared.utils :as shared-utils]
     [district-registry.ui.config :as config]
     [district-registry.ui.contract.district-factory :as district-factory]
     [district-registry.ui.contract.registry-entry :as registry-entry]
@@ -159,3 +161,27 @@
   (fn [{:keys [store db]} [account encrypted-email]]
     {:store (assoc-in store [:district-registry.ui.my-account account :encrypted-email] encrypted-email)
      :db (assoc-in db [:district-registry.ui.my-account account :encrypted-email] encrypted-email)}))
+
+
+(re-frame/reg-event-fx
+  ::backup-vote-secrets
+  [interceptors (re-frame/inject-cofx :store)]
+  (fn [{:keys [:store]} [{:keys [:file/filename]}]]
+    (let [filename "district_registry_vote_secrets.edn"
+          votes (str (:district-registry.ui.core/votes store))]
+      {:file/write [filename votes]})))
+
+
+(re-frame/reg-event-fx
+  ::import-vote-secrets
+  [interceptors (re-frame/inject-cofx :store)]
+  (fn [{:keys [:db :store]} [data-string]]
+    (let [votes (reader/read-string data-string)]
+      {:store (assoc store :district-registry.ui.core/votes votes)
+       :db (assoc db :district-registry.ui.core/votes votes)})))
+
+
+(re-frame/reg-fx
+  :file/write
+  (fn [[filename content]]
+    (shared-utils/file-write filename content)))

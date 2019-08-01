@@ -14,3 +14,9 @@
   (let [dbnc (Debouncer. f interval)]
     ;; We use apply here to support functions of various arities
     (fn [& args] (.apply (.-fire dbnc) dbnc (to-array args)))))
+
+(defn file-write [filename content & [mime-type]]
+  (js/saveAs (new js/Blob
+                  (clj->js [content])
+                  (clj->js {:type (or mime-type (str "application/plain;charset=UTF-8"))}))
+             filename))

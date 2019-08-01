@@ -706,7 +706,7 @@ form {
       display: inline-block;
       margin-top: -6px;
     }
-    .cta-btn {
+    .cta-btn, .dropzone {
       font-size: 13px;
       padding: 12px 20px;
       text-decoration: none;
@@ -1630,6 +1630,12 @@ nav.subnav {
     font-size: 13px;
   }
 
+  #page-my-account {
+    nav.subnav .cta-btn {
+      width: 111px;
+    }
+  }
+
   #page-registry {
     background-color: #eff1f9;
     .bg-wrap {
@@ -2124,4 +2130,8 @@ input[type=number] {
   margin-bottom: 50px;
   margin-right: 0;
   margin-top: 0;
+}
+
+.backup-vote-secrets-btn {
+  margin-bottom: 20px;
 }

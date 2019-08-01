@@ -2,6 +2,7 @@
   (:require
     [akiroz.re-frame.storage :as storage]
     [cljs.spec.alpha :as s]
+    [cljsjs.filesaverjs]
     [cljsjs.recharts]
     [day8.re-frame.async-flow-fx]
     [district-registry.shared.graphql-schema :refer [graphql-schema]]

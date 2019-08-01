@@ -7,6 +7,7 @@
                  [cljs-web3 "0.19.0-0-10"]
                  [cljsjs/bignumber "4.1.0-0"]
                  [cljsjs/buffer "5.1.0-1"]
+                 [cljsjs/filesaverjs "1.3.3-0"]
                  [cljsjs/react "16.5.2-0"]
                  [cljsjs/react-dom "16.5.2-0"]
                  [cljsjs/recharts "1.6.2-0"]
