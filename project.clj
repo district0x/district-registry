@@ -62,6 +62,7 @@
                  [district0x/error-handling "1.0.4"]
                  [district0x/re-frame-ipfs-fx "0.0.2"]
                  [funcool/bide "1.6.1-SNAPSHOT"]
+                 [jamesmacaulay/cljs-promises "0.1.0"]
                  [medley "1.0.0"]
                  [mount "0.1.12"]
                  [org.clojure/clojurescript "1.10.439"]
