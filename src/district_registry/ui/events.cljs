@@ -7,6 +7,7 @@
     [district-registry.ui.config :as config]
     [district-registry.ui.contract.district-factory :as district-factory]
     [district-registry.ui.contract.registry-entry :as registry-entry]
+    [district.cljs-utils :as cljs-utils]
     [district.encryption :as encryption]
     [district.ui.logging.events :as logging]
     [district.ui.smart-contracts.queries :as contract-queries]
@@ -177,8 +178,8 @@
   [interceptors (re-frame/inject-cofx :store)]
   (fn [{:keys [:db :store]} [data-string]]
     (let [votes (reader/read-string data-string)]
-      {:store (assoc store :district-registry.ui.core/votes votes)
-       :db (assoc db :district-registry.ui.core/votes votes)})))
+      {:store (update store :district-registry.ui.core/votes cljs-utils/merge-in votes)
+       :db (update db :district-registry.ui.core/votes cljs-utils/merge-in votes)})))
 
 
 (re-frame/reg-fx

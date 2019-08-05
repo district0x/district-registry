@@ -359,6 +359,14 @@
         [:div
          [:h2 "Vote"]
          [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+         [:p "If you want to be notified when you need to reveal vote, you can provide your "
+          [nav/a {:route [:route/my-account {:tab "email"}]}
+           "email."]]
+         [:p
+          "Make sure you "
+          [nav/a {:route [:route/my-account {:tab "vote-secrets"}]}
+           "backup"]
+          " your vote secrets regularly."]
          [:form.voting
           [challenger-comment challange]
           [:div.row.spaced
