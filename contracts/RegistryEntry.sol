@@ -41,7 +41,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
   }
 
   function isChallengePeriodActive()
-  internal
+  public
   constant
   returns (bool) {
     return now <= challengePeriodEnd;
@@ -129,19 +129,19 @@ contract RegistryEntry is ApproveAndCallFallBack {
     );
   }
 
-  function isChallengeable() internal constant returns (bool) {
+  function isChallengeable() public constant returns (bool) {
     return isChallengePeriodActive() && challenges.length == 0;
   }
 
-  function currentChallengeIndex() internal constant returns (uint) {
+  function currentChallengeIndex() public constant returns (uint) {
     return challenges.length - 1;
   }
 
-  function getChallenge(uint _challengeIndex) internal view returns (Challenge) {
+  function getChallenge(uint _challengeIndex) public view returns (Challenge) {
     return Challenge(challenges[_challengeIndex]);
   }
 
-  function currentChallenge() internal view returns (Challenge) {
+  function currentChallenge() public view returns (Challenge) {
     return getChallenge(currentChallengeIndex());
   }
 

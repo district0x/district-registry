@@ -9,6 +9,7 @@
     [district-registry.server.graphql-resolvers :refer [resolvers-map]]
     [district-registry.shared.graphql-schema :refer [graphql-schema]]
     [district-registry.tests.smart-contracts.deployment-tests]
+    [district-registry.tests.smart-contracts.district-tests]
     [district-registry.tests.smart-contracts.utils :as test-utils]
     [district.graphql-utils :as graphql-utils]
     [district.server.graphql :as graphql]
@@ -38,7 +39,8 @@
     ((test-utils/create-before-fixture))
     (log/info "Running tests" ::deploy-contracts-and-run-tests)
     (cljs.test/run-tests
-     'district-registry.tests.smart-contracts.deployment-tests)))
+      #_ 'district-registry.tests.smart-contracts.deployment-tests
+      'district-registry.tests.smart-contracts.district-tests)))
 
 (defn deploy-contracts-and-run-tests
   "Redeploy smart contracts with truffle"
@@ -46,11 +48,12 @@
   (log/warn "Redeploying contracts, please be patient..." ::redeploy)
   (let [child (spawn "truffle migrate --network ganache --f 2 --to 3" (clj->js {:stdio "inherit" :shell true}))]
     (-> child
-        (.on "close" (fn []
-                       ;; Give it some time to write smart_contracts.cljs
-                       ;; if we remove the timeout, it start mount components while we still have the old smart_contract.cljs
-                       (js/setTimeout #(start-and-run-tests) 5000))))))
+      (.on "close" (fn []
+                     ;; Give it some time to write smart_contracts.cljs
+                     ;; if we remove the timeout, it start mount components while we still have the old smart_contract.cljs
+                     (js/setTimeout #(start-and-run-tests) 5000))))))
 
 (cljs-promises.async/extend-promises-as-pair-channels!)
 #_ (deploy-contracts-and-run-tests)
-#_(start-and-run-tests)
+(start-and-run-tests)
+

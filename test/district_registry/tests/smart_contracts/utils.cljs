@@ -20,8 +20,7 @@
     (let [args {:web3 {:port 8549}
                 :smart-contracts {:contracts-var #'smart-contracts
                                   :auto-mining? true}
-                :time-source :blockchain
-                :ranks-cache {:ttl (t/in-millis (t/minutes 60))}}]
+                :time-source :blockchain}]
       (-> (mount/with-args args)
           (mount/only [#'district.server.web3/web3
                        #'district.server.smart-contracts/smart-contracts])

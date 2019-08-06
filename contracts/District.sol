@@ -137,7 +137,7 @@ contract District is RegistryEntry {
   }
 
   function isChallengeable()
-    internal view returns (bool) {
+    public view returns (bool) {
     return isChallengePeriodActive() &&
       (challenges.length == 0 ||
        currentChallenge().status() == Challenge.Status.Whitelisted);

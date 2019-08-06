@@ -13,8 +13,8 @@ contract DistrictFactory is RegistryEntryFactory {
   uint public constant version = 1;
 
   constructor(Registry _registry, MiniMeToken _registryToken)
-    public
-    RegistryEntryFactory(_registry, _registryToken)
+  public
+  RegistryEntryFactory(_registry, _registryToken)
   {
   }
 
@@ -28,7 +28,7 @@ contract DistrictFactory is RegistryEntryFactory {
     uint32 _dntWeight,
     string _aragonId
   )
-    public
+  public
   {
     District district = District(createRegistryEntry(_creator));
     district.construct(

@@ -292,7 +292,7 @@ async function deploy_District(deployer, opts) {
   linkBytecode(District, forwarder2TargetPlaceholder, stakeBank.address);
   linkBytecode(District, kitDistrictPlaceholder, kitDistrict.address);
 
-  await deployer.deploy(District, Object.assign({}, opts, {gas: 6e6}));
+  await deployer.deploy(District, Object.assign({}, opts, {gas: 6.2e6}));
   const district = await District.deployed();
 
   assignContract(district, "District", "district");
@@ -310,7 +310,7 @@ async function deploy_ParamChange(deployer, opts) {
   linkBytecode(ParamChange, registryPlaceholder, paramChangeRegistryForwarder.address);
   linkBytecode(ParamChange, forwarder1TargetPlaceholder, challenge.address);
 
-  await deployer.deploy(ParamChange, Object.assign({}, opts, {gas: 4.9e6}));
+  await deployer.deploy(ParamChange, Object.assign({}, opts, {gas: 5.2e6}));
   const paramChange = await ParamChange.deployed();
 
   assignContract(paramChange, "ParamChange", "param-change");
