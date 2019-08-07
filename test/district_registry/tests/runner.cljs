@@ -10,6 +10,7 @@
     [district-registry.shared.graphql-schema :refer [graphql-schema]]
     [district-registry.tests.smart-contracts.deployment-tests]
     [district-registry.tests.smart-contracts.district-tests]
+    [district-registry.tests.smart-contracts.registry-entry-tests]
     [district-registry.tests.smart-contracts.utils :as test-utils]
     [district.graphql-utils :as graphql-utils]
     [district.server.graphql :as graphql]
@@ -39,7 +40,8 @@
     ((test-utils/create-before-fixture))
     (log/info "Running tests" ::deploy-contracts-and-run-tests)
     (cljs.test/run-tests
-      #_ 'district-registry.tests.smart-contracts.deployment-tests
+      'district-registry.tests.smart-contracts.deployment-tests
+      'district-registry.tests.smart-contracts.registry-entry-tests
       'district-registry.tests.smart-contracts.district-tests)))
 
 (defn deploy-contracts-and-run-tests
@@ -54,6 +56,6 @@
                      (js/setTimeout #(start-and-run-tests) 5000))))))
 
 (cljs-promises.async/extend-promises-as-pair-channels!)
-#_ (deploy-contracts-and-run-tests)
+#_(deploy-contracts-and-run-tests)
 (start-and-run-tests)
 

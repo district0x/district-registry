@@ -10,6 +10,15 @@
 
 (def vote-option->num (set/map-invert vote-option->kw))
 
+(def reg-entry-status->kw
+  {0 :reg-entry.status/challenge-period
+   1 :reg-entry.status/commit-period
+   2 :reg-entry.status/reveal-period
+   3 :reg-entry.status/blacklisted
+   4 :reg-entry.status/whitelisted})
+
+(def reg-entry-status->num (set/map-invert reg-entry-status->kw))
+
 (defn debounce [f interval]
   (let [dbnc (Debouncer. f interval)]
     ;; We use apply here to support functions of various arities

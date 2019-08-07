@@ -64,5 +64,11 @@
 (defn creator-reward-claimed-event-in-tx [contract-key tx-hash & args]
   (apply contract-event-in-tx tx-hash contract-key :CreatorRewardClaimedEvent args))
 
+(defn district-stake-changed-event-in-tx [contract-key tx-hash & args]
+  (apply contract-event-in-tx tx-hash contract-key :DistrictStakeChangedEvent args))
+
+(defn district-meta-hash-changed-event-in-tx [contract-key tx-hash & args]
+  (apply contract-event-in-tx tx-hash contract-key :DistrictMetaHashChangedEvent args))
+
 (defn is-factory? [contract-key factory]
   (contract-call contract-key :is-factory [factory]))

@@ -31,8 +31,8 @@
   (contract-call [:district contract-addr] :challenge-period-end))
 
 
-(defn challenges [contract-addr]
-  (contract-call [:district contract-addr] :challenges))
+(defn challenges [contract-addr index]
+  (contract-call [:district contract-addr] :challenges [index]))
 
 
 (defn is-challenge-period-active? [contract-addr]
