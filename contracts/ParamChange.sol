@@ -15,16 +15,17 @@ import "./ParamChangeRegistry.sol";
 
 contract ParamChange is RegistryEntry {
 
-  ParamChangeRegistry internal constant registry = ParamChangeRegistry(0xfEEDFEEDfeEDFEedFEEdFEEDFeEdfEEdFeEdFEEd);
+  ParamChangeRegistry public constant registry = ParamChangeRegistry(0xfEEDFEEDfeEDFEedFEEdFEEDFeEdfEEdFeEdFEEd);
   EternalDb public db;
-  string private key;
-  EternalDb.Types private valueType;
-  uint private value;
-  uint private originalValue;
-  uint private appliedOn;
+  string public key;
+  EternalDb.Types public valueType;
+  uint public value;
+  uint public originalValue;
+  uint public appliedOn;
+  bytes public metaHash;
 
   function isChangeAllowed(ParamChangeRegistry registry, bytes32 record, uint _value)
-    private
+    public
     constant
     returns (bool) {
 
@@ -56,13 +57,15 @@ contract ParamChange is RegistryEntry {
    * @param _db EternalDb change will be applied to
    * @param _key Key of a changed parameter
    * @param _value New value of a parameter
+   * @param _metaHash The ipfs hash of the param change meta
    */
   function construct(
     address _creator,
     uint _version,
     address _db,
     string _key,
-    uint _value
+    uint _value,
+    bytes _metaHash
   )
     external
   {
@@ -72,6 +75,7 @@ contract ParamChange is RegistryEntry {
     db = EternalDb(_db);
     key = _key;
     value = _value;
+    metaHash = _metaHash;
     valueType = EternalDb.Types.UInt;
     originalValue = db.getUIntValue(record);
     registry.fireParamChangeConstructedEvent(
@@ -81,7 +85,8 @@ contract ParamChange is RegistryEntry {
       _key,
       value,
       deposit,
-      challengePeriodEnd
+      challengePeriodEnd,
+      metaHash
     );
   }
 
@@ -99,8 +104,8 @@ contract ParamChange is RegistryEntry {
     notEmergency
   {
     require(db.getUIntValue(keccak256(abi.encodePacked(key))) == originalValue);
-    require(appliedOn < 0);
-    require(currentChallenge().isWhitelisted());
+    require(appliedOn == 0);
+    require(isWhitelisted());
     require(registryToken.transfer(creator, deposit));
 
     db.setUIntValue(keccak256(abi.encodePacked(key)), value);

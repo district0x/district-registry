@@ -145,6 +145,18 @@ contract RegistryEntry is ApproveAndCallFallBack {
     return getChallenge(currentChallengeIndex());
   }
 
+  function isWhitelisted() public constant returns (bool) {
+    if (challenges.length == 0) {
+      if (isChallengePeriodActive()) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return currentChallenge().isWhitelisted();
+    }
+  }
+
 
   /**
    * @dev Commits encrypted vote to challenged entry

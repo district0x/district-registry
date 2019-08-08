@@ -310,7 +310,7 @@ async function deploy_ParamChange(deployer, opts) {
   linkBytecode(ParamChange, registryPlaceholder, paramChangeRegistryForwarder.address);
   linkBytecode(ParamChange, forwarder1TargetPlaceholder, challenge.address);
 
-  await deployer.deploy(ParamChange, Object.assign({}, opts, {gas: 5.2e6}));
+  await deployer.deploy(ParamChange, Object.assign({}, opts, {gas: 5.8e6}));
   const paramChange = await ParamChange.deployed();
 
   assignContract(paramChange, "ParamChange", "param-change");

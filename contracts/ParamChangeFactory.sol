@@ -25,7 +25,8 @@ contract ParamChangeFactory is RegistryEntryFactory {
     address _creator,
     address _db,
     string _key,
-    uint _value
+    uint _value,
+    bytes _metaHash
   )
   public
   {
@@ -36,7 +37,8 @@ contract ParamChangeFactory is RegistryEntryFactory {
       version,
       _db,
       _key,
-      _value
+      _value,
+      _metaHash
     );
   }
 }

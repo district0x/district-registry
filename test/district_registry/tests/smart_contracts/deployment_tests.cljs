@@ -59,11 +59,11 @@
                                                :dst (contract-address :param-change-registry-db)
                                                :sig ds-guard/ANY}))))
 
-          (is (<? (registry/is-factory? :district-registry-fwd
-                                        (contract-address :district-factory))))
+          (is (<? (registry/factory? :district-registry-fwd
+                                     (contract-address :district-factory))))
 
-          (is (<? (registry/is-factory? :param-change-registry-fwd
-                                        (contract-address :param-change-factory))))
+          (is (<? (registry/factory? :param-change-registry-fwd
+                                     (contract-address :param-change-factory))))
 
           (is (bn/< 0 (<? (dnt/balance-of addr0))))
 

@@ -15,6 +15,14 @@ contract RegistryEntryFactory is ApproveAndCallFallBack {
   MiniMeToken public registryToken;
   bytes32 public constant depositKey = keccak256("deposit");
 
+  /**
+   * @dev Modifier that disables function if registry is in emergency state
+   */
+  modifier notEmergency() {
+    require(!registry.isEmergency());
+    _;
+  }
+
   constructor(Registry _registry, MiniMeToken _registryToken) public {
     registry = _registry;
     registryToken = _registryToken;
@@ -29,7 +37,11 @@ contract RegistryEntryFactory is ApproveAndCallFallBack {
    * @param _creator Creator of registry entry
    * @return Address of a new registry entry forwarder contract
    */
-  function createRegistryEntry(address _creator) internal returns (address) {
+  function createRegistryEntry(address _creator)
+  notEmergency
+  internal
+  returns (address)
+  {
     uint deposit = registry.db().getUIntValue(depositKey);
     address regEntry = new Forwarder1();
     require(registryToken.transferFrom(_creator, this, deposit));

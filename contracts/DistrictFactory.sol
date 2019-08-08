@@ -29,6 +29,7 @@ contract DistrictFactory is RegistryEntryFactory {
     string _aragonId
   )
   public
+  notEmergency
   {
     District district = District(createRegistryEntry(_creator));
     district.construct(

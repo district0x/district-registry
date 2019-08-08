@@ -8,6 +8,7 @@
     [cljs.test :refer-macros [deftest is testing use-fixtures async]]
     [clojure.core.async :refer [<! go]]
     [district-registry.server.contract.challenge :as challenge]
+    [district-registry.server.contract.dnt :as dnt]
     [district-registry.server.contract.eternal-db :as eternal-db]
     [district-registry.server.contract.registry :as registry]
     [district-registry.server.contract.registry-entry :as registry-entry]
@@ -200,18 +201,22 @@
                  (bn/number (web3-utils/eth->wei 1)))))
 
         (testing "Can claim vote reward"
-          (let [tx (<? (registry-entry/claim-reward registry-entry {:from voter}))
+          (let [previous-balance (<? (dnt/balance-of voter))
+                tx (<? (registry-entry/claim-reward registry-entry {:from voter}))
                 vote-reward-event-args (:args (registry/vote-reward-claimed-event-in-tx :district-registry-fwd tx))]
 
+            (is (bn/< previous-balance (<? (dnt/balance-of voter))))
             (is (= voter (:voter vote-reward-event-args)))
             (is (= (web3-utils/wei->eth-number (:amount vote-reward-event-args))
                    (/ (web3-utils/wei->eth-number deposit) 2)))
             (is (true? (<? (challenge/is-vote-reward-claimed? challenge voter))))))
 
         (testing "Can claim challenger reward"
-          (let [tx (<? (registry-entry/claim-reward registry-entry {:from challenger}))
+          (let [previous-balance (<? (dnt/balance-of challenger))
+                tx (<? (registry-entry/claim-reward registry-entry {:from challenger}))
                 challenger-reward-event-args (:args (registry/challenger-reward-claimed-event-in-tx :district-registry-fwd tx))]
 
+            (is (bn/< previous-balance (<? (dnt/balance-of challenger))))
             (is (= challenger (:challenger challenger-reward-event-args)))
             (is (= (web3-utils/wei->eth-number (:amount challenger-reward-event-args))
                    (+ (/ (web3-utils/wei->eth-number deposit) 2)

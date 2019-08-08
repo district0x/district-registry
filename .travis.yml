@@ -2,7 +2,7 @@ dist: xenial
 language: clojure
 node_js:
 - '11'
-script: echo "No tests exist in this project" #lein doo node "server-tests" once
+script: lein doo node "server-tests" once
 notifications:
   slack:
     on_success: always
@@ -17,9 +17,9 @@ before_script:
   - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
   - sudo apt-get install -y nodejs
   - sudo npm install -g truffle
-  - truffle compile --all
   - npm install -g ganache-cli
-  - ganache-cli -p 8549 > /dev/null &
+  - ganache-cli -p 8549 -l 80000000 --allowUnlimitedContractSize -d -m district0x > /dev/null &
+  - truffle migrate --network ganache --f 2 --to 3
 env:
   global:
   - secure: Nio+lEZzY5Kdn5Z7UUScZwPrdUOZgv1GfvE4u9W5+2mmnckdMLtmtxhOd/vM4oPXqHbckYsC9DKBgwvZKQ18laZEQpzyNGXMjjDMAuHtpCv3m8MBJQ/tFJDUyig1PnqSSml2bMtKsrj6tjJZUkp57vLiErcrRabwAxYe+TpeV7AXq80IQUnuQf4g2lcseK3yMN9HQou0jrZubctO1erF5ncOagXtA/YXEST03YxP3s4o1eF2SfqASbpdPREQ+16ieqRar9ny8JkdshdPuVj+5iC5IALEKIrKUiWqQ+ibiepmLjItg+1RGoIW6Fwjon0Ej+d8WGLyjGTMWB8ZVWQ5loYjntJ/HYo75KV8bn/mp/l6awQAia41bV8A3hpGQ8MCa1Y5XIE+SlK3XXfHN7V4Ifc3DR7au0ZQC7jO/aJeS3Q7vg2NXOoan0AiDDfwAayau8DZZ4M7ssj2Rh8aH44ca6dpZQA1TGuLbFGfMd9jNpyTujcb12JlCYvx2fw8lvM2aYycy4GbmOT2fP3658xvzpQY0EFTPtOizztVzz07KgjPmC9/7cC9yl+lssZCpyrkLWc1sLkdjpkXJMQwefdgoItW92yc/qlWJSZKJwpgtOMbcGvt1sp4OAg1IGbyWqnqhbLbs4wY3jmjw9O7fFDgDlnnIuMD1Stcp7dXGsnlSd8=

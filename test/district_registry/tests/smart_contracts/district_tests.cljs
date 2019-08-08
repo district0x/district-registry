@@ -7,18 +7,18 @@
     [cljs-web3.evm :as web3-evm]
     [cljs.test :refer-macros [deftest is testing use-fixtures async]]
     [clojure.core.async :refer [<! go]]
+    [district-registry.server.contract.challenge :as challenge]
     [district-registry.server.contract.district :as district]
     [district-registry.server.contract.eternal-db :as eternal-db]
     [district-registry.server.contract.registry :as registry]
+    [district-registry.server.contract.registry-entry :as registry-entry]
     [district-registry.server.contract.stake-bank :as stake-bank]
     [district-registry.shared.utils :refer [vote-option->kw reg-entry-status->kw]]
     [district-registry.tests.smart-contracts.utils :refer [create-district tx-error?]]
     [district.cljs-utils :as cljs-utils]
     [district.server.web3 :refer [web3]]
     [district.web3-utils :refer [eth->wei-number eth->wei]]
-    [print.foo :include-macros true :refer [look]]
-    [district-registry.server.contract.registry-entry :as registry-entry]
-    [district-registry.server.contract.challenge :as challenge]))
+    [print.foo :include-macros true :refer [look]]))
 
 (def meta-hash1 "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH")
 (def meta-hash2 "QmdsBbZgkwTJgaxfGgegGxLJW72RjU1bpWzvMe1vXxXEGf")

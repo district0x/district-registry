@@ -10,7 +10,10 @@
     [district-registry.shared.graphql-schema :refer [graphql-schema]]
     [district-registry.tests.smart-contracts.deployment-tests]
     [district-registry.tests.smart-contracts.district-tests]
+    [district-registry.tests.smart-contracts.kit-district-tests]
+    [district-registry.tests.smart-contracts.param-change-tests]
     [district-registry.tests.smart-contracts.registry-entry-tests]
+    [district-registry.tests.smart-contracts.registry-tests]
     [district-registry.tests.smart-contracts.utils :as test-utils]
     [district.graphql-utils :as graphql-utils]
     [district.server.graphql :as graphql]
@@ -42,7 +45,10 @@
     (cljs.test/run-tests
       'district-registry.tests.smart-contracts.deployment-tests
       'district-registry.tests.smart-contracts.registry-entry-tests
-      'district-registry.tests.smart-contracts.district-tests)))
+      'district-registry.tests.smart-contracts.district-tests
+      'district-registry.tests.smart-contracts.registry-tests
+      'district-registry.tests.smart-contracts.kit-district-tests
+      'district-registry.tests.smart-contracts.param-change-tests)))
 
 (defn deploy-contracts-and-run-tests
   "Redeploy smart contracts with truffle"

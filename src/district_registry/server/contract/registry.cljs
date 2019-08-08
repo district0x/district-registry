@@ -10,6 +10,12 @@
 (defn set-factory [contract-key {:keys [:factory :factory?]} & [opts]]
   (contract-call contract-key :set-factory [factory factory?] (merge opts {:gas 100000})))
 
+(defn add-registry-entry [contract-key reg-entry & [opts]]
+  (contract-call contract-key :set-factory [reg-entry] (merge opts {:gas 100000})))
+
+(defn set-emergency [contract-key emergency? & [opts]]
+  (contract-call contract-key :set-emergency [emergency?] (merge opts {:gas 100000})))
+
 (defn challenge-created-event [contract-key opts on-event]
   (create-event-filter contract-key :ChallengeCreatedEvent {} opts on-event))
 
@@ -70,5 +76,11 @@
 (defn district-meta-hash-changed-event-in-tx [contract-key tx-hash & args]
   (apply contract-event-in-tx tx-hash contract-key :DistrictMetaHashChangedEvent args))
 
-(defn is-factory? [contract-key factory]
+(defn factory? [contract-key factory]
   (contract-call contract-key :is-factory [factory]))
+
+(defn registry-entry? [contract-key reg-entry]
+  (contract-call contract-key :is-registry-entry [reg-entry]))
+
+(defn emergency? [contract-key]
+  (contract-call contract-key :is-emergency))

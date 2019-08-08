@@ -19,6 +19,13 @@
 
 (def reg-entry-status->num (set/map-invert reg-entry-status->kw))
 
+(def kit-district-app->kw
+  {0 :voting
+   1 :vault
+   2 :finance})
+
+(def kit-district-app->num (set/map-invert kit-district-app->kw))
+
 (defn debounce [f interval]
   (let [dbnc (Debouncer. f interval)]
     ;; We use apply here to support functions of various arities

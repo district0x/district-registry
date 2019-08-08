@@ -12,8 +12,8 @@ import "./auth/DSGuard.sol";
 
 contract ParamChangeRegistry is Registry {
 
-  event ParamChangeConstructedEvent(address registryEntry, uint version, address creator, address db, string key, uint value, uint deposit, uint challengePeriodEnd);
-  event ParamChangeAppliedEvent(address registryEntry, uint version);
+  event ParamChangeConstructedEvent(address registryEntry, uint version, address creator, address db, string key, uint value, uint deposit, uint challengePeriodEnd, bytes metaHash, uint timestamp);
+  event ParamChangeAppliedEvent(address registryEntry, uint version, uint timestamp);
 
   /**
    * @dev Gives ParamChange contract temporary permission to apply its parameter changes into EthernalDb
@@ -39,19 +39,20 @@ contract ParamChangeRegistry is Registry {
     string key,
     uint value,
     uint deposit,
-    uint challengePeriodEnd
+    uint challengePeriodEnd,
+    bytes metaHash
   )
     public
     onlyRegistryEntry
   {
-    emit ParamChangeConstructedEvent(msg.sender, version, creator, _db, key, value, deposit, challengePeriodEnd);
+    emit ParamChangeConstructedEvent(msg.sender, version, creator, _db, key, value, deposit, challengePeriodEnd, metaHash, now);
   }
 
   function fireParamChangeAppliedEvent(uint version)
     public
     onlyRegistryEntry
   {
-    emit ParamChangeAppliedEvent(msg.sender, version);
+    emit ParamChangeAppliedEvent(msg.sender, version, now);
   }
 }
 
