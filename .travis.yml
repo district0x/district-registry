@@ -15,7 +15,6 @@ before_install:
 before_script:
   - nvm use 11.0.0
   - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-  - sudo apt-get install -y nodejs
   - sudo npm install -g truffle
   - npm install -g ganache-cli
   - ganache-cli -p 8549 -l 80000000 --allowUnlimitedContractSize -d -m district0x > /dev/null &
