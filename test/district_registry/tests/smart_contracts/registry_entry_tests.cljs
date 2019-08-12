@@ -173,8 +173,7 @@
                                                      :salt salt}
                                                     {:from voter}))
 
-        (print.foo/look (web3-evm/increase-time! @web3 [(inc commit-period-duration)]))
-        (println "commit period duration: " commit-period-duration)
+        (web3-evm/increase-time! @web3 [(inc commit-period-duration)])
 
         (testing "Is challenge status correct during reveal period"
           (is (= (reg-entry-status->kw (bn/number (<? (challenge/status challenge))))
