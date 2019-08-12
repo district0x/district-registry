@@ -15,6 +15,7 @@
     [district-registry.shared.utils :refer [vote-option->kw reg-entry-status->kw]]
     [district-registry.tests.smart-contracts.utils :refer [create-district]]
     [district.cljs-utils :as cljs-utils]
+    [district.format :as format]
     [district.server.web3 :refer [web3]]
     [district.web3-utils :as web3-utils]
     [print.foo :include-macros true :refer [look]]))
@@ -58,7 +59,7 @@
     (go
       (let [[creator challenger voter] (web3-eth/accounts @web3)
             [deposit commit-period-duration reveal-period-duration] (->> (<? (eternal-db/get-uint-values :district-registry-db [:deposit :commit-period-duration :reveal-period-duration]))
-                                                                         (map bn/number))
+                                                                      (map bn/number))
             aragon-id (cljs-utils/rand-str 10)
             salt (cljs-utils/rand-str 10)
             event-args (<! (create-district creator deposit meta-hash1 1000000 aragon-id))
@@ -75,7 +76,7 @@
               (is (= challenger (:challenger challenge-event-args)))
               (is (= meta-hash (web3/to-hex meta-hash1)))
               (is (= 0 (bn/number index)))
-              (is (= 500000000000000000 (bn/number reward-pool)))
+              (is (bn/> reward-pool 0))
               (is (= registry-entry (:registry-entry challenge-event-args)))
               (is (bn/> reveal-period-end 0))
               (is (bn/> commit-period-end 0))
@@ -147,7 +148,7 @@
     (go
       (let [[creator challenger voter] (web3-eth/accounts @web3)
             [deposit commit-period-duration reveal-period-duration] (->> (<? (eternal-db/get-uint-values :district-registry-db [:deposit :commit-period-duration :reveal-period-duration]))
-                                                                         (map bn/number))
+                                                                      (map bn/number))
             aragon-id (cljs-utils/rand-str 10)
             salt (cljs-utils/rand-str 10)
             event-args (<! (create-district creator deposit meta-hash1 1000000 aragon-id))
@@ -218,9 +219,9 @@
 
             (is (bn/< previous-balance (<? (dnt/balance-of challenger))))
             (is (= challenger (:challenger challenger-reward-event-args)))
-            (is (= (web3-utils/wei->eth-number (:amount challenger-reward-event-args))
-                   (+ (/ (web3-utils/wei->eth-number deposit) 2)
-                      (web3-utils/wei->eth-number deposit))))
+            (is (= (format/format-number (web3-utils/wei->eth-number (:amount challenger-reward-event-args)))
+                   (format/format-number (+ (/ (web3-utils/wei->eth-number deposit) 2)
+                                            (web3-utils/wei->eth-number deposit)))))
             (is (true? (<? (challenge/is-challenge-reward-claimed? challenge))))))
 
         (done)))))
@@ -231,7 +232,7 @@
     (go
       (let [[creator challenger voter] (web3-eth/accounts @web3)
             [deposit commit-period-duration reveal-period-duration] (->> (<? (eternal-db/get-uint-values :district-registry-db [:deposit :commit-period-duration :reveal-period-duration]))
-                                                                         (map bn/number))
+                                                                      (map bn/number))
             aragon-id (cljs-utils/rand-str 10)
             salt (cljs-utils/rand-str 10)
             event-args (<! (create-district creator deposit meta-hash1 1000000 aragon-id))
@@ -280,7 +281,7 @@
     (go
       (let [[creator challenger1 challenger2 voter1 voter2 voter3] (web3-eth/accounts @web3)
             [deposit commit-period-duration reveal-period-duration] (->> (<? (eternal-db/get-uint-values :district-registry-db [:deposit :commit-period-duration :reveal-period-duration]))
-                                                                         (map bn/number))
+                                                                      (map bn/number))
             aragon-id (cljs-utils/rand-str 10)
             salt (cljs-utils/rand-str 10)
             event-args (<! (create-district creator deposit meta-hash1 1000000 aragon-id))
