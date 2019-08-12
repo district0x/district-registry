@@ -14,7 +14,7 @@ before_install:
   - sudo apt-get -qq update
   - nvm use 11.0.0
   - npm install -g truffle
-  - npm install -g ganache-cli
+  - npm install -g ganache-cli@6.4.4
 before_script:
   - ganache-cli -p 8549 -l 80000000 --allowUnlimitedContractSize -d -m district0x > /dev/null &
   - truffle migrate --network ganache --f 2 --to 3
