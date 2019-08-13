@@ -52,10 +52,6 @@
   (contract-call [:challenge contract-addr] :has-voted [voter]))
 
 
-(defn was-challenged? [contract-addr]
-  (contract-call [:challenge contract-addr] :was-challenged))
-
-
 (defn voted-winning-vote-option? [contract-addr voter]
   (contract-call [:challenge contract-addr] :voted-winning-vote-option [voter]))
 

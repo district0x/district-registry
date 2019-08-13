@@ -24,6 +24,11 @@ contract ParamChange is RegistryEntry {
   uint public appliedOn;
   bytes public metaHash;
 
+  /**
+   * @dev Returns whether a parameter change is within allowed boundaries
+
+   * @return True if parameter change is allowed
+   */
   function isChangeAllowed(ParamChangeRegistry registry, bytes32 record, uint _value)
     public
     constant

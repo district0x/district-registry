@@ -23,6 +23,12 @@ contract RegistryEntryFactory is ApproveAndCallFallBack {
     _;
   }
 
+  /**
+   * @dev Constructor for this contract.
+
+   * @param _registry Address of a registry contract upon which this factory operates
+   * @param _registryToken Address of a token contract used by TCR
+   */
   constructor(Registry _registry, MiniMeToken _registryToken) public {
     registry = _registry;
     registryToken = _registryToken;

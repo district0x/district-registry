@@ -127,7 +127,6 @@
               (is (web3/address? challenge-addr))
               (is (= (reg-entry-status->kw (bn/number (<? (challenge/status challenge-addr))))
                      :reg-entry.status/commit-period))
-              (is (true? (<? (challenge/was-challenged? challenge-addr))))
               (is (true? (<? (challenge/is-vote-commit-period-active? challenge-addr))))))
 
 

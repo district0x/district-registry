@@ -54,16 +54,25 @@ contract Registry is DSAuth {
     owner = msg.sender;
   }
 
+  /**
+   * @dev Modifier that prevents calling a function for anything except registered factory contract
+   */
   modifier onlyFactory() {
     require(isFactory(msg.sender), "Registry: Sender should be factory");
     _;
   }
 
+  /**
+   * @dev Modifier that prevents calling a function for anything except registered registry entry contract
+   */
   modifier onlyRegistryEntry() {
     require(isRegistryEntry(msg.sender), "Registry: Sender should registry entry");
     _;
   }
 
+  /**
+   * @dev Modifier that disables function if registry is in emergency state
+   */
   modifier notEmergency() {
     require(!isEmergency(),"Registry: Emergency mode is enable");
     _;

@@ -15,6 +15,10 @@ import "@aragon/apps-finance/contracts/Finance.sol";
 import "@aragon/os/contracts/factory/APMRegistryFactory.sol";
 import "@aragon/os/contracts/lib/ens/PublicResolver.sol";
 
+/**
+ * @title Contract responsible for creating and configuring Aragon DAO related to a District
+ */
+
 contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
   FIFSResolvingRegistrar public aragonID;
   bytes32[3] public appIds;
@@ -28,6 +32,14 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
 
   mapping(uint8 => bool) public includeApp;
 
+  /**
+   * @dev Constructor for this contract
+
+   * @param _fac Address of Aragon DAOFactory contract
+   * @param _ens Address of ENS contract
+   * @param _aragonID Address of AragonID registrar contract
+   * @param _includeApps Collection of Aragon Apps that should be preconfigured for each district
+   */
   constructor(
     DAOFactory _fac,
     ENS _ens,
@@ -48,6 +60,13 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
     }
   }
 
+  /**
+   * @dev Creates and configures Aragon DAO
+
+   * @param _aragonId ENS name registered as <somename>.aragonid.eth
+   * @param _token Address of token that will be used as voting token within Aragon DAO
+   * @param _creator Address of the Aragon DAO creator
+   */
   function createDAO(
     string _aragonId,
     MiniMeToken _token,
@@ -150,26 +169,58 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
     return dao;
   }
 
+  /**
+   * @dev Registers ENS name at <somename>.aragonid.eth
+
+   * @param name Name to register
+   * @param owner Owner of the name
+   */
   function registerAragonID(string name, address owner) internal {
     aragonID.register(keccak256(abi.encodePacked(name)), owner);
   }
 
+  /**
+   * @dev Sets votingSupportRequiredPct parameter that will be preconfigured for all Aragon DAOs
+   * Can be called only by authorized address
+   * @param _votingSupportRequiredPct Percentage of voting support required
+   */
   function setVotingSupportRequiredPct(uint64 _votingSupportRequiredPct) public auth {
     votingSupportRequiredPct = _votingSupportRequiredPct;
   }
 
+  /**
+   * @dev Sets votingMinAcceptQuorumPct parameter that will be preconfigured for all Aragon DAOs
+   * Can be called only by authorized address
+   * @param _votingMinAcceptQuorumPct Percentage of minimum accept quorum
+   */
   function setVotingMinAcceptQuorumPct(uint64 _votingMinAcceptQuorumPct) public auth {
     votingMinAcceptQuorumPct = _votingMinAcceptQuorumPct;
   }
 
+  /**
+   * @dev Sets votingVoteTime parameter that will be preconfigured for all Aragon DAOs
+   * Can be called only by authorized address
+   * @param _votingVoteTime Voting vote time
+   */
   function setVotingVoteTime(uint64 _votingVoteTime) public auth {
     votingVoteTime = _votingVoteTime;
   }
 
+  /**
+   * @dev Sets financePeriodDuration parameter that will be preconfigured for all Aragon DAOs
+   * Can be called only by authorized address
+   * @param _financePeriodDuration Finance period duration
+   */
   function setFinancePeriodDuration(uint64 _financePeriodDuration) public auth {
     financePeriodDuration = _financePeriodDuration;
   }
 
+  /**
+   * @dev Sets which Aragon Apps will be preconfigured for all Aragon DAOs
+   * Can be called only by authorized address
+   * @param _includeApps IDs of apps
+   * @param _includeApps Boolean if app should be included or not
+   */
   function setAppsIncluded(Apps[] _includeApps, bool[] _isIncluded) public auth {
     require(_includeApps.length == _isIncluded.length);
     for (uint i; i < _includeApps.length; i++) {
@@ -177,11 +228,22 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
     }
   }
 
+  /**
+   * @dev Sets whether a Aragon App should be preconfigured for all Aragon DAOs
+   * Can be called only by authorized address
+   * @param _app ID of app
+   * @param _isIncluded Boolean if app should be included or not
+   */
   function setAppIncluded(Apps _app, bool _isIncluded) public auth {
     includeApp[uint8(_app)] = _isIncluded;
   }
 
-  function isAppIncluded(Apps _app) public view returns(bool){
+  /**
+   * @dev Returns if app is currently being preconfigured for app Aragon DAOs
+   * @param _app ID of app
+   * @return Boolean if app is included or not
+   */
+  function isAppIncluded(Apps _app) public view returns (bool){
     return includeApp[uint8(_app)];
   }
 

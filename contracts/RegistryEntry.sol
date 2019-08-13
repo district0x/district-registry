@@ -40,6 +40,11 @@ contract RegistryEntry is ApproveAndCallFallBack {
     _;
   }
 
+  /**
+   * @dev Returns whether a registry entry is in active challenge period
+
+   * @return True if registry entry is in challenge period
+   */
   function isChallengePeriodActive()
   public
   constant
@@ -74,12 +79,11 @@ contract RegistryEntry is ApproveAndCallFallBack {
   /**
    * @dev Creates a challenge for this TCR entry
    * Must be within challenge period
-   * Entry can be challenged only once
    * Transfers token deposit from challenger into this contract
-   * Forks registry token (DankToken) in order to create single purpose voting token to vote about this challenge
+   * Only 1 challenge can be created at a time
 
    * @param _challenger Address of a challenger
-   * @param _challengeMetaHash IPFS hash of meta data related to this challenge
+   * @param _challengeMetaHash IPFS hash of data related to a challenge
    */
   function createChallenge(
     address _challenger,
@@ -129,22 +133,47 @@ contract RegistryEntry is ApproveAndCallFallBack {
     );
   }
 
+  /**
+   * @dev Returns whether a registry entry is currently challengable
+
+   * @return True if registry entry is currently challengable
+   */
   function isChallengeable() public constant returns (bool) {
     return isChallengePeriodActive() && challenges.length == 0;
   }
 
+  /**
+   * @dev Returns index of the latest challenge
+
+   * @return Index of the latest challenge
+   */
   function currentChallengeIndex() public constant returns (uint) {
     return challenges.length - 1;
   }
 
+  /**
+   * @dev Returns a challenge given the index
+
+   * @return Challenge
+   */
   function getChallenge(uint _challengeIndex) public view returns (Challenge) {
     return Challenge(challenges[_challengeIndex]);
   }
 
+  /**
+   * @dev Returns whether a registry entry is currently challengable
+
+   * @return True if registry entry is currently challengable
+   */
   function currentChallenge() public view returns (Challenge) {
     return getChallenge(currentChallengeIndex());
   }
 
+  /**
+   * @dev Returns whether registry entry has whitelisted status
+
+   * @return True if registry entry is whitelisted in TCR
+   */
   function isWhitelisted() public constant returns (bool) {
     if (challenges.length == 0) {
       if (isChallengePeriodActive()) {
@@ -162,8 +191,8 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * @dev Commits encrypted vote to challenged entry
    * Locks voter's tokens in this contract. Returns when vote is revealed
    * Must be within commit period
-   * Voting takes full balance of voter's voting token
 
+   * @param _challengeIndex Index of a challenge to vote about
    * @param _voter Address of a voter
    * @param _amount Amount of tokens to vote with
    * @param _secretHash Encrypted vote option with salt. sha3(voteOption, salt)
@@ -189,10 +218,26 @@ contract RegistryEntry is ApproveAndCallFallBack {
     );
   }
 
+  /**
+   * @dev Calls _commitVoteForChallenge
+
+   * @param _challengeIndex Index of a challenge to vote about
+   * @param _voter Address of a voter
+   * @param _amount Amount of tokens to vote with
+   * @param _secretHash Encrypted vote option with salt. sha3(voteOption, salt)
+   */
   function commitVoteForChallenge(uint _challengeIndex, address _voter, uint _amount, bytes32 _secretHash) external {
     _commitVoteForChallenge(_challengeIndex, _voter, _amount, _secretHash);
   }
 
+
+  /**
+   * @dev Calls _commitVoteForChallenge for the latest challenge
+
+   * @param _voter Address of a voter
+   * @param _amount Amount of tokens to vote with
+   * @param _secretHash Encrypted vote option with salt. sha3(voteOption, salt)
+   */
   function commitVote(address _voter, uint _amount, bytes32 _secretHash) external {
     _commitVoteForChallenge(currentChallengeIndex(), _voter, _amount, _secretHash);
   }
@@ -202,6 +247,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * Returns registryToken back to the voter
    * Must be within reveal period
 
+   * @param _challengeIndex Index of a challenge
    * @param _voteOption Vote option voter previously voted with
    * @param _salt Salt with which user previously encrypted his vote option
    */
@@ -230,6 +276,14 @@ contract RegistryEntry is ApproveAndCallFallBack {
     );
   }
 
+
+  /**
+   * @dev Calls _revealVoteForChallenge
+
+   * @param _challengeIndex Index of a challenge
+   * @param _voteOption Vote option voter previously voted with
+   * @param _salt Salt with which user previously encrypted his vote option
+   */
   function revealVoteForChallenge(
     uint _challengeIndex,
     Challenge.VoteOption _voteOption,
@@ -240,10 +294,26 @@ contract RegistryEntry is ApproveAndCallFallBack {
     _revealVoteForChallenge(_challengeIndex, _voteOption, _salt);
   }
 
+  /**
+   * @dev Calls _revealVoteForChallenge for the latest challenge
+
+   * @param _voteOption Vote option voter previously voted with
+   * @param _salt Salt with which user previously encrypted his vote option
+   */
   function revealVote(Challenge.VoteOption _voteOption, string _salt) external {
     _revealVoteForChallenge(currentChallengeIndex(), _voteOption, _salt);
   }
 
+  /**
+   * @dev Multipurpose function that distributes rewards generated by a challenge
+   * It rewards challenger if challenger won
+   * It rewards creator  if challenger lost
+   * It rewards voter if voter voted for a winning option
+   * It returns votes to a voter if the voter didn't reveal the vote
+
+   * @param _challengeIndex Index of a challenge
+   * @param _user Address of a user subjected to rewards
+   */
   function _claimRewardForChallenge(uint _challengeIndex, address _user)
     internal
     notEmergency
@@ -275,10 +345,21 @@ contract RegistryEntry is ApproveAndCallFallBack {
     }
   }
 
+  /**
+   * @dev Calls _claimRewardForChallenge
+
+   * @param _challengeIndex Index of a challenge
+   * @param _user Address of a user subjected to rewards
+   */
   function claimRewardForChallenge(uint _challengeIndex, address  _user) external {
     _claimRewardForChallenge(_challengeIndex, _user);
   }
 
+  /**
+   * @dev Calls _claimRewardForChallenge for the latest challenge
+
+   * @param _user Address of a user subjected to rewards
+   */
   function claimReward(address _user) external {
     _claimRewardForChallenge(currentChallengeIndex(), _user);
   }

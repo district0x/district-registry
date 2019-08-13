@@ -33,6 +33,8 @@ contract District is RegistryEntry {
    * @param _creator Creator of a district
    * @param _version Version of District contract
    * @param _metaHash IPFS hash of data related to a district
+   * @param _dntWeight Coefficient that determines voting token issuance curve
+   * @param _aragonId ENS name registered as <somename>.aragonid.eth
    */
   function construct(
     address _creator,
@@ -41,7 +43,7 @@ contract District is RegistryEntry {
     uint32 _dntWeight,
     string _aragonId
   )
-    public
+  public
   {
     super.construct(_creator, _version);
     stakeBank = StakeBank(new Forwarder2());
@@ -52,8 +54,14 @@ contract District is RegistryEntry {
     registry.fireDistrictConstructedEvent(version, creator, metaHash, deposit, challengePeriodEnd, _dntWeight, address(aragonDao), _aragonId);
   }
 
+  /**
+   * @dev Sets new IPFS file for a district
+   * Should be callable only by creator and only when district is in challengable state
+
+   * @param _metaHash IPFS hash of data related to a district
+   */
   function setMetaHash(bytes _metaHash)
-    public
+  public
   {
     require(msg.sender == creator);
     require(isChallengeable());
@@ -61,7 +69,14 @@ contract District is RegistryEntry {
     registry.fireDistrictMetaHashChangedEvent(version, _metaHash);
   }
 
+  /**
+   * @dev Creates a new challenge for a district
+   * District can be challenged multiple times, but not at the same time.
+   * Only 1 challenge can be created at a time
 
+   * @param _challenger Address of a challenger
+   * @param _challengeMetaHash IPFS hash of data related to a challenge
+   */
   function createChallenge(
     address _challenger,
     bytes _challengeMetaHash
@@ -73,20 +88,26 @@ contract District is RegistryEntry {
     DistrictChallenge(currentChallenge()).setStakeBank(stakeBank);
   }
 
+  /**
+   * @dev Returns voting token balance for a user
 
-  /// @param _owner The address that's balance is being requested
-  /// @return The balance of `_owner` at the current block
+   * @param _owner User owning voting token
+   * @return Balance of a user
+   */
   function balanceOf(address _owner)
-    public constant returns (uint256 balance)
+  public constant returns (uint256 balance)
   {
     return stakeBank.balanceOf(_owner);
   }
 
-  /// @notice Stakes a certain amount of tokens for another user.
-  /// @param _user Address of the user to stake for.
-  /// @param _amount Amount of tokens to stake.
+  /**
+   * @dev Stakes a certain amount of tokens for a user
+
+   * @param _user Address of the user to stake for
+   * @param _amount Amount of tokens to stake
+   */
   function stakeFor(address _user, uint _amount)
-    public
+  public
   {
     require(registryToken.transferFrom(_user, address(this), _amount));
     uint stakeId = stakeBank.stakeFor(_user, _amount);
@@ -104,14 +125,19 @@ contract District is RegistryEntry {
     );
   }
 
-  /// @notice Unstakes a certain amount of tokens.
-  /// @param _amount Amount of tokens to unstake.
+
+  /**
+   * @dev Unstakes a certain amount of tokens
+
+   * @param _user Address of the user to stake for
+   * @param _amount Amount of tokens to unstake
+   */
   function unstake(uint _amount)
-    public
+  public
   {
     require(registryToken.transfer(msg.sender, _amount));
     uint stakeId = stakeBank.unstake(msg.sender, _amount);
-    maybeAdjustStakeDelta(msg.sender, int(_amount) * -1);
+    maybeAdjustStakeDelta(msg.sender, int(_amount) * - 1);
     registry.fireDistrictStakeChangedEvent(
       version,
       stakeId,
@@ -125,22 +151,35 @@ contract District is RegistryEntry {
     );
   }
 
+
+  /**
+   * @dev Keeps track of stake delta in case district is in vote commit period
+   * This delta is then counted as votes for keeping a district in the registry
+
+   * @param _voter Address of a user
+   * @param _amount Amount of staked tokens
+   */
   function maybeAdjustStakeDelta(
     address _voter,
     int _amount
   )
-    private
+  private
   {
     if (challenges.length != 0 && currentChallenge().isVoteCommitPeriodActive()) {
       DistrictChallenge(currentChallenge()).adjustStakeDelta(_voter, _amount);
     }
   }
 
+  /**
+   * @dev Returns whether a district can be currently challenged
+
+   * @return True if district can be challenged
+   */
   function isChallengeable()
-    public view returns (bool) {
+  public view returns (bool) {
     return isChallengePeriodActive() &&
-      (challenges.length == 0 ||
-       currentChallenge().status() == Challenge.Status.Whitelisted);
+    (challenges.length == 0 ||
+    currentChallenge().status() == Challenge.Status.Whitelisted);
   }
 
 }

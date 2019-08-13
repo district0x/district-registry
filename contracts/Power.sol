@@ -1,13 +1,15 @@
 pragma solidity ^0.4.18;
 
 /**
- * bancor formula by bancor
- * https://github.com/bancorprotocol/contracts
+ * @title Bancor formula by bancor
+ *
+ * @dev https://github.com/bancorprotocol/contracts
  * Modified from the original by Slava Balasanov
  * Split Power.sol out from BancorFormula.sol
  * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements;
  * and to You under the Apache License, Version 2.0. "
  */
+
 contract Power {
   string public version;
 
@@ -17,24 +19,24 @@ contract Power {
   uint8 private MAX_PRECISION;
 
   /**
-    The values below depend on MAX_PRECISION. If you choose to change it:
-    Apply the same change in file 'PrintIntScalingFactors.py', run it and paste the results below.
-  */
+   * @dev The values below depend on MAX_PRECISION. If you choose to change it:
+   * Apply the same change in file 'PrintIntScalingFactors.py', run it and paste the results below.
+   */
   uint256 private FIXED_1;
   uint256 private FIXED_2;
   uint256 private MAX_NUM;
 
   /**
-    The values below depend on MAX_PRECISION. If you choose to change it:
-    Apply the same change in file 'PrintLn2ScalingFactors.py', run it and paste the results below.
-  */
+   * @dev The values below depend on MAX_PRECISION. If you choose to change it:
+   * Apply the same change in file 'PrintLn2ScalingFactors.py', run it and paste the results below.
+   */
   uint256 private LN2_MANTISSA;
   uint8   private LN2_EXPONENT;
 
   /**
-    The values below depend on MIN_PRECISION and MAX_PRECISION. If you choose to change either one of them:
-    Apply the same change in file 'PrintFunctionBancorFormula.py', run it and paste the results below.
-  */
+   * @dev The values below depend on MIN_PRECISION and MAX_PRECISION. If you choose to change either one of them:
+   * Apply the same change in file 'PrintFunctionBancorFormula.py', run it and paste the results below.
+   */
   uint256[128] private maxExpArray;
 
   function construct() public {

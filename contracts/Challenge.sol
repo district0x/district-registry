@@ -7,6 +7,15 @@ import "./ownership/Ownable.sol";
 import "./StakeBank.sol";
 import "./RegistryEntry.sol";
 
+
+/**
+ * @title Contract created each time a registry entry is challenged
+ *
+ * @dev Full copy of this contract is NOT deployed with each challenge creation in order to save gas. Only forwarder contracts
+ * pointing into single intance of it.
+ */
+
+
 contract Challenge is Ownable {
 
   using SafeMath for uint;
@@ -43,6 +52,19 @@ contract Challenge is Ownable {
   mapping(address => Vote) public votes;
 
 
+  /**
+   * @dev Constructor for this contract
+   * Native constructor is not used, because users create only forwarders into single instance of this contract,
+   * therefore constructor must be called explicitly.
+   * Must NOT be callable multiple times
+
+   * @param _challenger Address of a challenger
+   * @param _metaHash IPFS hash of data related to a challenge
+   * @param _challengePeriodEnd Timestamp when challenge period ends
+   * @param _revealPeriodEnd Timestamp when reveal period ends
+   * @param _rewardPool Reward pool splitting ratio
+   * @param _voteQuorum Vote quorum coefficient
+   */
   function construct(
     RegistryEntry _registryEntry,
     address _challenger,
@@ -67,6 +89,10 @@ contract Challenge is Ownable {
     voteQuorum = _voteQuorum;
   }
 
+  /**
+   * @dev Returns whether a vote reveal period is active
+   * @return True if vote reveal period is active
+   */
   function isVoteRevealPeriodActive()
     public
     view
@@ -74,6 +100,11 @@ contract Challenge is Ownable {
     return !isVoteCommitPeriodActive() && now <= revealPeriodEnd;
   }
 
+  /**
+   * @dev Returns whether a vote has been revealed
+   * @param _voter Address of a voter
+   * @return True if vote has been revealed already
+   */
   function isVoteRevealed(address _voter)
     public
     view
@@ -81,6 +112,11 @@ contract Challenge is Ownable {
     return votes[_voter].revealedOn > 0;
   }
 
+  /**
+   * @dev Returns whether a vote reward has been claimed by voter
+   * @param _voter Address of a voter
+   * @return True if vote reward has been claimed already
+   */
   function isVoteRewardClaimed(address _voter)
     public
     view
@@ -88,6 +124,11 @@ contract Challenge is Ownable {
     return votes[_voter].claimedRewardOn > 0;
   }
 
+  /**
+   * @dev Returns whether a voting tokens have been already reclaimed
+   * @param _voter Address of a voter
+   * @return True if voting tokens have been reclaimed already
+   */
   function areVotesReclaimed(address _voter)
     public
     view
@@ -95,13 +136,21 @@ contract Challenge is Ownable {
     return votes[_voter].reclaimedVotesOn > 0;
   }
 
-  function isChallengeRewardClaimed()
+  /**
+   * @dev Returns whether the challenger reward has been already claimed
+   * @return True if challenger reward has been claimed already
+   */
+  function isChallengerRewardClaimed()
     public
     view
     returns (bool) {
     return challengerRewardClaimedOn > 0;
   }
 
+  /**
+   * @dev Returns whether the creator reward has been already claimed
+   * @return True if creator reward has been claimed already
+   */
   function isCreatorRewardClaimed()
     public
     view
@@ -109,6 +158,10 @@ contract Challenge is Ownable {
     return creatorRewardClaimedOn > 0;
   }
 
+  /**
+   * @dev Returns whether a vote challenge period is active
+   * @return True if vote challenge period is active
+   */
   function isChallengePeriodActive()
     public
     view
@@ -116,6 +169,10 @@ contract Challenge is Ownable {
     return now <= challengePeriodEnd;
   }
 
+  /**
+   * @dev Returns whether a status of a challenge is whitelisted
+   * @return True if status is whitelisted
+   */
   function isWhitelisted()
     public
     view
@@ -123,6 +180,10 @@ contract Challenge is Ownable {
     return status() == Status.Whitelisted;
   }
 
+  /**
+   * @dev Returns whether a vote commit period is active
+   * @return True if vote commit period is active
+   */
   function isVoteCommitPeriodActive()
     public
     view
@@ -130,6 +191,10 @@ contract Challenge is Ownable {
     return now <= commitPeriodEnd;
   }
 
+  /**
+   * @dev Returns whether a vote reveal period is over
+   * @return True if vote reveal period is over
+   */
   function isVoteRevealPeriodOver()
     public
     view
@@ -139,7 +204,6 @@ contract Challenge is Ownable {
 
   /**
    * @dev Returns whether Include is winning vote option
-   *
    * @return True if Include is winning option
    */
   function isWinningOptionInclude()
@@ -149,6 +213,11 @@ contract Challenge is Ownable {
     return winningVoteOption() == VoteOption.Include;
   }
 
+  /**
+   * @dev Returns whether a voter has voted already
+   * @param _voter Address of a voter
+   * @return True if voter has voted already
+   */
   function hasVoted(address _voter)
     public
     view
@@ -156,17 +225,9 @@ contract Challenge is Ownable {
     return votes[_voter].amount != 0;
   }
 
-  function wasChallenged()
-    public
-    view
-    returns (bool) {
-    return challenger != 0x0;
-  }
-
   /**
    * @dev Returns whether voter voted for winning vote option
    * @param _voter Address of a voter
-   *
    * @return True if voter voted for a winning vote option
    */
   function votedWinningVoteOption(address _voter)
@@ -177,15 +238,14 @@ contract Challenge is Ownable {
   }
 
   /**
-   * @dev Returns current status of a registry entry
-
+   * @dev Returns current result of a challenge
    * @return Status
    */
   function status()
     public
     view
     returns (Status) {
-    if (isChallengePeriodActive() && !wasChallenged()) {
+    if (isChallengePeriodActive()) {
       return Status.ChallengePeriod;
     } else if (isVoteCommitPeriodActive()) {
       return Status.CommitPeriod;
@@ -204,8 +264,7 @@ contract Challenge is Ownable {
 
   /**
    * @dev Returns token reward amount belonging to a challenger
-   *
-   * @return Amount of token
+   * @return Amount of tokens
    */
   function challengerReward()
     public
@@ -215,6 +274,10 @@ contract Challenge is Ownable {
     return deposit.add(deposit.sub(rewardPool));
   }
 
+  /**
+   * @dev Returns token reward amount belonging to a creator
+   * @return Amount of tokens
+   */
   function creatorReward()
     public
     view
@@ -223,6 +286,11 @@ contract Challenge is Ownable {
     return deposit.sub(rewardPool);
   }
 
+  /**
+   * @dev Returns amount a voter voted for vote option Include
+   * @param _voter Address of a voter
+   * @return The amount a voter voted for vote option Include
+   */
   function voteOptionIncludeVoterAmount(address _voter)
     public
     view
@@ -235,6 +303,11 @@ contract Challenge is Ownable {
     return amount;
   }
 
+  /**
+   * @dev Returns amount a voter voted for vote option Exclude
+   * @param _voter Address of a voter
+   * @return The amount a voter voted for vote option Exclude
+   */
   function voteOptionExcludeVoterAmount(address _voter)
     public
     view
@@ -250,7 +323,6 @@ contract Challenge is Ownable {
   /**
    * @dev Returns token reward amount belonging to a voter for voting for a winning option
    * @param _voter Address of a voter
-   *
    * @return Amount of tokens
    */
   function voteReward(address _voter)
@@ -275,6 +347,10 @@ contract Challenge is Ownable {
     }
   }
 
+  /**
+   * @dev Returns whether a status of a challenge is blacklisted
+   * @return True if status is blacklisted
+   */
   function isBlacklisted()
     public
     view
@@ -282,6 +358,10 @@ contract Challenge is Ownable {
     return status() == Status.Blacklisted;
   }
 
+  /**
+   * @dev Returns total amount of tokens voted for Include
+   * @return Amount of tokens
+   */
   function voteOptionIncludeAmount()
     public
     view
@@ -289,6 +369,10 @@ contract Challenge is Ownable {
     return votesInclude;
   }
 
+  /**
+   * @dev Returns total amount of tokens voted for Exclude
+   * @return Amount of tokens
+   */
   function voteOptionExcludeAmount()
     public
     view
@@ -320,7 +404,6 @@ contract Challenge is Ownable {
 
   /**
    * @dev Returns amount of votes for winning vote option
-   *
    * @return Amount of votes
    */
   function winningVoteOptionAmount()
@@ -337,6 +420,15 @@ contract Challenge is Ownable {
     }
   }
 
+  /**
+   * @dev Commits a vote
+   * Vote can be commited only during vote commit period
+   * Voter cannot commit more than once
+   * Amount must be larger than zero
+   * @param _voter Address of a voter
+   * @param _amount Amount of tokens to vote with
+   * @param _secretHash Encrypted vote option with salt. sha3(voteOption, salt)
+   */
   function commitVote(
     address _voter,
     uint _amount,
@@ -352,6 +444,15 @@ contract Challenge is Ownable {
     votes[_voter].amount = _amount;
   }
 
+  /**
+   * @dev Reveals previously committed vote
+   * Vote can be commited only during vote reveal period
+   * Secret hash must be correctly verified by given salt
+   * Cannot be revealed more than once
+   * @param _voter Address of a voter
+   * @param _voteOption Vote option voter previously voted with
+   * @param _salt Salt with which user previously encrypted his vote option
+   */
   function revealVote(
     address _voter,
     VoteOption _voteOption,
@@ -377,6 +478,12 @@ contract Challenge is Ownable {
     return amount;
   }
 
+  /**
+   * @dev Returns amount of tokens user is eligible to reclaim
+   * Does not throw error if there's nothing to reclaim
+   * @param _voter Address of a voter
+   * @return Amount of tokens user is eligible to reclaim
+   */
   function safeReclaimVotes(address _voter)
     external
     onlyOwner
@@ -394,6 +501,12 @@ contract Challenge is Ownable {
     return amount;
   }
 
+  /**
+   * @dev Returns amount of tokens user is eligible to receive as vote reward
+   * Does not throw error if there's no reward
+   * @param _voter Address of a voter
+   * @return Amount of tokens user is eligible to receive as vote reward
+   */
   function safeClaimVoteReward(address _voter)
     external
     onlyOwner
@@ -412,6 +525,12 @@ contract Challenge is Ownable {
     return reward;
   }
 
+  /**
+   * @dev Returns amount of tokens user is eligible to receive as challenger reward
+   * Does not throw error if there's no reward
+   * @param _voter Address of a voter
+   * @return Amount of tokens user is eligible to receive as challenger reward
+   */
   function safeClaimChallengerReward(address _user)
     external
     onlyOwner
@@ -419,7 +538,7 @@ contract Challenge is Ownable {
   {
     uint reward = 0;
     if (isVoteRevealPeriodOver() &&
-      !isChallengeRewardClaimed() &&
+      !isChallengerRewardClaimed() &&
       !isWinningOptionInclude() &&
       challenger == _user
     ) {
@@ -429,6 +548,12 @@ contract Challenge is Ownable {
     return reward;
   }
 
+  /**
+   * @dev Returns amount of tokens user is eligible to receive as creator reward
+   * Does not throw error if there's no reward
+   * @param _voter Address of a voter
+   * @return Amount of tokens user is eligible to receive as creator reward
+   */
   function safeClaimCreatorReward(address _user)
     external
     onlyOwner
