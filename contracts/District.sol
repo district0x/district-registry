@@ -129,7 +129,6 @@ contract District is RegistryEntry {
   /**
    * @dev Unstakes a certain amount of tokens
 
-   * @param _user Address of the user to stake for
    * @param _amount Amount of tokens to unstake
    */
   function unstake(uint _amount)

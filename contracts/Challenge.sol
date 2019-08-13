@@ -226,6 +226,17 @@ contract Challenge is Ownable {
   }
 
   /**
+   * @dev Returns whether this challenge was constructed
+   * @return True if challenge was constructed
+   */
+  function wasChallenged()
+    public
+    view
+    returns (bool) {
+    return challenger != 0x0;
+  }
+
+  /**
    * @dev Returns whether voter voted for winning vote option
    * @param _voter Address of a voter
    * @return True if voter voted for a winning vote option
@@ -245,7 +256,7 @@ contract Challenge is Ownable {
     public
     view
     returns (Status) {
-    if (isChallengePeriodActive()) {
+    if (isChallengePeriodActive() && !wasChallenged()) {
       return Status.ChallengePeriod;
     } else if (isVoteCommitPeriodActive()) {
       return Status.CommitPeriod;
@@ -528,7 +539,7 @@ contract Challenge is Ownable {
   /**
    * @dev Returns amount of tokens user is eligible to receive as challenger reward
    * Does not throw error if there's no reward
-   * @param _voter Address of a voter
+   * @param _user Address of a user
    * @return Amount of tokens user is eligible to receive as challenger reward
    */
   function safeClaimChallengerReward(address _user)
@@ -551,7 +562,7 @@ contract Challenge is Ownable {
   /**
    * @dev Returns amount of tokens user is eligible to receive as creator reward
    * Does not throw error if there's no reward
-   * @param _voter Address of a voter
+   * @param _user Address of a user
    * @return Amount of tokens user is eligible to receive as creator reward
    */
   function safeClaimCreatorReward(address _user)

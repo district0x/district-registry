@@ -21,8 +21,8 @@
   (contract-call [:challenge contract-addr] :are-votes-reclaimed [voter]))
 
 
-(defn is-challenge-reward-claimed? [contract-addr]
-  (contract-call [:challenge contract-addr] :is-challenge-reward-claimed))
+(defn is-challenger-reward-claimed? [contract-addr]
+  (contract-call [:challenge contract-addr] :is-challenger-reward-claimed))
 
 (defn is-creator-reward-claimed? [contract-addr]
   (contract-call [:challenge contract-addr] :is-creator-reward-claimed))

@@ -351,7 +351,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * @param _challengeIndex Index of a challenge
    * @param _user Address of a user subjected to rewards
    */
-  function claimRewardForChallenge(uint _challengeIndex, address  _user) external {
+  function claimRewardForChallenge(uint _challengeIndex, address _user) external {
     _claimRewardForChallenge(_challengeIndex, _user);
   }
 

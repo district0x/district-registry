@@ -246,7 +246,7 @@
             (is (= (web3-utils/wei->eth-number (:amount challenger-reward-event-args))
                    (+ (/ (web3-utils/wei->eth-number deposit) 2)
                       (web3-utils/wei->eth-number deposit))))
-            (is (true? (<? (challenge/is-challenge-reward-claimed? challenge))))))
+            (is (true? (<? (challenge/is-challenger-reward-claimed? challenge))))))
 
 
         (testing "Param change cannot be applied if param change got blacklisted"

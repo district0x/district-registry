@@ -221,7 +221,7 @@
             (is (= (format/format-number (web3-utils/wei->eth-number (:amount challenger-reward-event-args)))
                    (format/format-number (+ (/ (web3-utils/wei->eth-number deposit) 2)
                                             (web3-utils/wei->eth-number deposit)))))
-            (is (true? (<? (challenge/is-challenge-reward-claimed? challenge))))))
+            (is (true? (<? (challenge/is-challenger-reward-claimed? challenge))))))
 
         (done)))))
 
