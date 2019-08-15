@@ -214,8 +214,7 @@
                                                    :stake-history/dnt-total-staked
                                                    :stake-history/voting-token-total-supply]]]}
                           {:refetch-on #{::district/approve-and-stake-for-success
-                                         ::district/unstake-success}}])
-        ]
+                                         ::district/unstake-success}}])]
     (fn []
       (let [data (->> (:stake-history @query)
                    (map #(update % :stake-history/staked-on format-date))
@@ -255,10 +254,13 @@
           [:p "No one has staked into this district yet"])))))
 
 
-(defn stake-section [{:keys [:reg-entry/address :reg-entry/status :district/dnt-weight]}]
+(defn stake-section [{:keys [:reg-entry/address :reg-entry/status :district/dnt-weight]}
+                     {:keys [:challenge/winning-vote-option]}]
   [:div
    [:h2 "Stake"]
-   [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+   (if (= (gql-utils/gql-name->kw winning-vote-option) :vote-option/exclude)
+     [:p "This district has been blacklisted, and therefore no new tokens can be staked to it and all governance activity on the registry has been halted. If you had tokens staked from before the blacklisting, you may unstake them below."]
+     [:p "Below you can see the entire history of tokens staked into and out of this district, as well as the token issuance curve showing the expected amount of votes returned for each token staked now and in the future. You may stake to this district using the form below."])
    [:h3 "Stake History"]
    [stake-history-chart
     {:reg-entry/address address}]
@@ -280,7 +282,7 @@
           [:div
            [:div.h-line]
            [:h2 "Challenge"]
-           [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+           [:p "A challenge can be initiated against this district if you don't believe it upholds the standards of the District Registry. Type your reasoning below and submit the challenge and start a community-wide vote. Be aware you may lose all DNT submitted to this challenge if voters decide to let the district remain in the registry."]
            [:form.challenge
             [inputs/textarea-input {:form-data form-data
                                     :id :challenge/comment
@@ -358,7 +360,7 @@
 
         [:div
          [:h2 "Vote"]
-         [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+         [:p "This district has been challenged and is now in its voting period. You may commit DNT in favor or in challenge of this district. You will receive the full amount of DNT back, and if you reveal a winning vote, you will be rewarded with a portion of DNT from the losing depositor.\nProvide an email address below to be notified when to vote and reveal. Votes are stored in your browser, be sure to back them up if needed."]
          [:p "If you want to be notified when you need to reveal vote, you can provide your "
           [nav/a {:route [:route/my-account {:tab "email"}]}
            "email."]]
@@ -431,7 +433,7 @@
 
         [:div
          [:h2 "Reveal"]
-         [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+         [:p "This district has been challenged, voting has completed, and it is now in its reveal period. If you voted, you may reveal your votes below. Unrevealed votes are not counted to wards the final decision, and are not eligible for rewards. When the reveal period ends, return to reclaim your DNT and any rewards."]
          [challenger-comment challenge]
          [:form.voting
           [:div.row.spaced
@@ -598,7 +600,9 @@
           votes-total (+ votes-include votes-exclude)]
       [:div
        [:h2 "Vote Results"]
-       [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, malesuada non rutrum ut, ornare ac orci."]
+       (if (= winning-vote-option :vote-option/exclude)
+         [:p "This district was challenged, and voters decided to blacklist it. It has been removed from the registry, and can no longer be staked to. Any leftover tokens or rewards you've earned from voting or challenging can be claimed below."]
+         [:p "This district was challenged, but voters decided to allow it to remain in the registry. Any leftover tokens or rewards you've earned from voting can be claimed below."])
        [challenger-comment challenge]
        [:div.row.spaced
         [:div
@@ -671,7 +675,7 @@
               [:div.box-wrap.stats
                [:div.body-text
                 [:div.container
-                 [stake-section district]
+                 [stake-section district (last challenges)]
                  [challenge-section district]]]]
               (when (seq challenges)
                 [:div.box-wrap.challenges
