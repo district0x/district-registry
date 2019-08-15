@@ -66,10 +66,10 @@
                    :type "radio"
                    :checked (= (:dnt-weight @form-data) dnt-weight)
                    :on-change (dnt-weight-changed form-data dnt-weight)}])
-     [:label {:for "r3"} "Curve Option 1/1"]]
+     [:label {:for "r3"} "Flat"]]
     [:img.radio-img {:src "/images/curve-graph-1000000-m.svg"}]
     [:p
-     "Lorem ipsum dolor sit amet, consec tetur adipiscing elit, sed do eiusmod."]]
+     "Every new DNT staked receives the same amount of voting power back at any time."]]
    [:div.radio-box
     [:fieldset
      (let [dnt-weight 500000]
@@ -77,10 +77,10 @@
                    :type "radio"
                    :checked (= (:dnt-weight @form-data) dnt-weight)
                    :on-change (dnt-weight-changed form-data dnt-weight)}])
-     [:label {:for "r2"} "Curve Option 1/2"]]
+     [:label {:for "r2"} "Linear"]]
     [:img.radio-img {:src "/images/curve-graph-500000-m.svg"}]
     [:p
-     "Lorem ipsum dolor sit amet, consec tetur adipiscing elit, sed do eiusmod."]]
+     "Every new DNT staked receives a smaller portion of voting power back as more DNT in total is staked."]]
    [:div.radio-box
     [:fieldset
      (let [dnt-weight 333333]
@@ -88,9 +88,9 @@
                    :type "radio"
                    :checked (= (:dnt-weight @form-data) dnt-weight)
                    :on-change (dnt-weight-changed form-data dnt-weight)}])
-     [:label {:for "r1"} "Curve Option 1/3"]]
+     [:label {:for "r1"} "Exponential"]]
     [:img.radio-img {:src "/images/curve-graph-333333-m.svg"}]
-    [:p "Lorem ipsum dolor sit amet, consec tetur adipiscing elit, sed do eiusmod."]]])
+    [:p "Every new DNT staked receives a MUCH smaller portion of voting power back as more DNT in total is staked."]]])
 
 
 (defn submit-button []
@@ -185,8 +185,7 @@
                      (< 100 (count facebook-url)) (conj "Facebook URL is too long")
                      (< 100 (count twitter-url)) (conj "Twitter URL is too long")
                      (< 100 (count url)) (conj "URL is too long")
-                     (< 50 (count name)) (conj "District title is too long"))
-            ]
+                     (< 50 (count name)) (conj "District title is too long"))]
         [:section#main
          [:div.container
           [:div.box-wrap
@@ -197,8 +196,9 @@
              [:div.page-title [:h1 (if edit? "Edit" "Submit")]]]]
            [:div.body-text
             [:div.container
-             [:p.intro-text
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, masuada non rutrum ut, ornare ac orci. Lorem ipsum dolor sit amet, consectetur adipiscing. Lorem augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non."]
+             (when-not edit?
+              [:p.intro-text
+               "Below you can fill out all the parameters required to submit your district for a place in the District Registry. These items can be altered if a district is not currently challenged or blacklisted. Further down you can find the three different options for token issuance curves, with descriptions for each. These curves determine how many DNT need to be staked to earn votes for successive stakers to the district. Token issuance curve cannot be altered once submitted. You can read more " [:a {:href "https://education.district0x.io/district0x-specific-topics/understanding-distict0x/the-district-registry/" :target :_blank} "here"] "."])
              [:form.image-upload
               [:div.row.spaced
                [:div.col.left
