@@ -120,7 +120,7 @@
                creator
                status
                (= @active-account creator)
-               (= (gql-utils/gql-name->kw status) :reg-entry.status/whitelisted))
+               (= (normalize-status status) :in-registry))
       [:form.edit-district-button
        [nav/a
         {:route [:route/edit {:address address}]}

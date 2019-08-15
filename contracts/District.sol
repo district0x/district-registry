@@ -48,7 +48,7 @@ contract District is RegistryEntry {
     super.construct(_creator, _version);
     stakeBank = StakeBank(new Forwarder2());
     stakeBank.construct(_dntWeight);
-    challengePeriodEnd = 0;
+    challengePeriodEnd = ~uint(0);
     metaHash = _metaHash;
     Kernel aragonDao = kitDistrict.createDAO(_aragonId, MiniMeToken(stakeBank), _creator);
     registry.fireDistrictConstructedEvent(version, creator, metaHash, deposit, challengePeriodEnd, _dntWeight, address(aragonDao), _aragonId);
