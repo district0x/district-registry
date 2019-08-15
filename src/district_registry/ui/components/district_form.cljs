@@ -37,8 +37,18 @@
    [:div text]])
 
 
-(defn- file-acceptable? [{:keys [type]}]
-  (contains? #{"image/png" "image/jpg" "image/jpeg"} type))
+(defn- file-acceptable? [{:keys [:expected-width :expected-height]} {:keys [:type :file]}]
+  (js/Promise. (fn [resolve reject]
+                 (let [URL (or (aget js/window "URL") (aget js/window "webkitURL"))
+                       Image (js/document.createElement "img")]
+                   (aset Image "onload" (fn []
+                                          (this-as this
+                                            (if (or (not= (aget this "width") expected-width)
+                                                    (not= (aget this "height") expected-height)
+                                                    (not (contains? #{"image/png" "image/jpg" "image/jpeg"} type)))
+                                              (reject)
+                                              (resolve)))))
+                   (aset Image "src" (js-invoke URL "createObjectURL" file))))))
 
 
 (def default-form-data
@@ -143,6 +153,23 @@
     500))
 
 
+(defn image-input [{:keys [:form-data :width :height :id]} text]
+  (let [rejected? (r/atom false)]
+    (fn []
+      [:div.btn-wrap
+       [file-drag-input {:form-data form-data
+                         :id id
+                         :label [upload-image-button-label text]
+                         :file-accept-pred (partial file-acceptable? {:expected-width width :expected-height height})
+                         :on-file-accepted (fn []
+                                             (reset! rejected? false))
+                         :on-file-rejected (fn []
+                                             (reset! rejected? true))}]
+       [:p
+        (when @rejected? {:class "error"})
+        "Size " width " x " height]])))
+
+
 (defn district-form [{:keys [:form-data :edit?]}]
   (let [deposit-query (when-not edit?
                         (subscribe [::gql/query {:queries [(param-search-query :deposit)]}]))
@@ -197,8 +224,8 @@
            [:div.body-text
             [:div.container
              (when-not edit?
-              [:p.intro-text
-               "Below you can fill out all the parameters required to submit your district for a place in the District Registry. These items can be altered if a district is not currently challenged or blacklisted. Further down you can find the three different options for token issuance curves, with descriptions for each. These curves determine how many DNT need to be staked to earn votes for successive stakers to the district. Token issuance curve cannot be altered once submitted. You can read more " [:a {:href "https://education.district0x.io/district0x-specific-topics/understanding-distict0x/the-district-registry/" :target :_blank} "here"] "."])
+               [:p.intro-text
+                "Below you can fill out all the parameters required to submit your district for a place in the District Registry. These items can be altered if a district is not currently challenged or blacklisted. Further down you can find the three different options for token issuance curves, with descriptions for each. These curves determine how many DNT need to be staked to earn votes for successive stakers to the district. Token issuance curve cannot be altered once submitted. You can read more " [:a {:href "https://education.district0x.io/district0x-specific-topics/understanding-distict0x/the-district-registry/" :target :_blank} "here"] "."])
              [:form.image-upload
               [:div.row.spaced
                [:div.col.left
@@ -246,26 +273,18 @@
                                  :placeholder "Description"
                                  :id :description}]
                 [:div.form-btns
-                 [:div.btn-wrap
-                  [file-drag-input {:form-data form-data
-                                    :id :logo-file-info
-                                    :label [upload-image-button-label "Upload Logo"]
-                                    :file-accept-pred file-acceptable?
-                                    :on-file-accepted (fn [props]
-                                                        (prn "Accepted " props))
-                                    :on-file-rejected (fn [props]
-                                                        (prn "Rejected " props))}]
-                  [:p "Size 256 x 256"]]
-                 [:div.btn-wrap
-                  [file-drag-input {:form-data form-data
-                                    :id :background-file-info
-                                    :label [upload-image-button-label "Upload Background"]
-                                    :file-accept-pred file-acceptable?
-                                    :on-file-accepted (fn [props]
-                                                        (prn "Accepted " props))
-                                    :on-file-rejected (fn [props]
-                                                        (prn "Rejected " props))}]
-                  [:p "Size 1120 x 800"]]]]]]
+                 [image-input
+                  {:form-data form-data
+                   :id :logo-file-info
+                   :width 256
+                   :height 256}
+                  "Upload Logo"]
+                 [image-input
+                  {:form-data form-data
+                   :id :background-file-info
+                   :width 1120
+                   :height 800}
+                  "Upload Background"]]]]]
              (if edit?
                [save-button
                 {:reg-entry/address address
