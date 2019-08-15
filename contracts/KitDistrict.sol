@@ -25,7 +25,7 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
 
   enum Apps {Voting, Vault, Finance}
 
-  uint64 public votingSupportRequiredPct = 51 ^ 17; // 51%
+  uint64 public votingSupportRequiredPct = 50 ^ 17; // 50%
   uint64 public votingMinAcceptQuorumPct = 25 ^ 17; // 25%
   uint64 public votingVoteTime = 3 days;
   uint64 public financePeriodDuration = 30 days;
