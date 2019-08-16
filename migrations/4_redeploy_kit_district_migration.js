@@ -45,7 +45,7 @@ async function deploy_District(deployer, dntAddr, districtChallengeAddr, stakeBa
   linkBytecode(District, forwarder2TargetPlaceholder, stakeBankAddr);
   linkBytecode(District, kitDistrictPlaceholder, kitDistrict.address);
 
-  await deployer.deploy(District, Object.assign({}, opts, {gas: 6e6}));
+  await deployer.deploy(District, Object.assign({}, opts, {gas: 6.2e6}));
   const district = await District.deployed();
 
   return district;
@@ -59,7 +59,7 @@ async function deploy_DistrictFactory(deployer, dntAddr, districtRegistryFwdAddr
 
   linkBytecode(DistrictFactory, forwarder1TargetPlaceholder, district.address);
 
-  await deployer.deploy(DistrictFactory, districtRegistryFwdAddr, dntAddr, Object.assign({}, opts, {gas: 1e6}));
+  await deployer.deploy(DistrictFactory, districtRegistryFwdAddr, dntAddr, Object.assign({}, opts, {gas: 1.5e6}));
   const districtFactory = await DistrictFactory.deployed();
 
   console.log("Allowing new DistrictFactory in DistrictRegistryForwarder");

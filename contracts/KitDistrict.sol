@@ -89,7 +89,7 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
 
     if (isAppIncluded(Apps.Voting)) {
       voting = Voting(
-        dao.newPinnedAppInstance(
+        dao.newAppInstance(
           appIds[uint8(Apps.Voting)],
           latestVersionAppBase(appIds[uint8(Apps.Voting)])
         )
@@ -99,7 +99,7 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
 
     if (isAppIncluded(Apps.Vault) || isAppIncluded(Apps.Finance)) {
       vault = Vault(
-        dao.newPinnedAppInstance(
+        dao.newAppInstance(
           appIds[uint8(Apps.Vault)],
           latestVersionAppBase(appIds[uint8(Apps.Vault)]),
           new bytes(0),
@@ -111,7 +111,7 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
 
     if (isAppIncluded(Apps.Finance)) {
       finance = Finance(
-        dao.newPinnedAppInstance(
+        dao.newAppInstance(
           appIds[uint8(Apps.Finance)],
           latestVersionAppBase(appIds[uint8(Apps.Finance)])
         )
