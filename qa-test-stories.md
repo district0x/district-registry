@@ -36,16 +36,19 @@ Following user stories should be tested on QA before updates can be pushed into 
 - Go to Submit Page
 - Fill out the form with random data and choose Linear curve
 - Go to detail page and verify is all displayed data match your submitted data
+- From creator's address press Edit button, edit district data randomly, and send transaction
 - From detail page, stake and unstake into the district random amounts, randomly many times, from random addresses
 - Looking at stake history chart, verify if staking follows chosen curve
 - Switch to a different address and challenge the district
+- Verify if from creator's address it is not possible to edit district during a challenge
 - From challenger's address vote Against with amount larger than currently staked balance
 - Click on the link to backup your vote secrets and backup your vote secrets
 - Clear localstorage of your browser
 - Import your vote secrets file
 - Go back to the district detail page
 - Reveal your vote
-- Verify is the district is blacklisted after reveal period finished
+- Verify if the district is blacklisted after reveal period finished
+- Verify that the district cannot be edited from creator's address after it was blacklisted
 - Verify that challenger's address is egligible for challenge as well as vote reward
 - Claim the reward from challenger's address
 - Verify if you received email notification about claimed reward
