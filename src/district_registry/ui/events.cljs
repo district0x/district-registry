@@ -37,7 +37,7 @@
       {:ipfs/call {:func "add"
                    :args [buffer-data]
                    :on-success [::registry-entry/approve-and-create-challenge data]
-                   :on-error ::error}})))
+                   :on-error [::logging/error "Adding challenge meta failed" ::registry-entry/approve-and-create-challenge]}})))
 
 
 (re-frame/reg-event-fx
@@ -49,7 +49,7 @@
       {:ipfs/call {:func "add"
                    :args [(:file logo-file-info)]
                    :on-success [::add-district-bg-image data]
-                   :on-error ::error}})))
+                   :on-error [::logging/error "Uploading district bg image failed" ::add-district-bg-image]}})))
 
 
 (re-frame/reg-event-fx
@@ -61,7 +61,7 @@
       {:ipfs/call {:func "add"
                    :args [(:file background-file-info)]
                    :on-success [::add-district-meta data logo-hash]
-                   :on-error ::error}})))
+                   :on-error [::logging/error "Uploading district meta data" ::add-district-meta]}})))
 
 
 (defn- safe-trim [s]
@@ -98,7 +98,9 @@
                    :on-success (if edit?
                                  [::registry-entry/set-meta-hash data]
                                  [::district-factory/approve-and-create-district data])
-                   :on-error ::error}})))
+                   :on-error (if edit?
+                               [::logging/error "Editing district data failed" ::registry-entry/set-meta-hash]
+                               [::logging/error "Creating district failed" ::district-factory/approve-and-create-district])}})))
 
 
 (re-frame/reg-event-fx
