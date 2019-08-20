@@ -68,7 +68,7 @@
         [unit value] (time/time-remaining-biggest-unit (t/now)
                                                        (-> commit-period-end time/epoch->long time-coerce/from-long))
         time-remaining (format/format-time-units {unit value})]
-    (promise-> (district0x-emails/get-email {:district0x-emails/address (print.foo/look creator)})
+    (promise-> (district0x-emails/get-email {:district0x-emails/address creator})
                #(validate-email %)
                (fn [to] (if to
                           (do
@@ -109,7 +109,7 @@
                :to to
                :subject "You received a vote reward"
                :content (templates/vote-reward-claimed-email-body {:district/name name
-                                                                   :vote/option (case (print.foo/look option)
+                                                                   :vote/option (case option
                                                                                   1 "YES"
                                                                                   2 "NO")
                                                                    :amount amount

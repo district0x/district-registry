@@ -116,7 +116,7 @@
    [:stake-history/staker-voting-token-balance :BIG :INT not-nil]
    [:stake-history/staked-amount :BIG :INT not-nil]
    [:stake-history/unstake? :unsigned :integer not-nil]
-   [(sql/call :primary-key :reg-entry/address :stake-history/staker :stake-history/staked-on)]
+   [(sql/call :primary-key :reg-entry/address :stake-history/stake-id)]
    [(sql/call :foreign-key :reg-entry/address) (sql/call :references :districts :reg-entry/address)]])
 
 
