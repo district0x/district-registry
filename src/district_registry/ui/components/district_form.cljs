@@ -37,16 +37,24 @@
    [:div text]])
 
 
-(defn- file-acceptable? [{:keys [:expected-width :expected-height]} {:keys [:type :file]}]
+(defn- file-acceptable? [{:keys [:expected-width :expected-height]} {:keys [:type :file :size]}]
   (js/Promise. (fn [resolve reject]
                  (let [URL (or (aget js/window "URL") (aget js/window "webkitURL"))
                        Image (js/document.createElement "img")]
                    (aset Image "onload" (fn []
                                           (this-as this
-                                            (if (or (not= (aget this "width") expected-width)
-                                                    (not= (aget this "height") expected-height)
-                                                    (not (contains? #{"image/png" "image/jpg" "image/jpeg"} type)))
-                                              (reject)
+                                            (cond
+                                              (or (not= (aget this "width") expected-width)
+                                                  (not= (aget this "height") expected-height))
+                                              (reject {:error :image-size})
+
+                                              (not (contains? #{"image/png" "image/jpg" "image/jpeg"} type))
+                                              (reject {:error :file-type})
+
+                                              (> size 1000000)
+                                              (reject {:error :file-size})
+
+                                              :else
                                               (resolve)))))
                    (aset Image "src" (js-invoke URL "createObjectURL" file))))))
 
@@ -154,7 +162,7 @@
 
 
 (defn image-input [{:keys [:form-data :width :height :id]} text]
-  (let [rejected? (r/atom false)]
+  (let [submit-error (r/atom false)]
     (fn []
       [:div.btn-wrap
        [file-drag-input {:form-data form-data
@@ -162,12 +170,16 @@
                          :label [upload-image-button-label text]
                          :file-accept-pred (partial file-acceptable? {:expected-width width :expected-height height})
                          :on-file-accepted (fn []
-                                             (reset! rejected? false))
-                         :on-file-rejected (fn []
-                                             (reset! rejected? true))}]
+                                             (reset! submit-error false))
+                         :on-file-rejected (fn [_ {:keys [:error]}]
+                                             (reset! submit-error error))}]
        [:p
-        (when @rejected? {:class "error"})
-        "Size " width " x " height]])))
+        (when @submit-error {:class "error"})
+        (condp = @submit-error
+          :image-size [:<> "Invalid Size (" width " x " height ")"]
+          :file-type [:<> "Invalid File Type"]
+          :file-size [:<> "Image is too large (max 1MB)"]
+          [:<> "Size " width " x " height])]])))
 
 
 (defn district-form [{:keys [:form-data :edit?]}]
