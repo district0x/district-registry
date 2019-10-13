@@ -230,10 +230,14 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
       history.push(StakeBankCheckpoint({at: block.number, amount: amount}));
       return;
     }
+    StakeBankCheckpoint storage checkpoint;
     if (history[length-1].at < block.number) {
       history.push(StakeBankCheckpoint({at: block.number, amount: history[length-1].amount}));
+      checkpoint = history[length];
+    } else if (history[length-1].at == block.number) {
+      checkpoint = history[length-1];
     }
-    StakeBankCheckpoint storage checkpoint = history[length];
+
     if (isUnstake) {
       checkpoint.amount = checkpoint.amount.sub(amount);
     } else {
