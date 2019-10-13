@@ -92,7 +92,6 @@ contract RegistryEntry is ApproveAndCallFallBack {
   public
   notEmergency
   {
-    require(_challenger != 0x0);
     require(isChallengeable());
     require(registryToken.transferFrom(_challenger, address(this), deposit));
 
