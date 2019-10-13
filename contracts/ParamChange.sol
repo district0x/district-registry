@@ -57,8 +57,8 @@ contract ParamChange is RegistryEntry {
    * therefore constructor must be called explicitly.
    * Can only be called if the parameter value is within its allowed domain.
 
-   * @param _creator Creator of a district
-   * @param _version Version of District contract
+   * @param _creator Creator of a param change
+   * @param _version Version of ParamChange contract
    * @param _db EternalDb change will be applied to
    * @param _key Key of a changed parameter
    * @param _value New value of a parameter
