@@ -147,7 +147,11 @@ contract RegistryEntry is ApproveAndCallFallBack {
    * @return Index of the latest challenge
    */
   function currentChallengeIndex() public constant returns (uint) {
-    return challenges.length - 1;
+    if (challenges.length > 0) {
+      return challenges.length - 1;
+    } else {
+      return 0;
+    }
   }
 
   /**
