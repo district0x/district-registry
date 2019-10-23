@@ -207,7 +207,7 @@
   (let [active-account (subscribe [::account-subs/active-account])
         route-query (subscribe [::router-subs/active-page-query])
         status (or (:status @route-query) "in-registry")
-        order-by (or (:order-by @route-query) "dnt-staked")
+        order-by (or (:order-by @route-query) "created-on")
         order-by-kw (keyword "districts.order-by" order-by)
         order-by-kw->str {:districts.order-by/created-on "Creation Date"
                           :districts.order-by/dnt-staked "DNT Staked"}
