@@ -305,14 +305,6 @@
               "Challenge"]]]])))))
 
 
-(defn format-remaining-time [to-time]
-  (let [time-remaining (subscribe [::now-subs/time-remaining to-time])
-        {:keys [:days :hours :minutes :seconds]} @time-remaining]
-    (when-not (every? zero? [days hours minutes seconds])
-      (str (format/pluralize days "day") " " (format/pluralize hours "hour")
-           " " minutes " min. " seconds " sec."))))
-
-
 (defn- dispatch-vote [e option address district-name form-data]
   (js-invoke e "preventDefault")
   (dispatch [::reg-entry/approve-and-commit-vote
@@ -349,11 +341,12 @@
     (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges :district/name]}
          {:keys [:challenge/commit-period-end :challenge/comment] :as challange}]
       (let [tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:approve-and-commit-vote {:reg-entry/address address}}])
-            remaining-time (format-remaining-time (gql-utils/gql-date->date commit-period-end))
+            remaining-time @(subscribe [::now-subs/time-remaining (gql-utils/gql-date->date commit-period-end)])
+            has-remaining-time? (not (format/zero-time-units? remaining-time))
             {:keys [:challenge/vote]} (last challenges)
             voted? (pos? (:vote/amount vote))]
         (when (and commit-period-end
-                   (not remaining-time)
+                   (not has-remaining-time?)
                    (not @period-finished-event-fired?))
           (reset! period-finished-event-fired? true)
           (dispatch-period-finished ::reg-entry/commit-period-finished))
@@ -374,8 +367,8 @@
           [:div.row.spaced
            [:p [:b.remaining-time
                 "Voting period "
-                (if remaining-time
-                  (str "ends in " remaining-time)
+                (if has-remaining-time?
+                  (str "ends in " (format/format-time-units remaining-time {:short? true}))
                   "has finished.")]]
            [:div.form-btns
             [:div.cta-btns
@@ -403,7 +396,7 @@
                :id :vote/amount
                :errors errors
                :type :number
-               :disabled (or (nil? remaining-time) voted?)}]
+               :disabled (or (not has-remaining-time?) voted?)}]
              [:span.cur "DNT"]]]
            [:div
             [:p "You can vote with up to "
@@ -420,12 +413,13 @@
     (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges :district/name]}
          {:keys [:challenge/comment :challenge/reveal-period-end :challenge/vote] :as challenge}]
       (let [tx-pending? (subscribe [::tx-id-subs/tx-pending? {:reveal-vote {:reg-entry/address address}}])
-            remaining-time (format-remaining-time (gql-utils/gql-date->date reveal-period-end))
+            remaining-time @(subscribe [::now-subs/time-remaining (gql-utils/gql-date->date reveal-period-end)])
+            has-remaining-time? (not (format/zero-time-units? remaining-time))
             no-vote? (not (pos? (:vote/amount vote)))
             stored-vote @(subscribe [::subs/vote address])]
 
         (when (and reveal-period-end
-                   (not remaining-time)
+                   (not has-remaining-time?)
                    (not @period-finished-event-fired?))
           (reset! period-finished-event-fired? true)
           (dispatch-period-finished ::reg-entry/commit-period-finished))
@@ -437,13 +431,13 @@
          [challenger-comment challenge]
          [:form.voting
           [:div.row.spaced
-           [:p [:b (str "Reveal period " (if remaining-time
-                                           (str "ends in " remaining-time)
+           [:p [:b (str "Reveal period " (if has-remaining-time?
+                                           (str "ends in " (format/format-time-units remaining-time {:short? true}))
                                            "has finished."))]]
            [tx-button
             {:class "cta-btn"
              :primary true
-             :disabled (or (not remaining-time)
+             :disabled (or (not has-remaining-time?)
                            (boolean (:vote/revealed-on vote))
                            no-vote?
                            (and (not no-vote?) (not stored-vote)))

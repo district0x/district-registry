@@ -7,9 +7,11 @@
     [district-registry.ui.components.stake :as stake]
     [district-registry.ui.contract.district :as district]
     [district.format :as format]
+    [district.graphql-utils :as gql-utils]
     [district.ui.component.page :refer [page]]
     [district.ui.graphql.subs :as gql]
     [district.ui.ipfs.subs :as ipfs-subs]
+    [district.ui.now.subs :as now-subs]
     [district.ui.router.subs :as router-subs]
     [district.ui.web3-accounts.subs :as account-subs]
     [re-frame.core :refer [subscribe dispatch]]
@@ -39,7 +41,10 @@
              :reg-entry/created-on
              :reg-entry/challenge-period-end
              [:reg-entry/challenges
-              [:challenge/challenger]]
+              [:challenge/index
+               :challenge/challenger
+               :challenge/commit-period-end
+               :challenge/reveal-period-end]]
              :district/meta-hash
              :district/name
              :district/description
@@ -73,10 +78,13 @@
                              :district/name
                              :district/total-supply
                              :district/url
+                             :reg-entry/status
                              :reg-entry/address
                              :reg-entry/challenges
                              :reg-entry/deposit
-                             :reg-entry/version]}]
+                             :reg-entry/version]
+                      :as district}
+                     {:keys [:status]}]
   (let [nav-to-details-props {:style {:cursor "pointer"}
                               :on-click #(dispatch [:district.ui.router.events/navigate
                                                     :route/detail
@@ -90,6 +98,31 @@
       [:div.inner
        [:h2 nav-to-details-props (format/truncate name 64)]
        [:p nav-to-details-props (format/truncate description 200)]
+       (when (and (= status "challenged"))
+         (let [{:keys [:challenge/commit-period-end :challenge/reveal-period-end] :as challenge} (last challenges)]
+           [:p.time-remaining [:b
+                (when challenge
+                  (let [district-status (gql-utils/gql-name->kw (:reg-entry/status district))
+                        commit-period? (= district-status :reg-entry.status/commit-period)
+                        remaining-time @(subscribe [::now-subs/time-remaining (gql-utils/gql-date->date (if commit-period?
+                                                                                                          commit-period-end
+                                                                                                          reveal-period-end))])
+                        has-remaining-time? (not (format/zero-time-units? remaining-time))]
+
+                    (cond
+                      (and commit-period? has-remaining-time?)
+                      (str "Vote period ends in " (format/format-time-units remaining-time {:short? true}))
+
+                      (and commit-period? (not has-remaining-time?))
+                      "Vote period ended."
+
+                      (and (not commit-period?) has-remaining-time?)
+                      (str "Reveal period ends in " (format/format-time-units remaining-time {:short? true}))
+
+                      (and (not commit-period?) (not has-remaining-time?))
+                      "Reveal period ended."
+
+                      :else "")))]]))
        [:div.h-line]
        [stake/stake-info address]
        [stake/stake-form address]]
@@ -138,7 +171,7 @@
              (->> districts
                (map (fn [{:as district
                           :keys [:reg-entry/address]}]
-                      ^{:key address} [district-tile district]))
+                      ^{:key address} [district-tile district route-query]))
                doall)])))
 
 
