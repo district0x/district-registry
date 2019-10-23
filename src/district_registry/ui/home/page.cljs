@@ -125,7 +125,7 @@
                       :else "")))]]))
        [:div.h-line]
        [stake/stake-info address]
-       [stake/stake-form address]]
+       [stake/stake-form address {:disable-estimated-return? (= status "blacklisted")}]]
       [:div.arrow-blob
        (nav/a {:route [:route/detail {:address address}]}
               [:span.arr.icon-arrow-right])]]]))

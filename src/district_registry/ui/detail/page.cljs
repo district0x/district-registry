@@ -92,6 +92,7 @@
     :district/logo-image-hash
     :district/background-image-hash
     :district/dnt-weight
+    :district/stake-bank
     :district/dnt-staked
     :district/total-supply
     [:district/dnt-staked-for {:staker active-account}]
@@ -144,6 +145,7 @@
                             :district/aragon-id
                             :district/total-supply
                             :district/dnt-staked
+                            :district/stake-bank
                             :reg-entry/status
                             :reg-entry/created-on
                             :reg-entry/address

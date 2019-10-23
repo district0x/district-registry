@@ -117,14 +117,29 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
   }
 
   /**
-   * @dev Estimates amount of voting tokens received given amount of staked registry tokens
+   * @dev Calculates amount of voting tokens received given amount of staked registry tokens
    * @param _amount Amount of staked registry tokens
    * @return The estimated amount
    */
-  function estimateReturnForStake(uint _amount) private view returns (uint) {
+  function calculateReturnForStake(uint _amount) private view returns (uint) {
     return calculatePurchaseReturn(
       totalSupply().add(1e19),
       totalStaked().add(1e14),
+      dntWeight,
+      _amount
+    );
+  }
+
+  /**
+   * @dev Estimates amount of voting tokens received given amount of staked registry tokens
+   * Purpose of this function is to provide number into UI before user submits actual stake transaction
+   * @param _amount Amount of staked registry tokens
+   * @return The estimated amount
+   */
+  function estimateReturnForStake(uint _amount) public view returns (uint) {
+    return calculatePurchaseReturn(
+      totalSupply().add(1e19),
+      totalStaked().add(1e14).add(_amount),
       dntWeight,
       _amount
     );
@@ -141,7 +156,7 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
   function stakeFor(address user, uint256 amount) public onlyOwner returns (uint) {
     updateStakeBankCheckpointAtNow(stakesFor[user], amount, false);
     updateStakeBankCheckpointAtNow(stakeHistory, amount, false);
-    require(generateTokens(user, estimateReturnForStake(amount)));
+    require(generateTokens(user, calculateReturnForStake(amount)));
     return stakeHistory.length - 1;
   }
 

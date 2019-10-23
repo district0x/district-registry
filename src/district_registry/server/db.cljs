@@ -46,6 +46,7 @@
    [:district/total-supply :unsigned :BIG :INT not-nil]
    [:district/aragon-dao address not-nil]
    [:district/aragon-id :string not-nil]
+   [:district/stake-bank :string not-nil]
    [(sql/call :primary-key :reg-entry/address)]
    [(sql/call :foreign-key :reg-entry/address) (sql/call :references :reg-entries :reg-entry/address)]])
 

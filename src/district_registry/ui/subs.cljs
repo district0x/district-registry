@@ -24,3 +24,8 @@
   ::active-account-has-email?
   (fn [db]
     (boolean (seq (get-in db [:district-registry.ui.my-account (account-queries/active-account db) :encrypted-email])))))
+
+(re-frame/reg-sub
+  ::estimated-return-for-stake
+  (fn [db [_ stake-bank amount]]
+    (get-in db [:district-registry.ui.contract.district/estimated-return-for-stake stake-bank amount])))

@@ -123,6 +123,7 @@ type District implements RegEntry {
   district_logoImageHash: String
   district_backgroundImageHash: String
   district_dntWeight: Int
+  district_stakeBank: String
   district_facebookUrl: String
   district_twitterUrl: String
   district_aragonDao: String
