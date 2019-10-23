@@ -433,7 +433,7 @@
 
         [:div
          [:h2 "Reveal"]
-         [:p "This district has been challenged, voting has completed, and it is now in its reveal period. If you voted, you may reveal your votes below. Unrevealed votes are not counted to wards the final decision, and are not eligible for rewards. When the reveal period ends, return to reclaim your DNT and any rewards."]
+         [:p "This district has been challenged, voting has completed, and it is now in its reveal period. If you voted, you may reveal your votes below. Unrevealed votes are not counted towards the final decision, and are not eligible for rewards. When the reveal period ends, return to reclaim your DNT and any rewards."]
          [challenger-comment challenge]
          [:form.voting
           [:div.row.spaced
