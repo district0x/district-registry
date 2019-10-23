@@ -5,6 +5,7 @@
     [district-registry.ui.components.nav :as nav]
     [district-registry.ui.events :as events]
     [district-registry.ui.subs :as subs]
+    [district.format :as format]
     [district.ui.component.form.input :refer [text-input file-drag-input]]
     [district.ui.component.page :refer [page]]
     [district.ui.component.tx-button :refer [tx-button]]
@@ -102,7 +103,8 @@
 
 
 (defn my-account []
-  (let [active-page-params (subscribe [::router-subs/active-page-params])]
+  (let [active-page-params (subscribe [::router-subs/active-page-params])
+        active-account (subscribe [::accounts-subs/active-account])]
     (fn []
       [:section#main
        [:div.container
@@ -123,7 +125,7 @@
            (condp = (:tab @active-page-params)
              "email" [email-section]
              "vote-secrets" [vote-secrets-section]
-             [tx-log {:header-props {:text [:h1 "Activity"]}
+             [tx-log {:header-props {:text [:h1 "Activity - " (format/truncate @active-account 10)]}
                       :settings-el [:div]
                       :tx-cost-currency :USD}])]]]]])))
 

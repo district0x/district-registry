@@ -2,7 +2,6 @@
   (:require
    [district-registry.ui.components.nav :as nav]
    [district-registry.ui.subs :as dr-subs]
-   [district.ui.component.active-account :refer [active-account]]
    [district.ui.component.active-account-balance :refer [active-account-balance]]
    [district.ui.component.form.input :as inputs :refer [text-input*]]
    [district.ui.router.events]
@@ -36,8 +35,8 @@
         :locale "en-US"}]]
      [nav/a {:route [:route/my-account {:tab "activity"}]}
       [:div.select-menu
-       [:div.select-choice.cta-btn
-        [:div.select-text [active-account]]]]]]]])
+       [:div.select-choice.cta-btn.my-account-btn
+        [:div.select-text "My Account"]]]]]]])
 
 (defn footer []
   [:footer#globalFooter
