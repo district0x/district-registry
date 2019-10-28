@@ -6,13 +6,13 @@
     [district-registry.server.contract.district0x-emails :as district0x-emails]
     [district-registry.server.db :as db]
     [district-registry.server.emailer.templates :as templates]
-    [district-registry.server.syncer]
     [district.encryption :as encryption]
     [district.format :as format]
     [district.sendgrid :refer [send-email]]
     [district.server.config :as config]
     [district.server.config :refer [config]]
     [district.server.logging]
+    [district-registry.server.utils :as server-utils]
     [district.server.web3-events :refer [register-callback! unregister-callbacks!]]
     [district.shared.async-helpers :refer [promise->]]
     [district.shared.error-handling :refer [try-catch try-catch-throw]]
@@ -31,6 +31,66 @@
       (log/error "Private key for emailer wasn't configured")
       nil)))
 
+(defn send-registry-blacklisted-with-stake-email [staker-address registry-entry]
+  (let [{:keys [:from :template-id :api-key :print-mode?]} (get-in @config/config [:emailer])
+        root-url (format/ensure-trailing-slash (get-in @config/config [:ui :root-url]))
+        district-url (str root-url "detail/" (:reg-entry/address registry-entry))]
+    (promise-> (district0x-emails/get-email staker-address)
+               #(validate-email %)
+               (fn [to]
+                 (if to
+                   (let [email {:from from
+                                :to to
+                                :subject "A district you staked on has been blacklisted"
+                                :content (templates/blacklisted-reminder-email-body {:district/name name
+                                                                                     :district-url district-url})
+                                :substitutions {}
+                                :on-success #(log/info "Success sending blacklisted reminder email"
+                                                       {:to to :reg-entry/address registry-entry :district/name name}
+                                                       ::send-registry-blacklisted-with-stake-email)
+                                :on-error #(log/error "Error when sending blacklisted remainder email"
+                                                      {:error % :reg-entry/address registry-entry :to to}
+                                                      ::send-registry-blacklisted-with-stake-email)
+
+
+                                :template-id template-id
+                                :api-key api-key
+                                :print-mode? print-mode?}]
+                     (log/info "Sending blacklisted with stake reminder email" {:to to
+                                                                                :staker-address staker-address
+                                                                                :reg-entry/address (:reg-entry/address registry-entry)}
+                               ::send-registry-blacklisted-with-stake-email)
+                     (log/debug "EMAIL" {:email email})
+                     (send-email email))
+                   (log/info "No email found for staker" {:address staker-address} ::send-reveal-reminder-email))))))
+
+(defn- on-challenge-resolved [challenged-entry status]
+  (case status
+    :reg-entry.status/blacklisted
+    (let [stakers-addresses (db/get-stakers (:reg-entry/address challenged-entry))]
+      (when (seq stakers-addresses)
+        (log/info "Registry entry blacklisted with positive stakes" {:reg-entry/address (:reg-entry/address challenged-entry)
+                                                                     :stakers stakers-addresses})
+        (doseq [address stakers-addresses]
+          (send-registry-blacklisted-with-stake-email address challenged-entry))))
+
+    nil))
+
+(defn- schedule-on-challenge-resolved!
+  "Given a challenged `reg-entry` map and a function `f` call `f` with the `reg-entry` and
+  its status when the challenge resolves."
+  [{:keys [:challenge/reveal-period-end] :as reg-entry} f]
+  (let [now (server-utils/now-in-seconds)
+        schedule-seconds-ahead (inc (- reveal-period-end now))]
+    (log/debug "Scheduling on-challenge-resolved" {:reg-entry/address (:reg-entry/address reg-entry)
+                                                  :seconds-ahead schedule-seconds-ahead})
+    (js/setTimeout (fn []
+                     (let [reg-entry-status (db/reg-entry-status (server-utils/now-in-seconds)
+                                                                 reg-entry)]
+                       (log/debug "Challenge status resolved" {:status reg-entry-status
+                                                               :reg-entry reg-entry})
+                       (f reg-entry reg-entry-status)))
+                   (* schedule-seconds-ahead 1000))))
 
 (defn send-challenge-created-email-handler
   [{:keys [from to
@@ -59,8 +119,8 @@
      :print-mode? print-mode?}))
 
 
-(defn send-challenge-created-email [{:keys [:registry-entry :challenger :commit-period-end :reward-pool :metahash :timestamp :version] :as ev}]
-  (let [{:keys [:reg-entry/creator]} (db/get-registry-entry {:reg-entry/address registry-entry} [:reg-entry/creator])
+(defn send-challenge-created-email [{:keys [:registry-entry :challenger :commit-period-end :reveal-period-end :reward-pool :metahash :timestamp :version] :as ev}]
+  (let [{:keys [:reg-entry/creator :reg-entry/challenge-period-end]} (db/get-registry-entry {:reg-entry/address registry-entry} [:reg-entry/creator :reg-entry/challenge-period-end])
         {:keys [:district/name]} (db/get-district {:reg-entry/address registry-entry} [:district/name])
         {:keys [:from :template-id :api-key :print-mode?]} (get-in @config/config [:emailer])
         root-url (format/ensure-trailing-slash (get-in @config/config [:ui :root-url]))
@@ -68,6 +128,10 @@
         [unit value] (time/time-remaining-biggest-unit (t/now)
                                                        (-> commit-period-end time/epoch->long time-coerce/from-long))
         time-remaining (format/format-time-units {unit value})]
+    (schedule-on-challenge-resolved! {:reg-entry/address registry-entry
+                                      :reg-entry/challenge-period-end (bn/number challenge-period-end)
+                                      :challenge/reveal-period-end reveal-period-end}
+                                     on-challenge-resolved)
     (promise-> (district0x-emails/get-email {:district0x-emails/address creator})
                #(validate-email %)
                (fn [to] (if to
@@ -325,7 +389,6 @@
                         :print-mode? print-mode?}))
                    (log/info "No email found for voter" {:event ev :reg-entry/address registry-entry} ::send-reveal-reminder-email))))))
 
-
 (defn- dispatcher [callback]
   (fn [_ {:keys [:latest-event? :args]}]
     (if (= callback send-reveal-reminder-email)
@@ -357,4 +420,3 @@
   :start (start (merge (:pinner @config)
                        (:pinner (mount/args))))
   :stop (stop emailer))
-

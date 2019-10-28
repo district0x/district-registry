@@ -33,3 +33,7 @@
 (defn reveal-reminder-email-body [{:keys [:district/name :district-url]}]
   (let [link (format-link district-url name)]
     (str "You voted about destiny of " link ". Now voting has entered reveal phase. Please reveal your vote, so it counts!")))
+
+(defn blacklisted-reminder-email-body [{:keys [:district/name :district-url]}]
+  (let [link (format-link district-url name)]
+    (str link "COMPLETE HERE")))

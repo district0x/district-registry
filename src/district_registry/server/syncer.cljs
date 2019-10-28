@@ -6,6 +6,7 @@
     [cljs-web3.core :as web3]
     [cljs-web3.eth :as web3-eth]
     [district-registry.server.db :as db]
+    [district-registry.server.emailer :as emailer]
     [district-registry.server.ipfs :as ipfs]
     [district-registry.server.utils :as server-utils]
     [district-registry.shared.utils :refer [vote-option->num]]
@@ -35,7 +36,6 @@
 
 (defn- transform-district-keys [[k v]]
   [(keyword "district" (name k)) v])
-
 
 (defn district-constructed-event [_ {:keys [:args]}]
   (try-catch
@@ -102,27 +102,27 @@
       (db/update-param-change! {:reg-entry/address registry-entry
                                 :param-change/applied-on timestamp}))))
 
-
 (defn challenge-created-event [_ {:keys [:args]}]
   (try-catch
     (let [{:keys [:registry-entry :index :challenger :commit-period-end :reveal-period-end :reward-pool :meta-hash]} args
-          index (bn/number index)]
-      (db/insert-challenge!
-        {:reg-entry/address registry-entry
-         :challenge/index index
-         :challenge/challenger challenger
-         :challenge/commit-period-end (bn/number commit-period-end)
-         :challenge/reveal-period-end (bn/number reveal-period-end)
-         :challenge/reward-pool (bn/number reward-pool)
-         :challenge/meta-hash (web3/to-ascii meta-hash)})
+          index (bn/number index)
+          challenged-entry {:reg-entry/address registry-entry
+                            :challenge/index index
+                            :challenge/challenger challenger
+                            :challenge/commit-period-end (bn/number commit-period-end)
+                            :challenge/reveal-period-end (bn/number reveal-period-end)
+                            :challenge/reward-pool (bn/number reward-pool)
+                            :challenge/meta-hash (web3/to-ascii meta-hash)}]
+      (db/insert-challenge! challenged-entry)
       (db/update-registry-entry! {:reg-entry/address registry-entry
                                   :reg-entry/current-challenge-index index})
       (.then (server-utils/get-ipfs-meta @ipfs/ipfs (web3/to-ascii meta-hash))
              (fn [{:keys [comment]}]
-               (try-catch
-                 (db/update-challenge! {:reg-entry/address registry-entry
-                                        :challenge/index index
-                                        :challenge/comment comment})))))))
+               (let [challenge-extra-info {:reg-entry/address registry-entry
+                                           :challenge/index index
+                                           :challenge/comment comment}]
+                 (try-catch
+                  (db/update-challenge! challenge-extra-info))))))))
 
 
 (defn vote-committed-event [_ {:keys [:args]}]
