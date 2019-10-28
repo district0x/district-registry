@@ -60,21 +60,64 @@
                                                                                 :staker-address staker-address
                                                                                 :reg-entry/address (:reg-entry/address registry-entry)}
                                ::send-registry-blacklisted-with-stake-email)
-                     (log/debug "EMAIL" {:email email})
                      (send-email email))
-                   (log/info "No email found for staker" {:address staker-address} ::send-reveal-reminder-email))))))
+                   (log/warn "No email found for staker" {:address staker-address} ::send-registry-blacklisted-with-stake-email))))))
+
+(defn send-registry-whitelisted-with-stake-email [staker-address registry-entry]
+  (let [{:keys [:from :template-id :api-key :print-mode?]} (get-in @config/config [:emailer])
+        root-url (format/ensure-trailing-slash (get-in @config/config [:ui :root-url]))
+        district-url (str root-url "detail/" (:reg-entry/address registry-entry))]
+    (promise-> (district0x-emails/get-email staker-address)
+               #(validate-email %)
+               (fn [to]
+                 (if to
+                   (let [email {:from from
+                                :to to
+                                :subject "A district you have a stake on has been whitelisted. You can collect your reward."
+                                :content (templates/staker-collect-reward-reminder-email-body {:district/name name
+                                                                                               :district-url district-url})
+                                :substitutions {}
+                                :on-success #(log/info "Success sending staker collect reword remainder email"
+                                                       {:to to :reg-entry/address registry-entry :district/name name}
+                                                       ::send-registry-whitelisted-with-stake-email)
+                                :on-error #(log/error "Error when sending staker collect reword remainder email"
+                                                      {:error % :reg-entry/address registry-entry :to to}
+                                                      ::send-registry-whitelisted-with-stake-email)
+
+
+                                :template-id template-id
+                                :api-key api-key
+                                :print-mode? print-mode?}]
+                     (log/debug "Sending staker collect reword remainder email" {:to to
+                                                                                 :staker-address staker-address
+                                                                                 :reg-entry/address (:reg-entry/address registry-entry)}
+                                ::send-registry-whitelisted-with-stake-email)
+                     (send-email email))
+                   (log/warn "No email found for staker" {:address staker-address} ::send-registry-whitelisted-with-stake-email))))))
 
 (defn- on-challenge-resolved [challenged-entry status]
-  (case status
-    :reg-entry.status/blacklisted
-    (let [stakers-addresses (db/get-stakers (:reg-entry/address challenged-entry))]
-      (when (seq stakers-addresses)
-        (log/info "Registry entry blacklisted with positive stakes" {:reg-entry/address (:reg-entry/address challenged-entry)
-                                                                     :stakers stakers-addresses})
-        (doseq [address stakers-addresses]
-          (send-registry-blacklisted-with-stake-email address challenged-entry))))
+  (let [stakers-addresses (db/get-stakers (:reg-entry/address challenged-entry))]
+    (when (seq stakers-addresses)
+      (case status
 
-    nil))
+        ;; when district is blacklisted notify all stakers with a current positive stake on it
+        :reg-entry.status/blacklisted
+        (do
+          (log/info "Registry entry blacklisted with positive stakes. Notifying stakers."
+                    {:reg-entry/address (:reg-entry/address challenged-entry)
+                     :stakers stakers-addresses})
+          (doseq [address stakers-addresses]
+            (send-registry-blacklisted-with-stake-email address challenged-entry)))
+
+        ;; when district is whitelisted after a challenge notify all stakers to collect reward
+        :reg-entry.status/whitelisted
+        (do
+          (log/info "Registry entry whitelisted with positive stakes. Notifying stakers to collect rewards."
+                    {:reg-entry/address (:reg-entry/address challenged-entry)
+                     :stakers stakers-addresses})
+          (doseq [address stakers-addresses]
+            (send-registry-blacklisted-with-stake-email address challenged-entry)))
+        nil))))
 
 (defn- schedule-on-challenge-resolved!
   "Given a challenged `reg-entry` map and a function `f` call `f` with the `reg-entry` and

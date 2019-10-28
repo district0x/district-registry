@@ -37,3 +37,7 @@
 (defn blacklisted-reminder-email-body [{:keys [:district/name :district-url]}]
   (let [link (format-link district-url name)]
     (str link "COMPLETE HERE")))
+
+(defn staker-collect-reward-reminder-email-body [{:keys [:district/name :district-url]}]
+  (let [link (format-link district-url name)]
+    (str link "COMPLETE HERE")))
