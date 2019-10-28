@@ -5,7 +5,7 @@
    [district.server.db.column-types :refer [address not-nil default-nil default-zero default-false sha3-hash primary-key]]
    [district.server.db.honeysql-extensions]
    [honeysql.core :as sql]
-   [honeysql.helpers :refer [merge-where merge-order-by merge-left-join defhelper]]
+   [honeysql.helpers :as sqlh :refer [merge-where merge-order-by merge-left-join defhelper]]
    [medley.core :as medley]
    [mount.core :as mount :refer [defstate]]
    [taoensso.timbre :as logging :refer-macros [info warn error]]))
@@ -242,3 +242,56 @@
 (def update-stake-balance! (create-update-fn :stake-balances stake-balances-column-names [:reg-entry/address :stake-balance/staker]))
 
 (def insert-stake-history! (create-insert-fn :stake-history stake-history-column-names))
+
+(defn total-stake
+  "Returns the total stake from a collection of stakes"
+  [stakes]
+  (->> stakes
+       (map (fn [{:keys [:stake-history/unstake? :stake-history/staked-amount]}]
+              (* staked-amount (if unstake? -1 1))))
+       (reduce +)))
+
+(defn get-stakers
+  "Returns all the stakers addresses for a `reg-entry-address` which currenlty hold a positive stake"
+  [reg-entry-address]
+  (->> (db/all {:select [:*]
+                :from [:stake-history]
+                :where [:and
+                        [:= :reg-entry/address reg-entry-address]]})
+       (map #(update % :stake-history/unstake? = 1))
+       (group-by :stake-history/staker)
+       (keep (fn [[staker stakes]] (when (pos? (total-stake stakes))
+                                     staker)))))
+
+(defn get-stake-history [{:keys [:challenge/commit-period-end :stake-history/staker :reg-entry/address]} & [fields]]
+  (let [query (cond-> {:select (or fields [:*])
+                       :from [:stake-history]
+                       :order-by [[:stake-history/stake-id :desc]]
+                       :where [:= :reg-entry/address address]
+                       :limit 1}
+                staker (sqlh/merge-where [:= :stake-history/staker staker])
+                commit-period-end (sqlh/merge-where [:<= :stake-history/staked-on commit-period-end]))]
+    (db/get query)))
+
+(defn reg-entry-status [now {:keys [:reg-entry/address :reg-entry/challenge-period-end]}]
+  (let [{:keys [:challenge/index
+                :challenge/commit-period-end
+                :challenge/reveal-period-end
+                :challenge/votes-include
+                :challenge/votes-exclude]}
+        (db/get {:select [:*]
+                 :from [:challenges]
+                 :where [:= :challenges.reg-entry/address address]
+                 :order-by [[:challenges.challenge/index :desc]]})
+
+        {:keys [:stake-history/dnt-total-staked]}
+        (get-stake-history {:challenge/commit-period-end commit-period-end
+                            :reg-entry/address address})]
+    (cond
+      (and (< now challenge-period-end) (not index)) :reg-entry.status/challenge-period
+      (< now commit-period-end) :reg-entry.status/commit-period
+      (< now reveal-period-end) :reg-entry.status/reveal-period
+      (or
+       (< votes-exclude (+ votes-include (or dnt-total-staked 0)))
+       (< challenge-period-end now)) :reg-entry.status/whitelisted
+      :else :reg-entry.status/blacklisted)))
