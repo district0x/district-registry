@@ -36,8 +36,8 @@
 
 (defn blacklisted-reminder-email-body [{:keys [:district/name :district-url]}]
   (let [link (format-link district-url name)]
-    (str link "COMPLETE HERE")))
+    (str "You staked on a district " link " that has been blacklisted. You can collect your stake now.")))
 
 (defn staker-collect-reward-reminder-email-body [{:keys [:district/name :district-url]}]
   (let [link (format-link district-url name)]
-    (str link "COMPLETE HERE")))
+    (str "You staked on a district " link " which was challenged but the challenge failed. You can collect your reward now.")))
