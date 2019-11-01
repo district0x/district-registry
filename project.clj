@@ -150,7 +150,7 @@
                                     ".cljs_node_repl"
                                     "dev-server/"
                                     "resources/public/css-compiled/"
-                                    "resources/public/js/"
+                                    "resources/public/js/compiled/"
                                     "server-tests/"
                                     "server/"
                                     "target/"]
@@ -161,7 +161,8 @@
                                   [figwheel-sidecar "0.5.18" :exclusions [org.clojure/core.async]]
                                   [org.clojure/clojure "1.9.0"]
                                   [org.clojure/tools.reader "1.3.0"]]
-                   :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
+                   :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
+                                  :timeout 120000}
                    :source-paths ["dev" "src"]
                    :resource-paths ["resources"]}}
 
