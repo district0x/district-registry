@@ -19,12 +19,12 @@
        :body (-> "public/index.html" io/resource slurp)})
    "public"))
 
-(defn start-ui! [& [{:keys [ui-only?]}]]
+(defn start-ui! []
   (figwheel-sidecar.repl-api/start-figwheel!
     (assoc-in (figwheel-sidecar.config/fetch-config)
       [:data :figwheel-options :ring-handler]
       'user/ui-handler)
-    (if ui-only? "qa" "dev"))
+    "dev")
   (figwheel-sidecar.repl-api/cljs-repl "dev"))
 
 (defn start-tests! []

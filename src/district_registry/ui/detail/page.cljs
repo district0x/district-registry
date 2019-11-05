@@ -317,11 +317,12 @@
 
 
 (defn- vote-button-disabled? [form-data balance-dnt voted?]
-  (let [amount (parsers/parse-float (:vote/amount form-data))]
+  (let [balance-dnt (or balance-dnt 0)
+        amount (some-> form-data :vote/amount parsers/parse-float web3-utils/eth->wei)]
     (or
-      (not amount)
-      (bn/> (web3-utils/eth->wei amount) balance-dnt)
-      voted?)))
+     (not amount)
+     (bn/> amount balance-dnt)
+     voted?)))
 
 
 (defn- challenger-comment [{:keys [:challenge/challenger :challenge/comment]}]
@@ -341,12 +342,12 @@
         errors (ratom/reaction {:local {}})
         period-finished-event-fired? (r/atom false)]
     (fn [{:keys [:reg-entry/address :reg-entry/status :reg-entry/challenges :district/name]}
-         {:keys [:challenge/commit-period-end :challenge/comment] :as challange}]
+         {:keys [:challenge/commit-period-end :challenge/comment] :as challenge}]
       (let [tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:approve-and-commit-vote {:reg-entry/address address}}])
             remaining-time @(subscribe [::now-subs/time-remaining (gql-utils/gql-date->date commit-period-end)])
             has-remaining-time? (not (format/zero-time-units? remaining-time))
             {:keys [:challenge/vote]} (last challenges)
-            voted? (pos? (:vote/amount vote))]
+            voted? (bn/> (:vote/amount vote) 0)]
         (when (and commit-period-end
                    (not has-remaining-time?)
                    (not @period-finished-event-fired?))
@@ -365,7 +366,7 @@
            "backup"]
           " your vote secrets regularly."]
          [:form.voting
-          [challenger-comment challange]
+          [challenger-comment challenge]
           [:div.row.spaced
            [:p [:b.remaining-time
                 "Voting period "
@@ -403,8 +404,8 @@
            [:div
             [:p "You can vote with up to "
              (-> @balance-dnt
-               web3-utils/wei->eth-number
-               format/format-dnt)
+                 web3-utils/wei->eth-number
+                 format/format-dnt)
              "."
              [:br]
              "Tokens will be returned to you after revealing your vote."]]]]]))))
