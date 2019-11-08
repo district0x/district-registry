@@ -2,6 +2,7 @@
   (:require
     [bignumber.core :as bn]
     [cljsjs.bignumber]
+    [cljs-web3.core :refer [to-big-number]]
     [clojure.string :as str]
     [district-registry.ui.components.app-layout :refer [app-layout]]
     [district-registry.ui.components.nav :as nav]
@@ -317,8 +318,8 @@
 
 
 (defn- vote-button-disabled? [form-data balance-dnt voted?]
-  (let [balance-dnt (or balance-dnt 0)
-        amount (some-> form-data :vote/amount parsers/parse-float web3-utils/eth->wei)]
+  (let [balance-dnt (or balance-dnt (to-big-number 0))
+        amount (some-> form-data :vote/amount parsers/parse-float to-big-number web3-utils/eth->wei)]
     (or
      (not amount)
      (bn/> amount balance-dnt)
