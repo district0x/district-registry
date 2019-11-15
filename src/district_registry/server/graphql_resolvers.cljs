@@ -62,6 +62,8 @@
                                           [:= :%count.* (sql/inline 0)] (sql/inline 0)
                                           :else :stake-history/dnt-total-staked)]
                        :from [[:stake-history :sh]]
+                       :group-by [:sh.reg-entry/address]
+                       :having [:<= (sql/call :max :sh.stake-history/staked-on) :c.challenge/commit-period-end]
                        :where [:and
                                [:= :re.reg-entry/address :sh.reg-entry/address]
                                [:<= :sh.stake-history/staked-on :c.challenge/commit-period-end]]}))
