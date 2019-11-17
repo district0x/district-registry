@@ -15,6 +15,7 @@
     [district-registry.ui.home.page]
     [district-registry.ui.my-account.page]
     [district-registry.ui.not-found.page]
+    [district-registry.ui.privacy-policy.page]
     [district-registry.ui.submit.page]
     [district.cljs-utils :as cljs-utils]
     [district.ui.component.router :refer [router]]

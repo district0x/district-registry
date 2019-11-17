@@ -37,8 +37,8 @@
       (let [tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:set-email @active-account}])]
         [:<>
          [:h1.email "Email"]
-         [:p "The email associated with your address will be encrypted and stored on a public blockchain. Only our email server will be able to decrypt it. We'll use it to send you automatic notifications about your activity, as well as important website updates. You can unsubscribe at any time by saving a blank email address above. You can view our privacy policy here."]
-         [:p "We use the service Sendgrid to generate these emails. You can also always unsubscribe from this service by opting out through their provided links at the bottom of every email."]
+         [:p "The email associated with your address will be encrypted and stored on a public blockchain. Only our email server will be able to decrypt it. We'll use it to send you automatic notifications about your activity, as well as important website updates. You can unsubscribe at any time by saving a blank email address above. You can view our privacy policy " [nav/a {:route [:route/privacy-policy]} "here"] "."]
+         [:p "We use the service Sendgrid to generate these emails. You can also always unsubscribe from this service by opting out through their provided links at the bottom of every email. You can view our privacy policy " [nav/a {:route [:route/privacy-policy]} "here"] "."]
          (when @has-email?
            [:p.success "You already associated an email with your Ethereum address."])
          [:form

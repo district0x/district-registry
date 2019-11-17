@@ -94,6 +94,7 @@
                    :route/submit "page-submit"
                    :route/edit "page-submit"
                    :route/my-account "page-my-account"
+                   :route/privacy-policy "page-privacy-policy"
                    :route/not-found "not-found")}
        [header (:name @active-page)]
        (into [:div#page-content]
