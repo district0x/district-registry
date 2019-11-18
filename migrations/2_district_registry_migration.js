@@ -143,7 +143,7 @@ async function deploy_DistrictRegistryDb(deployer, opts) {
 async function deploy_ParamChangeRegistryDb(deployer, opts) {
   console.log("Deploying ParamChangeRegistryDb");
 
-  await deployer.deploy(ParamChangeRegistryDb, Object.assign({}, opts, {gas: 2.7e6}));
+  await deployer.deploy(ParamChangeRegistryDb, Object.assign({}, opts, {gas: 3.5e6}));
   const paramChangeRegistryDb = await ParamChangeRegistryDb.deployed();
 
   await setInitialParameters(paramChangeRegistryDb, "paramChangeRegistryDb", opts);
@@ -209,7 +209,7 @@ async function deploy_ParamChangeRegistryForwarder(deployer, opts) {
   linkBytecode(ParamChangeRegistryForwarder, forwarder1TargetPlaceholder, paramChangeRegistry.address);
   await deployer.deploy(ParamChangeRegistryForwarder, Object.assign({}, opts, {gas: 0.7e6}));
   const paramChangeRegistryForwarder = await ParamChangeRegistryForwarder.deployed();
-  
+
   console.log("Constructing ParamChangeRegistryForwarder");
   const paramChangeRegistryDb = await ParamChangeRegistryDb.deployed();
   const paramChangeRegistryForwarderInstance = await ParamChangeRegistry.at(paramChangeRegistryForwarder.address);
@@ -348,7 +348,7 @@ async function deploy_ParamChangeFactory(deployer, opts) {
 
   await deployer.deploy(ParamChangeFactory, paramChangeRegistryForwarder.address, dnt.address, Object.assign({}, opts, {gas: 1.5e6}));
   const paramChangeFactory = await ParamChangeFactory.deployed();
-  
+
   console.log("Allowing new ParamChangeFactory in ParamChangeRegistryForwarder");
   const paramChangeRegistryForwarderInstance = await ParamChangeRegistry.at(paramChangeRegistryForwarder.address);
   await paramChangeRegistryForwarderInstance.setFactory(paramChangeFactory.address, true, Object.assign({}, opts, {gas: 0.1e6}));

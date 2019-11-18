@@ -98,17 +98,18 @@
                        [graphql "0.13.1"]
                        [graphql-fields "1.0.2"]
                        [graphql-tools "3.0.1"]
-                       [solc "0.4.20"]
+                       ;; [solc "0.4.20"]
                        [source-map-support "0.5.3"]
                        [ws "4.0.0"]
                        ;; district0x/district-server-web3 needs [ganache-core "2.0.2"]   who also needs "ethereumjs-wallet": "~0.6.0"
                        ;; https://github.com/ethereumjs/ethereumjs-wallet/issues/64
                        [ethereumjs-wallet "0.6.0"]
+                       [truffle "5.1.0"]
                        ;; truffle script deps
                        [jsedn "0.4.1"]
                        [minimetoken "0.2.0"]
                        [openzeppelin-solidity "2.3.0"]
-                       [truffle-hdwallet-provider "1.0.12"]
+                       ["@truffle/hdwallet-provider" "1.0.25"]
                        [dotenv "8.0.0"]
 
                        ;; Aragon dependencies:
