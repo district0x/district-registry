@@ -628,14 +628,12 @@ async function setInitialParameters(instance, parametersKey, opts) {
      'commitPeriodDuration',
      'revealPeriodDuration',
      'deposit',
-     'challengeDispensation',
-     'voteQuorum'].map((key) => {return web3.utils.soliditySha3({t: "string", v: key})}),
+     'challengeDispensation'].map((key) => {return web3.utils.soliditySha3({t: "string", v: key})}),
      [parameters[parametersKey].challengePeriodDuration.toString(),
       parameters[parametersKey].commitPeriodDuration.toString(),
       parameters[parametersKey].revealPeriodDuration.toString(),
       parameters[parametersKey].deposit.toString(),
-      parameters[parametersKey].challengeDispensation.toString(),
-      parameters[parametersKey].voteQuorum.toString()],
+      parameters[parametersKey].challengeDispensation.toString()],
     Object.assign({}, opts, {gas: 1e6})
   );
 }

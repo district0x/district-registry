@@ -69,20 +69,18 @@ let parameters = {
     District0xEmails: "0x5065ef0724b76421aeaafa87ba752d6c5d5499b5",
     districtRegistryDb : {
       challengePeriodDuration : 0,
-      commitPeriodDuration : 600, // seconds
-      revealPeriodDuration : 600, // seconds
-      deposit : 1e18, // 1e18 = 1 DNT
+      commitPeriodDuration : 259200, // seconds
+      revealPeriodDuration : 259200, // seconds
+      deposit : 10000e18, // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
-      voteQuorum : 50, // percent
     },
 
     paramChangeRegistryDb : {
-      challengePeriodDuration : 600, // seconds
-      commitPeriodDuration : 600, // seconds
-      revealPeriodDuration : 600, // seconds
-      deposit : 1e18, // 1e18 = 1 DNT
+      challengePeriodDuration : 259200, // seconds
+      commitPeriodDuration : 259200, // seconds
+      revealPeriodDuration : 259200, // seconds
+      deposit : 1000000000e18, // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
-      voteQuorum : 50 // percent
     }
   }
 };
