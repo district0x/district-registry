@@ -34,7 +34,6 @@ contract Registry is DSAuth {
   bytes32 public constant maxAuctionDurationKey = keccak256("maxAuctionDuration");
   bytes32 public constant maxTotalSupplyKey = keccak256("maxTotalSupply");
   bytes32 public constant revealPeriodDurationKey = keccak256("revealPeriodDuration");
-  bytes32 public constant voteQuorumKey = keccak256("voteQuorum");
 
   EternalDb public db;
   bool private wasConstructed;

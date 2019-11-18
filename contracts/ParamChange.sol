@@ -41,8 +41,7 @@ contract ParamChange is RegistryEntry {
       }
     }
 
-    if(record == registry.challengeDispensationKey() || record == registry.voteQuorumKey() ||
-       record == registry.maxTotalSupplyKey()) {
+    if(record == registry.challengeDispensationKey() || record == registry.maxTotalSupplyKey()) {
       if (_value >= 0 && _value <= 100) {
         return true;
       }

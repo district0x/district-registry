@@ -104,7 +104,7 @@ contract RegistryEntry is ApproveAndCallFallBack {
       registry.challengeDispensationKey()
     )
     ).mul(deposit)) / 100;
-    uint voteQuorum = registry.db().getUIntValue(registry.voteQuorumKey());
+    uint voteQuorum = 50;
 
     Challenge challenge = Challenge(new Forwarder1());
 
