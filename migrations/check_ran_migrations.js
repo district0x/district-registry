@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const { readSmartContractsFile, getSmartContractAddress } = require ("./utils.js");
-const { parameters, smart_contracts_path } = require ('../truffle.js');
+const { parameters, smartContractsPath } = require ('../truffle.js');
 const migrations_dir = './migrations/';
 
 const NETWORKS = {
@@ -11,7 +11,7 @@ const NETWORKS = {
 
 const Migrations = artifacts.require("Migrations");
 
-var smartContracts = readSmartContractsFile(smart_contracts_path);
+var smartContracts = readSmartContractsFile(smartContractsPath);
 const migrationsAddress = getSmartContractAddress(smartContracts, ":migrations");
 
 /**
