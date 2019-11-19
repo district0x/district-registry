@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const { readSmartContractsFile, getSmartContractAddress } = require ("./utils.js");
-const { parameters, smartContractsPath } = require ('../truffle.js');
+const { smartContractsPath } = require ('../truffle.js');
 const migrations_dir = './migrations/';
 
 const NETWORKS = {
@@ -21,7 +21,7 @@ module.exports = function(callback) {
   web3.version.getNetwork( (error, id) => {
 
     console.log ("@@@ using Web3 version:", web3.version.api);
-    console.log("@@@ using smart_contracts file ", smart_contracts_path);
+    console.log("@@@ using smart_contracts file ", smartContractsPath);
 
     const network = NETWORKS [id] || "ganache";
     const migrations = Migrations.at (migrationsAddress);
