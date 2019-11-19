@@ -36,7 +36,6 @@ jobs:
           key: npm-dependencies-{{ checksum "package-lock.json" }}
           paths:
             - ./node_modules
-      - run: npx truffle --version
       - run: npx truffle migrate --network ganache --f 2 --to 3
       - run: lein doo node "server-tests" once
       - persist_to_workspace:
