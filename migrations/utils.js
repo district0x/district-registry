@@ -42,8 +42,8 @@ let copyContract = (contractName, contractCopyName) => {
 let smartContractsTemplate = (map, env) => {
   return `(ns district-registry.shared.smart-contracts-${env})
 
-  (def smart-contracts
-    ${map})
+(def smart-contracts
+  ${map})
 `;
 };
 
@@ -52,7 +52,7 @@ let encodeContractEDN = (contractInstance, contractName, contractKey, opts) => {
   const cljContractName = ":" + contractKey;
   const contract_address = contractInstance.address.toLowerCase();
   opts = opts || {};
-  
+
   let entry_value = [
     edn.kw(":name"), contractName,
     edn.kw(":address"), contract_address,
