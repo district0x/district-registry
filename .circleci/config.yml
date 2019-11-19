@@ -7,8 +7,8 @@ jobs:
       # Primary container image where all steps run.
       - image: district0x/cljs-dev
       # Secondary container images on common network.
-      - image: trufflesuite/ganache-cli:latest
-        command: [-d, -m district0x, -p 8545, -l 80000000, --noVMErrorsOnRPCResponse, --allowUnlimitedContractSize]
+      - image: trufflesuite/ganache-cli:v6.4.4
+        command: [-d, -m district0x, -p 8545, -l 80000000, --allowUnlimitedContractSize]
       - image: district0x/ipfs-daemon:latest
     steps:
       - checkout
