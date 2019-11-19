@@ -39,7 +39,7 @@ jobs:
       - run: npx truffle migrate --network ganache --f 2 --to 3
       - run: lein doo node "server-tests" once
       - persist_to_workspace:
-          root:  ~/district_registry
+          root: ~/district_registry
           paths:
             - truffle.js
             - project.clj
