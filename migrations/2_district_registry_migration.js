@@ -1,4 +1,4 @@
-const {copyContract, copy, smartContractsTemplate, encodeContractEDN, linkBytecode, encodeSmartContracts, writeSmartContracts, kitDistrictAppsToNum} = require("./utils.js");
+const {copyContract, copy, smartContractsTemplate, encodeContractEDN, linkBytecode, encodeSmartContracts, writeSmartContracts, kitDistrictAppsToNum, getSmartContractAddress, readSmartContractsFile} = require("./utils.js");
 const fs = require("fs");
 const edn = require("jsedn");
 const {env, smartContractsPath, parameters} = require("../truffle.js");
@@ -24,6 +24,7 @@ function requireContract(contractName, contractCopyName) {
 // Contract Artifacts
 //
 
+let Migrations = requireContract("Migrations");
 let DSGuard = requireContract("DSGuard");
 let DNT = requireContract("District0xNetworkToken");
 let DistrictFactory = requireContract("DistrictFactory");

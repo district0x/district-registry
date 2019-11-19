@@ -8,6 +8,7 @@ function requireContract(contractName, contractCopyName) {
 }
 
 const KitDistrict = requireContract("KitDistrict");
+let Migrations = requireContract("Migrations");
 
 /**
  * This migration does dry run to create a new district and see gas costs
@@ -36,4 +37,8 @@ module.exports = async function(deployer, network, accounts) {
 
   console.log("Successfully changed includedApps in KitDistrict");
 
+  console.log("Setting migration completed...");
+  const migrationsAddress = getSmartContractAddress(smartContracts, ":migrations");
+  const migrations = await Migrations.at(migrationsAddress);
+  await migrations.setCompleted(7, Object.assign(opts, {gas: 100000}));
 };
