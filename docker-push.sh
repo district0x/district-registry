@@ -80,8 +80,8 @@ function login {
 function before {
   lein deps
   lein npm install
-  sudo npm install -g truffle
-  truffle compile --all
+  # sudo npm install -g truffle
+  npx truffle compile --all
 }
 
 #--- EXECUTE

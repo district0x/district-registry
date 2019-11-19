@@ -1,6 +1,4 @@
 'use strict';
-// const BigNumber = require('bignumber.js');
-// const { toWei } = require('web3-utils');
 const BN = require('bn.js');
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 require('dotenv').config()  // Store environment-specific variable from '.env' to process.env
@@ -17,44 +15,25 @@ const smartContractsPaths = {
 let parameters = {
   "dev": {
     // KitDistrict : {includeApps: ["voting", "vault", "finance"]},
-   KitDistrict : {includeApps: ["voting", "vault"]},
-//    KitDistrict : {includeApps: ["finance"]},
-//    KitDistrict : {includeApps: ["voting"]},
-
-    // districtRegistryDb : {
-    //   challengePeriodDuration : 0,
-    //   commitPeriodDuration : 60, // seconds
-    //   revealPeriodDuration : 60, // seconds
-    //   deposit : 1e18, // 1e18 = 1 DNT
-    //   challengeDispensation : 50, // percent
-    //   voteQuorum : 50, // percent
-    // },
-
-    // paramChangeRegistryDb : {
-    //   challengePeriodDuration : 600, // seconds
-    //   commitPeriodDuration : 600, // seconds
-    //   revealPeriodDuration : 600, // seconds
-    //   deposit : 1e18, // 1e18 = 1 DNT
-    //   challengeDispensation : 50, // percent
-    //   voteQuorum : 50 // percent
-    // }
-
+    KitDistrict : {includeApps: ["voting", "vault"]},
+    // KitDistrict : {includeApps: ["finance"]},
+    // KitDistrict : {includeApps: ["voting"]},
     districtRegistryDb : {
       challengePeriodDuration : 0,
-      commitPeriodDuration : 259200, // seconds
-      revealPeriodDuration : 259200, // seconds
-      deposit : new BN("10000e18"), //new BigNumber(10000e18), // 1e18 = 1 DNT
+      commitPeriodDuration : 60, // seconds
+      revealPeriodDuration : 60, // seconds
+      deposit : 1e18, // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
+      voteQuorum : 50, // percent
     },
-
     paramChangeRegistryDb : {
-      challengePeriodDuration : 259200, // seconds
-      commitPeriodDuration : 259200, // seconds
-      revealPeriodDuration : 259200, // seconds
-      deposit : new BN("1000000000e18"), // 1e18 = 1 DNT
+      challengePeriodDuration : 600, // seconds
+      commitPeriodDuration : 600, // seconds
+      revealPeriodDuration : 600, // seconds
+      deposit : 1e18, // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
+      voteQuorum : 50 // percent
     }
-
   },
   "qa" : {
     DNT: "0xe450dcde6c059339a35eec0facbe62751cca6e8a",
@@ -70,7 +49,6 @@ let parameters = {
       challengeDispensation : 50, // percent
       voteQuorum : 50, // percent
     },
-
     paramChangeRegistryDb : {
       challengePeriodDuration : 200, // seconds
       commitPeriodDuration : 200, // seconds
@@ -92,10 +70,9 @@ let parameters = {
       challengePeriodDuration : 0,
       commitPeriodDuration : 259200, // seconds
       revealPeriodDuration : 259200, // seconds
-      deposit : new BN("10000e18"), //new BigNumber(10000e18), // 1e18 = 1 DNT
+      deposit : new BN("10000e18"), // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
     },
-
     paramChangeRegistryDb : {
       challengePeriodDuration : 259200, // seconds
       commitPeriodDuration : 259200, // seconds
@@ -121,7 +98,6 @@ module.exports = {
       network_id: '*',
       skipDryRun: true
     },
-
     parity: {
       host: 'localhost',
       port: 8545,
@@ -131,7 +107,7 @@ module.exports = {
       skipDryRun: true
     },
     "infura-rinkeby": {
-      provider: () => new HDWalletProvider(process.env.MNENOMIC || process.env.PRIV_KEY, "https://rinkeby.infura.io/v3/" + process.env.INFURA_API_KEY),
+      provider: () => new HDWalletProvider(process.env.MNENOMIC || process.env.RINKEBY_PRIV_KEY, "https://rinkeby.infura.io/v3/" + process.env.INFURA_API_KEY),
       network_id: 4,
       gas: 6e6,
       gasPrice: 1e9,

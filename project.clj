@@ -71,7 +71,6 @@
                  [reagent "0.8.1"]]
 
   :exclusions [express-graphql
-               express-graphql
                cljsjs/react-with-addons]
 
   :plugins [[deraen/lein-less4clj "0.7.0-SNAPSHOT"]
@@ -79,7 +78,6 @@
             [lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.18"]
             [lein-shell "0.5.0"]
-            [lein-solc "1.0.2"]
             [lein-doo "0.1.8"]
             [lein-npm "0.6.2"]
             [lein-pdo "0.1.1"]]
@@ -98,7 +96,6 @@
                        [graphql "0.13.1"]
                        [graphql-fields "1.0.2"]
                        [graphql-tools "3.0.1"]
-                       ;; [solc "0.4.20"]
                        [source-map-support "0.5.3"]
                        [ws "4.0.0"]
                        ;; district0x/district-server-web3 needs [ganache-core "2.0.2"]   who also needs "ethereumjs-wallet": "~0.6.0"
@@ -123,12 +120,6 @@
                        ["eth-ens-namehash" "2.0.8"]
                        ["web3-utils" "1.0.0-beta.55"]
                        ["bluebird" "3.5.2"]]}
-
-  :solc {:src-path "resources/public/contracts/src"
-         :build-path "resources/public/contracts/build"
-         :solc-err-only true
-         :wc true
-         :contracts :all}
 
   :source-paths ["src" "test"]
 
@@ -214,5 +205,4 @@
                                    :target :nodejs,
                                    :optimizations :none,
                                    :verbose false
-                                   ;;:closure-defines {goog.DEBUG true}
                                    :source-map true}}]})
