@@ -8,7 +8,7 @@ jobs:
       - image: district0x/cljs-dev
       # Secondary container images on common network.
       - image: trufflesuite/ganache-cli:latest
-        command: [-d, -m district0x, -p 8545, -l 80000000, --noVMErrorsOnRPCResponse --allowUnlimitedContractSize]
+        command: [-d, -m district0x, -p 8545, -l 80000000, --noVMErrorsOnRPCResponse, --allowUnlimitedContractSize]
       - image: district0x/ipfs-daemon:latest
     steps:
       - checkout
@@ -36,7 +36,8 @@ jobs:
           key: npm-dependencies-{{ checksum "package-lock.json" }}
           paths:
             - ./node_modules
-      - run: env DISTRICT_REGISTRY_ENV=dev npx truffle migrate --network ganache --f 2 --to 3
+      - run: npx truffle --version
+      - run: npx truffle migrate --network ganache --f 2 --to 3
       - run: lein doo node "server-tests" once
       - persist_to_workspace:
           root:  ~/district_registry

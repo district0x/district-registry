@@ -14,8 +14,8 @@ const smartContractsPaths = {
 
 let parameters = {
   "dev": {
-    // KitDistrict : {includeApps: ["voting", "vault", "finance"]},
-    KitDistrict : {includeApps: ["voting", "vault"]},
+    KitDistrict : {includeApps: ["voting", "vault", "finance"]},
+    // KitDistrict : {includeApps: ["voting", "vault"]},
     // KitDistrict : {includeApps: ["finance"]},
     // KitDistrict : {includeApps: ["voting"]},
     districtRegistryDb : {
