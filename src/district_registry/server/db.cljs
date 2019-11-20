@@ -152,49 +152,54 @@
            tables))))
 
 
+(defn create-indexes []
+  (doseq [column [:reg-entry/created-on :reg-entry/challenge-period-end :reg-entry/current-challenge-index]]
+    (db/run! {:create-index (index-name column) :on [:reg-entries column]}))
+
+  (doseq [column [:district/dnt-staked :district/total-supply]]
+    (db/run! {:create-index (index-name column) :on [:districts column]}))
+
+  (doseq [column [:challenge/created-on :challenge/commit-period-end]]
+    (db/run! {:create-index (index-name column) :on [:challenges column]}))
+
+  (doseq [column [:param-change/key :param-change/db]]
+    (db/run! {:create-index (index-name column) :on [:param-changes column]}))
+
+  (doseq [column [:stake-balance/staker]]
+    (db/run! {:create-index (index-name column) :on [:stake-balances column]})))
+
+
 (defn start [{:keys [:resync?] :as opts}]
   (when resync?
     (log/info "Database module called with a resync flag.")
-    (clean-db)
+    (clean-db))
 
-    (db/run! (-> (psqlh/create-table :reg-entries :if-not-exists)
-               (psqlh/with-columns registry-entries-columns)))
+  (db/run! (-> (psqlh/create-table :reg-entries :if-not-exists)
+             (psqlh/with-columns registry-entries-columns)))
 
-    (doseq [column [:reg-entry/created-on :reg-entry/challenge-period-end :reg-entry/current-challenge-index]]
-      (db/run! {:create-index (index-name column) :on [:reg-entries column]}))
+  (db/run! (-> (psqlh/create-table :districts :if-not-exists)
+             (psqlh/with-columns districts-columns)))
 
-    (db/run! (-> (psqlh/create-table :districts :if-not-exists)
-               (psqlh/with-columns districts-columns)))
+  (db/run! (-> (psqlh/create-table :challenges :if-not-exists)
+             (psqlh/with-columns challenges-columns)))
 
-    (doseq [column [:district/dnt-staked :district/total-supply]]
-      (db/run! {:create-index (index-name column) :on [:districts column]}))
+  (db/run! (-> (psqlh/create-table :initial-params :if-not-exists)
+             (psqlh/with-columns initial-params-columns)))
 
-    (db/run! (-> (psqlh/create-table :challenges :if-not-exists)
-               (psqlh/with-columns challenges-columns)))
+  (db/run! (-> (psqlh/create-table :param-changes :if-not-exists)
+             (psqlh/with-columns param-changes-columns)))
 
-    (doseq [column [:challenge/created-on :challenge/commit-period-end]]
-      (db/run! {:create-index (index-name column) :on [:challenges column]}))
+  (db/run! (-> (psqlh/create-table [:votes] :if-not-exists)
+             (psqlh/with-columns votes-columns)))
 
-    (db/run! (-> (psqlh/create-table :initial-params :if-not-exists)
-               (psqlh/with-columns initial-params-columns)))
+  (db/run! (-> (psqlh/create-table [:stake-balances] :if-not-exists)
+             (psqlh/with-columns stake-balances-columns)))
 
-    (db/run! (-> (psqlh/create-table :param-changes :if-not-exists)
-               (psqlh/with-columns param-changes-columns)))
+  (db/run! (-> (psqlh/create-table [:stake-history] :if-not-exists)
+             (psqlh/with-columns stake-history-columns)))
 
-    (doseq [column [:param-change/key :param-change/db]]
-      (db/run! {:create-index (index-name column) :on [:param-changes column]}))
-
-    (db/run! (-> (psqlh/create-table [:votes] :if-not-exists)
-               (psqlh/with-columns votes-columns)))
-
-    (db/run! (-> (psqlh/create-table [:stake-balances] :if-not-exists)
-               (psqlh/with-columns stake-balances-columns)))
-
-    (doseq [column [:stake-balance/staker]]
-      (db/run! {:create-index (index-name column) :on [:stake-balances column]}))
-
-    (db/run! (-> (psqlh/create-table [:stake-history] :if-not-exists)
-               (psqlh/with-columns stake-history-columns))))
+  (when resync?
+    (create-indexes))
 
   ::started)
 
