@@ -1,14 +1,15 @@
 (ns district-registry.server.db
   (:require
-   [district.server.config :refer [config]]
-   [district.server.db :as db]
-   [district.server.db.column-types :refer [address not-nil default-nil default-zero default-false sha3-hash primary-key]]
-   [district.server.db.honeysql-extensions]
-   [honeysql.core :as sql]
-   [honeysql.helpers :as sqlh :refer [merge-where merge-order-by merge-left-join defhelper]]
-   [medley.core :as medley]
-   [mount.core :as mount :refer [defstate]]
-   [taoensso.timbre :as logging :refer-macros [info warn error]]))
+    [district.server.config :refer [config]]
+    [district.server.db :as db]
+    [district.server.db.column-types :refer [address not-nil default-nil default-zero default-false sha3-hash primary-key]]
+    [district.server.db.honeysql-extensions]
+    [honeysql-postgres.helpers :as psqlh]
+    [honeysql.core :as sql]
+    [honeysql.helpers :as sqlh :refer [merge-where merge-order-by merge-left-join defhelper]]
+    [medley.core :as medley]
+    [mount.core :as mount :refer [defstate]]
+    [taoensso.timbre :as log :refer-macros [info warn error]]))
 
 (declare start)
 (declare stop)
@@ -133,42 +134,72 @@
 (defn- index-name [col-name]
   (keyword (namespace col-name) (str (name col-name) "-index")))
 
-(defn start [opts]
+(defn clean-db []
+  (let [tables [:reg-entries
+                :districts
+                :challenges
+                :initial-params
+                :param-changes
+                :votes
+                :stake-balances
+                :stake-history]
+        drop-table-if-exists (fn [t]
+                               (psqlh/drop-table :if-exists t))]
+    (doall
+      (map (fn [t]
+             (log/debug (str "Dropping table " t))
+             (db/run! (drop-table-if-exists t)))
+           tables))))
 
-  (db/run! {:create-table [:reg-entries]
-            :with-columns [registry-entries-columns]})
 
-  (db/run! {:create-table [:districts]
-            :with-columns [districts-columns]})
+(defn start [{:keys [:resync?] :as opts}]
+  (when resync?
+    (log/info "Database module called with a resync flag.")
+    (clean-db))
 
-  (db/run! {:create-table [:challenges]
-            :with-columns [challenges-columns]})
+  (db/run! (-> (psqlh/create-table :reg-entries :if-not-exists)
+             (psqlh/with-columns registry-entries-columns)))
 
-  (db/run! {:create-table [:initial-params]
-            :with-columns [initial-params-columns]})
+  (doseq [column [:reg-entry/created-on :reg-entry/challenge-period-end :reg-entry/current-challenge-index]]
+    (db/run! {:create-index (index-name column) :on [:reg-entries column]}))
 
-  (db/run! {:create-table [:param-changes]
-            :with-columns [param-changes-columns]})
+  (db/run! (-> (psqlh/create-table :districts :if-not-exists)
+             (psqlh/with-columns districts-columns)))
 
-  (db/run! {:create-table [:votes]
-            :with-columns [votes-columns]})
+  (doseq [column [:district/dnt-staked :district/total-supply]]
+    (db/run! {:create-index (index-name column) :on [:districts column]}))
 
-  (db/run! {:create-table [:stake-balances]
-            :with-columns [stake-balances-columns]})
+  (db/run! (-> (psqlh/create-table :challenges :if-not-exists)
+             (psqlh/with-columns challenges-columns)))
 
-  (db/run! {:create-table [:stake-history]
-            :with-columns [stake-history-columns]})
+  (doseq [column [:challenge/created-on :challenge/commit-period-end]]
+    (db/run! {:create-index (index-name column) :on [:challenges column]}))
+
+  (db/run! (-> (psqlh/create-table :initial-params :if-not-exists)
+             (psqlh/with-columns initial-params-columns)))
+
+  (db/run! (-> (psqlh/create-table :param-changes :if-not-exists)
+             (psqlh/with-columns param-changes-columns)))
+
+  (doseq [column [:param-change/key :param-change/db]]
+    (db/run! {:create-index (index-name column) :on [:param-changes column]}))
+
+  (db/run! (-> (psqlh/create-table [:votes] :if-not-exists)
+             (psqlh/with-columns votes-columns)))
+
+  (db/run! (-> (psqlh/create-table [:stake-balances] :if-not-exists)
+             (psqlh/with-columns stake-balances-columns)))
+
+  (doseq [column [:stake-balance/staker]]
+    (db/run! {:create-index (index-name column) :on [:stake-balances column]}))
+
+  (db/run! (-> (psqlh/create-table [:stake-history] :if-not-exists)
+             (psqlh/with-columns stake-history-columns)))
 
   ::started)
 
 (defn stop []
-  (db/run! {:drop-table [:stake-balances]})
-  (db/run! {:drop-table [:votes]})
-  (db/run! {:drop-table [:challenges]})
-  (db/run! {:drop-table [:param-changes]})
-  (db/run! {:drop-table [:initial-params]})
-  (db/run! {:drop-table [:districts]})
-  (db/run! {:drop-table [:reg-entries]}))
+  :stopped)
 
 (defn create-insert-fn [table-name column-names & [{:keys [:insert-or-replace?]}]]
   (fn [item]
