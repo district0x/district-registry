@@ -1,9 +1,10 @@
 (ns district-registry.ui.privacy-policy.page
   (:require
-   [district-registry.ui.components.app-layout :refer [app-layout]]
-   [district.ui.component.page :refer [page]]
-   [district.ui.graphql.subs :as gql]
-   [re-frame.core :refer [subscribe]]))
+    [district-registry.ui.components.app-layout :refer [app-layout]]
+    [district.ui.component.page :refer [page]]
+    [district.ui.graphql.subs :as gql]
+    [re-frame.core :refer [subscribe]]
+    [district-registry.ui.components.nav :as nav]))
 
 (defmethod page :route/privacy-policy []
   (fn []
@@ -47,7 +48,7 @@
           [:p "(4) operate and maintain the security or integrity of our Game, including to prevent or stop an attack on our computer systems or networks;"]
           [:p "(5) protect our rights, interests, or property, and the rights, interests, or property of third parties;"]
           [:p "(6) prevent or investigate possible wrongdoing in connection with the Services; or"]
-          [:p "(7) enforce our Terms of use."]
+          [:p "(7) enforce our " [nav/a {:route [:route/terms]} "Terms Of Use"] "."]
           [:p "We may use and share aggregated non-personal information with third parties for marketing, advertising, and analytics purposes. We do not sell or trade your personal information to third parties."]
           [:h3 "Where do we keep personal data?"]
           [:p "We store personal data in the United States. The storage location(s) are chosen to provide both security and efficiency in operation. We transfer personal data from the European Economic Area and Switzerland to the United States. When we engage in such transfers, we use a variety of technical legal mechanisms, including contracts, to help ensure your rights and protections travel with your data."]

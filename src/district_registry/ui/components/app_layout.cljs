@@ -47,15 +47,18 @@
     [:div.logo.sized [:img {:src "/images/registry-logo@2x.png"}]]
     [:div.row.spaced
      [:div.col
-      [:p
-       "A network of decentralized markets and communities. Create, operate, and govern. Powered by Ethereum, Aragon, and IPFS."]]
+      [:p "A network of decentralized markets and communities. Create, operate, and govern. Powered by Ethereum, Aragon, and IPFS."]
+      [:br]
+      [:p.cookies-note "We use cookies to improve your experience on our website. By continuing to use this website, you agree to the use of cookies. To learn more about how we use cookies, please see our " [nav/a {:route [:route/privacy-policy]} "Cookie Policy."]]]
      [:div.col
       [:nav.footerlinks
        [:ul
         [:li [:a {:href "https://blog.district0x.io" :target :_blank} "Blog"]]
         [:li [:a {:href "https://district0x.io/team/" :target :_blank} "Team"]]
         [:li [:a {:href "https://district0x.io/transparency/" :target :_blank} "Transparency"]]
-        [:li [:a {:href "https://district0x.io/faq/" :target :_blank} "FAQ"]]]]]
+        [:li [:a {:href "https://district0x.io/faq/" :target :_blank} "FAQ"]]
+        [:li [nav/a {:route [:route/terms]} "Terms Of Use"]]
+        [:li [nav/a {:route [:route/privacy-policy]} "Privacy Policy"]]]]]
      [:div.col
       [:a.cta-btn.has-icon
        {:href "https://discord.gg/rJvBEyV"
@@ -95,6 +98,7 @@
                    :route/edit "page-submit"
                    :route/my-account "page-my-account"
                    :route/privacy-policy "page-privacy-policy"
+                   :route/terms "page-terms"
                    :route/not-found "not-found")}
        [header (:name @active-page)]
        (into [:div#page-content]

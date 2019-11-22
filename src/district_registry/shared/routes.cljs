@@ -6,4 +6,5 @@
              ["/detail/:address" :route/detail]
              ["/edit/:address" :route/edit]
              ["/my-account/:tab" :route/my-account]
-             ["/privacy-policy" :route/privacy-policy]])
+             ["/privacy-policy" :route/privacy-policy]
+             ["/terms" :route/terms]])

@@ -17,6 +17,7 @@
     [district-registry.ui.not-found.page]
     [district-registry.ui.privacy-policy.page]
     [district-registry.ui.submit.page]
+    [district-registry.ui.terms.page]
     [district.cljs-utils :as cljs-utils]
     [district.ui.component.router :refer [router]]
     [district.ui.graphql]
@@ -88,7 +89,8 @@
                        :reagent-render {:id "app"
                                         :component-var #'router}
                        :router {:routes routes
-                                :default-route :route/not-found}
+                                :default-route :route/not-found
+                                :scroll-top? true}
                        :notification {:default-show-duration 3000
                                       :default-hide-duration 1000}})]
 
