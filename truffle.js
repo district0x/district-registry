@@ -70,14 +70,14 @@ let parameters = {
       challengePeriodDuration : 0,
       commitPeriodDuration : 259200, // seconds
       revealPeriodDuration : 259200, // seconds
-      deposit : new BN("10000e18"), // 1e18 = 1 DNT
+      deposit : "10000000000000000000000", // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
     },
     paramChangeRegistryDb : {
       challengePeriodDuration : 259200, // seconds
       commitPeriodDuration : 259200, // seconds
       revealPeriodDuration : 259200, // seconds
-      deposit : new BN("1000000000e18"), // 1e18 = 1 DNT
+      deposit : "1000000000000000000000000000", // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
     }
   }
@@ -117,7 +117,7 @@ module.exports = {
       provider: () => new HDWalletProvider(process.env.MNENOMIC || process.env.MAINNET_PRIV_KEY, "https://mainnet.infura.io/v3/" + process.env.INFURA_API_KEY),
       network_id: 1,
       gas: 6e6,
-      gasPrice: 5e9,
+      gasPrice: 4e9,
       skipDryRun: true
     }
   },
