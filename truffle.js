@@ -62,7 +62,7 @@ let parameters = {
     DNT: "0x0abdace70d3790235af448c88547603b945604ea",
     // MiniMeTokenFactory: "0xa7dd95d9978dde794eae5233889f1ffebcdc9914",
     ENS: "0x314159265dd8dbb310642f98f50c066173c1259b",
-    DAOFactory: "0x595b34c93aa2c2ba0a38daeede629a0dfbdcc559",
+    DAOFactory: "0xb9da44c051c6cc9e04b7e0f95e95d69c6a6d8031",
     FIFSResolvingRegistrar: "0x546aa2eae2514494eeadb7bbb35243348983c59d",
     KitDistrict : {includeApps: ["voting", "vault", "finance"]},
     District0xEmails: "0x5065ef0724b76421aeaafa87ba752d6c5d5499b5",
@@ -117,7 +117,7 @@ module.exports = {
       provider: () => new HDWalletProvider(process.env.MNENOMIC || process.env.MAINNET_PRIV_KEY, "https://mainnet.infura.io/v3/" + process.env.INFURA_API_KEY),
       network_id: 1,
       gas: 6e6,
-      gasPrice: 4e9,
+      gasPrice: 5e9,
       skipDryRun: true
     }
   },
