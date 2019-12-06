@@ -6,7 +6,8 @@ const migrations_dir = './migrations/';
 
 const NETWORKS = {
   "1" : "mainnet",
-  "3" : "ropsten"
+  "3" : "ropsten",
+  "4" : "rinkeby"
 };
 
 const Migrations = artifacts.require("Migrations");
@@ -15,7 +16,7 @@ var smartContracts = readSmartContractsFile(smartContractsPath);
 const migrationsAddress = getSmartContractAddress(smartContracts, ":migrations");
 
 /**
- * MEMEFACTORY_ENV=dev truffle exec ./migrations/check_ran_migrations.js --network ganache
+ * env DISTRICT_REGISTRY_ENV=dev truffle exec ./migrations/check_ran_migrations.js --network ganache
  */
 module.exports = function(callback) {
   web3.version.getNetwork( (error, id) => {
