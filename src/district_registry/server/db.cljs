@@ -249,7 +249,7 @@
 (defn initial-param-exists? [key db]
   (boolean (seq (get-initial-param key db))))
 
-(def insert-initial-param! (create-insert-fn :initial-params initial-params-column-names))
+(def insert-initial-param! (create-insert-fn :initial-params initial-params-column-names {:insert-or-replace? true}))
 
 (def insert-registry-entry! (create-insert-fn :reg-entries registry-entry-column-names))
 (def update-registry-entry! (create-update-fn :reg-entries registry-entry-column-names :reg-entry/address))
