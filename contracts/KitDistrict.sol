@@ -77,6 +77,7 @@ contract KitDistrict is KitBase, IsContract, APMNamehash, DSAuth {
     Kernel dao
   )
   {
+    require(address(_token) != address(0));
     dao = fac.newDAO(this);
 
     ACL acl = ACL(dao.acl());
