@@ -122,12 +122,14 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
    * @return The estimated amount
    */
   function calculateReturnForStake(uint _amount) private view returns (uint) {
+    uint256 supply = totalSupply();
+    uint256 totalS = totalStaked();
     return calculatePurchaseReturn(
-      totalSupply().add(1e19),
-      totalStaked().add(1e14),
-      dntWeight,
-      _amount
-    );
+                                   (supply>0) ? supply : 1e19,
+                                   (totalS>0) ? totalS : 1e14,
+                                   dntWeight,
+                                   _amount
+                                   );
   }
 
   /**
@@ -137,9 +139,11 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
    * @return The estimated amount
    */
   function estimateReturnForStake(uint _amount) public view returns (uint) {
+    uint256 supply = totalSupply();
+    uint256 totalS = totalStaked();
     return calculatePurchaseReturn(
-      totalSupply().add(1e19),
-      totalStaked().add(1e14).add(_amount),
+      (supply>0) ? supply : 1e19,
+      (totalS>0) ? totalS : 1e14,
       dntWeight,
       _amount
     );
@@ -154,9 +158,11 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
    * @return Index of a last stake history entry
    */
   function stakeFor(address user, uint256 amount) public onlyOwner returns (uint) {
+    require(generateTokens(user, calculateReturnForStake(amount)));
+
     updateStakeBankCheckpointAtNow(stakesFor[user], amount, false);
     updateStakeBankCheckpointAtNow(stakeHistory, amount, false);
-    require(generateTokens(user, calculateReturnForStake(amount)));
+
     return stakeHistory.length - 1;
   }
 
