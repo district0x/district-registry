@@ -16,7 +16,7 @@ import "./proxy/Forwarder1.sol";
 contract StakeBank is Ownable, MiniMeTokenProxyTarget {
 
   MiniMeTokenFactory public constant minimeTokenFactory = MiniMeTokenFactory(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
-  uint32 public MAX_WEIGHT;
+  uint32 public MAX_WEIGHT=1000000;
   using SafeMath for uint256;
 
   /**
@@ -76,46 +76,66 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     power.construct();
   }
 
-  /**
-   * @dev given a token supply, connector balance, weight and a deposit amount (in the connector token),
-   * calculates the return for a given conversion (in the main token)
-   *
-   * Formula:
-   * Return = _supply * ((1 + _depositAmount / _connectorBalance) ^ (_connectorWeight / 1000000) - 1)
-   *
-   * @param _supply Token total supply
-   * @param _connectorBalance Total connector balance
-   * @param _connectorWeight Connector weight, represented in ppm, 1-1000000
-   * @param _depositAmount Deposit amount, in connector token
-   *
-   * @return purchase return amount
-   */
+  /*   function calculatePurchaseReturn( */
+  /*   uint256 _supply, */
+  /*   uint256 _connectorBalance, */
+  /*   uint32 _connectorWeight, */
+  /*   uint256 _depositAmount */
+  /* ) */
+  /*   public constant returns (uint256) */
+  /* { */
+  /*   // validate input */
+  /* require(_supply > 0 , "WRONG supply"); */
+  /*   require(_connectorBalance > 0, "WRONG connectorBalance"); */
+  /*   require(_connectorWeight > 0, "WRONG Weight min"); */
+  /*   require(_connectorWeight <= MAX_WEIGHT, "WRONG Weight max"); */
+  /*   // special case for 0 deposit amount */
+  /*   if (_depositAmount == 0) { */
+  /*     return 0; */
+  /*   } */
+  /*   // special case if the weight = 100% */
+  /*   if (_connectorWeight == MAX_WEIGHT) { */
+  /*     return _supply.mul(_depositAmount).div(_connectorBalance); */
+  /*   } */
+  /*   uint256 result; */
+  /*   uint8 precision; */
+  /*   uint256 baseN = _depositAmount.add(_connectorBalance); */
+  /*   (result, precision) = power.power(baseN, _connectorBalance, _connectorWeight, MAX_WEIGHT); */
+  /*   uint256 temp = _supply.mul(result) >> precision; */
+  /*   return temp - _supply; */
+  /* } */
+
   function calculatePurchaseReturn(
     uint256 _supply,
     uint256 _connectorBalance,
     uint32 _connectorWeight,
     uint256 _depositAmount
   )
-    public
-    constant
-    returns (uint256)
+    public constant returns (uint256)
   {
     // validate input
-    require(_supply > 0 && _connectorBalance > 0 && _connectorWeight > 0 && _connectorWeight <= MAX_WEIGHT);
+    require(_supply > 0 , "WRONG supply");
+    require(_connectorBalance > 0, "WRONG connectorBalance");
+    require(_connectorWeight > 0, "WRONG Weight min");
+    require(_connectorWeight <= MAX_WEIGHT, "WRONG Weight max");
+
     // special case for 0 deposit amount
     if (_depositAmount == 0) {
       return 0;
     }
-    // special case if the weight = 100%
-    if (_connectorWeight == MAX_WEIGHT) {
-      return _supply.mul(_depositAmount).div(_connectorBalance);
+
+    uint256 newTotal = _supply.add(_depositAmount);
+
+    if (_connectorWeight == MAX_WEIGHT) { // FLAT CURVE
+      return _depositAmount;
+    } else if (_connectorWeight == 500000){ // Linear CURVE
+      return 10**18 * newTotal**2 / (2 * 10**18 * 10**18) - _connectorBalance;
+    } else if (_connectorWeight == 333333){ // Exp CURVE
+      uint256 newPrice = newTotal * newTotal / 10**18 * newTotal / 10**18;
+      return newPrice / 3 - _connectorBalance;
+    } else {
+      return 0;
     }
-    uint256 result;
-    uint8 precision;
-    uint256 baseN = _depositAmount.add(_connectorBalance);
-    (result, precision) = power.power(baseN, _connectorBalance, _connectorWeight, MAX_WEIGHT);
-    uint256 temp = _supply.mul(result) >> precision;
-    return temp - _supply;
   }
 
   /**
@@ -127,11 +147,11 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     uint256 supply = totalSupply();
     uint256 totalS = totalStaked();
     return calculatePurchaseReturn(
-                                   (supply>0) ? supply : 1e19,
-                                   (totalS>0) ? totalS : 1e14,
-                                   dntWeight,
-                                   _amount
-                                   );
+      (supply>0) ? supply : 1e18,
+      (totalS>0) ? totalS : 1e14,
+      dntWeight,
+      _amount
+    );
   }
 
   /**
@@ -144,7 +164,7 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     uint256 supply = totalSupply();
     uint256 totalS = totalStaked();
     return calculatePurchaseReturn(
-      (supply>0) ? supply : 1e19,
+      (supply>0) ? supply : 1e18,
       (totalS>0) ? totalS : 1e14,
       dntWeight,
       _amount
@@ -178,13 +198,7 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
    */
   function unstake(address user, uint256 amount) public onlyOwner returns (uint) {
     require(amount > 0);
-    uint staked = totalStakedFor(user);
-    uint minted = balanceOf(user);
-    uint toDestroy = minted.mul(1000000000000000000).div(staked.mul(1000000000000000000).div(amount));
-    require(destroyTokens(user, toDestroy));
-    updateStakeBankCheckpointAtNow(stakesFor[user], amount, true);
-    updateStakeBankCheckpointAtNow(stakeHistory, amount, true);
-    return stakeHistory.length - 1;
+
   }
 
   /**
