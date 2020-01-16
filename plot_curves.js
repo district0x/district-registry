@@ -20,7 +20,9 @@ const contractAddress = "0xc2de159ca5175da01a972c3a7e41ec0579a62948";
 // -- PARAMS-- //
 
 // parameter between 1  - 1e6
-const connectorWeight = 1000000;
+const MAX_WEIGHT = 1000000;
+
+const connectorWeight = 1 *  MAX_WEIGHT;
 const init_tokenSupply = 1000;
 const init_connectorBalance = 100;
 
@@ -56,11 +58,11 @@ module.exports = async function(callback) {
     // returns the amount of continuous token you get for the depositAmount of connector token
     var result = await stakeBank.methods.calculatePurchaseReturn(currentTokenSupply, currentConnectorBalance, connectorWeight, depositAmount).call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'});
 
-    console.log ("@@@ RES", result);
+    // console.log ("@@@ RES", result);
 
     // price is denominated in connector tokens
     var currentPrice = depositAmount / result;
-    console.log ("You receive " + result + " continuous tokens for the price of " + currentPrice);
+    console.log ("You receive " + result + " continuous tokens for the price of " + currentPrice + " connector tokens");
 
     tokenSupply [i + 1] = result;
     connectorBalance [i + 1] = depositAmount;
