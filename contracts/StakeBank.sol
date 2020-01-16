@@ -96,7 +96,9 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     uint32 _connectorWeight,
     uint256 _depositAmount
   )
-    private constant returns (uint256)
+    public
+    constant
+    returns (uint256)
   {
     // validate input
     require(_supply > 0 && _connectorBalance > 0 && _connectorWeight > 0 && _connectorWeight <= MAX_WEIGHT);
