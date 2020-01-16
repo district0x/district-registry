@@ -18,7 +18,7 @@ const BN = require('bn.js');
 
 
 // const StakeBank = artifacts.require("StakeBank");
-const contractAddress = "0x84a0259c3c87df92d5af85c2d743b70b8fadb9bb";
+const contractAddress = "0x24c51375f85def94f73c65701d4a2a14010ae0c7";
 
 // -- PARAMS-- //
 
@@ -40,7 +40,7 @@ module.exports = async function(callback) {
   const stakeBank = new web3.eth.Contract(abi, contractAddress);
   // const stakeBank = StakeBank.at (contractAddress);
 
-  var n = 10;
+  var n = 1;
   var tokenSupply = init_tokenSupply;
   var connectorBalance = init_connectorBalance;
 
@@ -55,8 +55,8 @@ module.exports = async function(callback) {
       // random 1 - 200, denominated in connector token
       var depositAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 10) + 1),"milliether"));
 
-      //console.log("Calling with  supply " + tokenSupply +  " balance " +  connectorBalance + " weight" + connectorWeight + " deposit " + depositAmount);
-      var result = await stakeBank.methods.calculatePurchaseReturn(web3.utils.toHex(tokenSupply), web3.utils.toHex(connectorBalance), web3.utils.toHex(connectorWeight),web3.utils.toHex(depositAmount)).call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'});
+      console.log("Calling with  supply " + tokenSupply +  " balance " +  connectorBalance + " weight" + connectorWeight + " deposit " + depositAmount);
+      var result = await debug(stakeBank.methods.calculatePurchaseReturn(web3.utils.toHex(tokenSupply), web3.utils.toHex(connectorBalance), connectorWeight,web3.utils.toHex(depositAmount)).call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'}));
       result = new BN(result);
 
       var price = result.div(depositAmount);

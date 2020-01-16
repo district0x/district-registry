@@ -76,36 +76,7 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     power.construct();
   }
 
-  /*   function calculatePurchaseReturn( */
-  /*   uint256 _supply, */
-  /*   uint256 _connectorBalance, */
-  /*   uint32 _connectorWeight, */
-  /*   uint256 _depositAmount */
-  /* ) */
-  /*   public constant returns (uint256) */
-  /* { */
-  /*   // validate input */
-  /* require(_supply > 0 , "WRONG supply"); */
-  /*   require(_connectorBalance > 0, "WRONG connectorBalance"); */
-  /*   require(_connectorWeight > 0, "WRONG Weight min"); */
-  /*   require(_connectorWeight <= MAX_WEIGHT, "WRONG Weight max"); */
-  /*   // special case for 0 deposit amount */
-  /*   if (_depositAmount == 0) { */
-  /*     return 0; */
-  /*   } */
-  /*   // special case if the weight = 100% */
-  /*   if (_connectorWeight == MAX_WEIGHT) { */
-  /*     return _supply.mul(_depositAmount).div(_connectorBalance); */
-  /*   } */
-  /*   uint256 result; */
-  /*   uint8 precision; */
-  /*   uint256 baseN = _depositAmount.add(_connectorBalance); */
-  /*   (result, precision) = power.power(baseN, _connectorBalance, _connectorWeight, MAX_WEIGHT); */
-  /*   uint256 temp = _supply.mul(result) >> precision; */
-  /*   return temp - _supply; */
-  /* } */
-
-  function calculatePurchaseReturn(
+    function calculatePurchaseReturn(
     uint256 _supply,
     uint256 _connectorBalance,
     uint32 _connectorWeight,
@@ -114,29 +85,59 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     public constant returns (uint256)
   {
     // validate input
-    require(_supply > 0 , "WRONG supply");
+  require(_supply > 0 , "WRONG supply");
     require(_connectorBalance > 0, "WRONG connectorBalance");
     require(_connectorWeight > 0, "WRONG Weight min");
     require(_connectorWeight <= MAX_WEIGHT, "WRONG Weight max");
-
     // special case for 0 deposit amount
     if (_depositAmount == 0) {
       return 0;
     }
-
-    uint256 newTotal = _supply.add(_depositAmount);
-
-    if (_connectorWeight == MAX_WEIGHT) { // FLAT CURVE
-      return _depositAmount;
-    } else if (_connectorWeight == 500000){ // Linear CURVE
-      return 10**18 * newTotal**2 / (2 * 10**18 * 10**18) - _connectorBalance;
-    } else if (_connectorWeight == 333333){ // Exp CURVE
-      uint256 newPrice = newTotal * newTotal / 10**18 * newTotal / 10**18;
-      return newPrice / 3 - _connectorBalance;
-    } else {
-      return 0;
+    // special case if the weight = 100%
+    if (_connectorWeight == MAX_WEIGHT) {
+      return _supply.mul(_depositAmount).div(_connectorBalance);
     }
+    uint256 result;
+    uint8 precision;
+    uint256 baseN = _depositAmount.add(_connectorBalance);
+    (result, precision) = power.power(baseN, _connectorBalance, _connectorWeight, MAX_WEIGHT);
+
+    uint256 temp = _supply.mul(result) >> precision;
+    return temp - _supply;
   }
+
+  /* function calculatePurchaseReturn( */
+  /*   uint256 _supply, */
+  /*   uint256 _connectorBalance, */
+  /*   uint32 _connectorWeight, */
+  /*   uint256 _depositAmount */
+  /* ) */
+  /*   public constant returns (uint256) */
+  /* { */
+  /*   // validate input */
+  /*   require(_supply > 0 , "WRONG supply"); */
+  /*   require(_connectorBalance > 0, "WRONG connectorBalance"); */
+  /*   require(_connectorWeight > 0, "WRONG Weight min"); */
+  /*   require(_connectorWeight <= MAX_WEIGHT, "WRONG Weight max"); */
+
+  /*   // special case for 0 deposit amount */
+  /*   if (_depositAmount == 0) { */
+  /*     return 0; */
+  /*   } */
+
+  /*   uint256 newTotal = _supply.add(_depositAmount); */
+
+  /*   if (_connectorWeight == MAX_WEIGHT) { // FLAT CURVE */
+  /*     return _depositAmount; */
+  /*   } else if (_connectorWeight == 500000){ // Linear CURVE */
+  /*     return 10**18 * newTotal**2 / (2 * 10**18 * 10**18) - _connectorBalance; */
+  /*   } else if (_connectorWeight == 333333){ // Exp CURVE */
+  /*     uint256 newPrice = newTotal * newTotal / 10**18 * newTotal / 10**18; */
+  /*     return newPrice / 3 - _connectorBalance; */
+  /*   } else { */
+  /*     return 0; */
+  /*   } */
+  /* } */
 
   /**
    * @dev Calculates amount of voting tokens received given amount of staked registry tokens
