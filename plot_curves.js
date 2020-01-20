@@ -25,22 +25,26 @@ const contractAddress = "0x24c51375f85def94f73c65701d4a2a14010ae0c7";
 // parameter between 1  - 1e6
 const MAX_WEIGHT = 1000000;
 
-//const connectorWeight =  333333;
+// const connectorWeight =  333333;
 const connectorWeight =  500000;
-// const connectorWeight =  MAX_WEIGHT;
-const init_tokenSupply = new BN(web3.utils.toWei("10", "ether"));
-const init_connectorBalance = new BN(web3.utils.toWei("1", "ether"));
+//const connectorWeight =  MAX_WEIGHT;
+
+const init_tokenSupply = new BN("10");
+//const init_tokenSupply = new BN(web3.utils.toWei("10", "ether"));
+const init_connectorBalance = new BN("1") ;
+//const init_connectorBalance = new BN(web3.utils.toWei("1", "ether"));
 
 // npx truffle exec ./plot_curves.js --network ganache
 module.exports = async function(callback) {
 
-  console.log ("@@@ using Web3 version:", web3.version);
+  // console.log ("@@@ using Web3 version:", web3.version);
 
   var abi = JSON.parse(fs.readFileSync('./resources/public/contracts/build/StakeBank.json')).abi;
   const stakeBank = new web3.eth.Contract(abi, contractAddress);
-  // const stakeBank = StakeBank.at (contractAddress);
 
-  var n = 1;
+  stakeBank.methods.construct(connectorWeight).send({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb', gas: 5.2e6}).then( (receipt) => console.log (receipt) );
+
+  var n = 30;
   var tokenSupply = init_tokenSupply;
   var connectorBalance = init_connectorBalance;
 
@@ -52,19 +56,28 @@ module.exports = async function(callback) {
     // returns the amount of continuous token you get for the depositAmount of connector token
     try
     {
-      // random 1 - 200, denominated in connector token
-      var depositAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 10) + 1),"milliether"));
+      // var depositAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
+     var depositAmount = new BN(String(Math.floor(Math.random() * 20) + 1));
 
-      console.log("Calling with  supply " + tokenSupply +  " balance " +  connectorBalance + " weight" + connectorWeight + " deposit " + depositAmount);
-      var result = await debug(stakeBank.methods.calculatePurchaseReturn(web3.utils.toHex(tokenSupply), web3.utils.toHex(connectorBalance), connectorWeight,web3.utils.toHex(depositAmount)).call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'}));
+      // console.log("Calling with  supply " + tokenSupply +  " balance " +  connectorBalance + " weight" + connectorWeight + " deposit " + depositAmount);
+      var result = await stakeBank.methods.calculatePurchaseReturn(web3.utils.toHex(tokenSupply), web3.utils.toHex(connectorBalance), web3.utils.toHex(connectorWeight),web3.utils.toHex(depositAmount)).call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'});
+      // var result = await stakeBank.methods.calculatePurchaseReturn(tokenSupply,connectorBalance, connectorWeight,depositAmount).call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'});
       result = new BN(result);
+      //console.log("Got " + result);
 
-      var price = result.div(depositAmount);
-      // console.log (web3.utils.fromWei(tokenSupply) + "   " + web3.utils.fromWei(price));
-      console.log (tokenSupply + "   " + price);
+      if (!result.isZero()){
+        // depositAmount=web3.utils.fromWei(depositAmount);
+        // result=web3.utils.fromWei(result);
+        var price = depositAmount/result;
+        // console.log (web3.utils.fromWei(tokenSupply) + "   " + web3.utils.fromWei(price));
+        console.log (tokenSupply + "   " + price);
 
-      tokenSupply = tokenSupply.add(result);
-      connectorBalance = connectorBalance.add(depositAmount);
+        tokenSupply = tokenSupply.add(result);
+        connectorBalance = connectorBalance.add(depositAmount);
+      }else{
+
+      }
+
 
     }catch (e){
       console.log(e);

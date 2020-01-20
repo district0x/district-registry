@@ -8,6 +8,6 @@ module.exports = async function(deployer, network, accounts) {
   var smartContracts = readSmartContractsFile(smartContractsPath);
   const migrations = await Migrations.deployed();
 
-  setSmartContractAddress(smartContracts, ":migrations", migrations.address);
+  //setSmartContractAddress(smartContracts, ":migrations", migrations.address);
   writeSmartContracts(smartContractsPath, smartContracts, env);
 };
