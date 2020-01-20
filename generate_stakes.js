@@ -12,7 +12,7 @@ let DistrictFactory = requireContract("DistrictFactory");
 
 // -- PARAMS-- //
 
-// npx truffle exec ./plot_curves.js --network ganache
+// npx truffle exec ./generate_stakes.js --network ganache
 module.exports = async function(callback) {
 
   var smartContracts = readSmartContractsFile(smartContractsPath);
@@ -24,31 +24,34 @@ module.exports = async function(callback) {
   // console.log ("@@@ using Web3 version:", web3.version);
   var abi = JSON.parse(fs.readFileSync('./resources/public/contracts/build/District.json')).abi;
 
-
   var firstAccountAddress='0x4c3F13898913F15F12F902d6480178484063A6Fb';
-  const districtAddress="0x6652ab7df38d53220bd902c0d91378fa437ce858";
+  const districtAddress="0xe7014fa4a390e67e873664cd43e042d2f5a4fbf8";
   const district = new web3.eth.Contract(abi, districtAddress);
 
+  var depositAmount;// = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
 
-  var n = 50;
+  var n = 10;
   var i;
   for (i = 0; i < n; i++) {
+    try {
 
+      var isStake = Math.random() >= 0.5;
 
-    // returns the amount of continuous token you get for the depositAmount of connector token
-    try
-    {
+      if (i == 0 || isStake == true) {
+        depositAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
+        var extraData = await district.methods.stakeFor(firstAccountAddress, web3.utils.toHex(depositAmount)).encodeABI();
 
-      var depositAmount =  new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
-      var extraData = await district.methods.stakeFor(firstAccountAddress,web3.utils.toHex(depositAmount)).encodeABI();
+        stakeTx = await dnt.approveAndCall(districtAddress, depositAmount, extraData, {from: firstAccountAddress, gas: 10000000});
 
-      result= await dnt.approveAndCall(districtAddress, depositAmount, extraData, {from: firstAccountAddress, gas: 10000000});
+        console.log("Stake tx: " + stakeTx);
+      } else {
 
-      // var result = await stakeBank.methods.calculatePurchaseReturn(tokenSupply,connectorBalance, connectorWeight,depositAmount).call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'});
-      console.log("Stake Id: " + result);
+        unstakeTx = await district.methods.unstake (web3.utils.toHex (depositAmount)).send ({from: firstAccountAddress, gas: 10000000});
 
+        console.log("Unstake tx: " + unstakeTx);
+      }
 
-    }catch (e){
+    } catch (e) {
       console.log(e);
     }
 
