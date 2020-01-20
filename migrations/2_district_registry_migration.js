@@ -248,7 +248,7 @@ async function deploy_StakeBank(deployer, opts) {
   const miniMeTokenFactory = await getMiniMeTokenFactory();
   linkBytecode(StakeBank, forwarder1TargetPlaceholder, power.address);
   linkBytecode(StakeBank, minimeTokenFactoryPlaceholder, miniMeTokenFactory.address);
-  await deployer.deploy(StakeBank, Object.assign({}, opts, {gas: 5.2e6}));
+  await deployer.deploy(StakeBank, Object.assign({}, opts, {gas: 6.2e6}));
   const stakeBank = await StakeBank.deployed();
 
   assignContract(stakeBank, "StakeBank", "stake-bank");

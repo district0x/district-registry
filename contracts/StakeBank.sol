@@ -76,32 +76,6 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     power.construct();
   }
 
-  /* function calculatePurchaseReturn( */
-  /*                                  uint256 _supply, */
-  /*                                  uint256 _connectorBalance, */
-  /*                                  uint32 _connectorWeight, */
-  /*                                  uint256 _depositAmount */
-  /*                                  ) */
-  /*   public constant returns (uint256) */
-  /* { */
-  /*   // validate input */
-  /*   require(_supply > 0 , "WRONG supply"); */
-  /*   require(_connectorBalance > 0, "WRONG connectorBalance"); */
-  /*   require(_connectorWeight > 0, "WRONG Weight min"); */
-  /*   require(_connectorWeight <= MAX_WEIGHT, "WRONG Weight max"); */
-
-  /*   // special case for 0 deposit amount */
-  /*   if (_depositAmount == 0) { */
-  /*     return 0; */
-  /*   } */
-  /*   // special case if the weight = 100% */
-  /*   if (_connectorWeight == MAX_WEIGHT) { */
-  /*     return _supply.mul(_depositAmount).div(_connectorBalance); */
-  /*   } */
-
-  /*   return _supply * ((1 + _depositAmount / _connectorBalance) ^ (_connectorWeight / MAX_WEIGHT) - 1); */
-  /* } */
-
 
     function calculatePurchaseReturn(
     uint256 _supply,
@@ -143,8 +117,8 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     uint256 supply = totalSupply();
     uint256 totalS = totalStaked();
     return calculatePurchaseReturn(
-      (supply>0) ? supply : 1e18,
-      (totalS>0) ? totalS : 1e14,
+      (supply>0) ? supply : 10e18,
+      (totalS>0) ? totalS : 1e18,
       dntWeight,
       _amount
     );
@@ -160,8 +134,8 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     uint256 supply = totalSupply();
     uint256 totalS = totalStaked();
     return calculatePurchaseReturn(
-      (supply>0) ? supply : 1e18,
-      (totalS>0) ? totalS : 1e14,
+      (supply>0) ? supply : 10e18,
+      (totalS>0) ? totalS : 1e18,
       dntWeight,
       _amount
     );
@@ -194,7 +168,13 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
    */
   function unstake(address user, uint256 amount) public onlyOwner returns (uint) {
     require(amount > 0);
-
+    uint staked = totalStakedFor(user);
+    uint minted = balanceOf(user);
+    uint toDestroy = minted.mul(1000000000000000000).div(staked.mul(1000000000000000000).div(amount));
+    require(destroyTokens(user, toDestroy));
+    updateStakeBankCheckpointAtNow(stakesFor[user], amount, true);
+    updateStakeBankCheckpointAtNow(stakeHistory, amount, true);
+    return stakeHistory.length - 1;
   }
 
   /**
