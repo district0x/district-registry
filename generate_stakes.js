@@ -26,7 +26,8 @@ module.exports = async function(callback) {
 
 
   var firstAccountAddress='0x4c3F13898913F15F12F902d6480178484063A6Fb';
-  const district = new web3.eth.Contract(abi, "0x6652ab7df38d53220bd902c0d91378fa437ce858");
+  const districtAddress="0x6652ab7df38d53220bd902c0d91378fa437ce858";
+  const district = new web3.eth.Contract(abi, districtAddress);
 
 
   var n = 1;
@@ -38,12 +39,10 @@ module.exports = async function(callback) {
     try
     {
 
-      var deposit = web3.utils.toHex(parameters.districtRegistryDb.deposit);
-
-      var depositAmount = new BN(10);//new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
+      var depositAmount =  new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
       var extraData = await district.methods.stakeFor(firstAccountAddress,web3.utils.toHex(depositAmount)).encodeABI();
 
-      await dnt.approveAndCall(districtFactory.address, deposit, extraData, {from: firstAccountAddress, gas: 10000000});
+      result= await dnt.approveAndCall(districtAddress, depositAmount, extraData, {from: firstAccountAddress, gas: 10000000});
 
       // var result = await stakeBank.methods.calculatePurchaseReturn(tokenSupply,connectorBalance, connectorWeight,depositAmount).call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'});
       console.log("Stake Id: " + result);
