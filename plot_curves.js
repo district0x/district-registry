@@ -25,14 +25,14 @@ const contractAddress = "0x24c51375f85def94f73c65701d4a2a14010ae0c7";
 // parameter between 1  - 1e6
 const MAX_WEIGHT = 1000000;
 
-// const connectorWeight =  333333;
-const connectorWeight =  500000;
+const connectorWeight =  333333;
+// const connectorWeight =  500000;
 //const connectorWeight =  MAX_WEIGHT;
 
-const init_tokenSupply = new BN("10");
-//const init_tokenSupply = new BN(web3.utils.toWei("10", "ether"));
-const init_connectorBalance = new BN("1") ;
-//const init_connectorBalance = new BN(web3.utils.toWei("1", "ether"));
+// const init_tokenSupply = new BN("10");
+const init_tokenSupply = new BN(web3.utils.toWei("10", "ether"));
+// const init_connectorBalance = new BN("1") ;
+const init_connectorBalance = new BN(web3.utils.toWei("1", "ether"));
 
 // npx truffle exec ./plot_curves.js --network ganache
 module.exports = async function(callback) {
@@ -44,7 +44,7 @@ module.exports = async function(callback) {
 
   stakeBank.methods.construct(connectorWeight).send({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb', gas: 5.2e6}).then( (receipt) => console.log (receipt) );
 
-  var n = 30;
+  var n = 50;
   var tokenSupply = init_tokenSupply;
   var connectorBalance = init_connectorBalance;
 
@@ -56,8 +56,8 @@ module.exports = async function(callback) {
     // returns the amount of continuous token you get for the depositAmount of connector token
     try
     {
-      // var depositAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
-     var depositAmount = new BN(String(Math.floor(Math.random() * 20) + 1));
+      var depositAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
+     //var depositAmount = new BN(String(Math.floor(Math.random() * 1000) + 1));
 
       // console.log("Calling with  supply " + tokenSupply +  " balance " +  connectorBalance + " weight" + connectorWeight + " deposit " + depositAmount);
       var result = await stakeBank.methods.calculatePurchaseReturn(web3.utils.toHex(tokenSupply), web3.utils.toHex(connectorBalance), web3.utils.toHex(connectorWeight),web3.utils.toHex(depositAmount)).call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'});
@@ -68,7 +68,7 @@ module.exports = async function(callback) {
       if (!result.isZero()){
         // depositAmount=web3.utils.fromWei(depositAmount);
         // result=web3.utils.fromWei(result);
-        var price = depositAmount/result;
+        var price = web3.utils.fromWei(depositAmount)/web3.utils.fromWei(result);
         // console.log (web3.utils.fromWei(tokenSupply) + "   " + web3.utils.fromWei(price));
         console.log (tokenSupply + "   " + price);
 
