@@ -25,29 +25,41 @@ module.exports = async function(callback) {
   var abi = JSON.parse(fs.readFileSync('./resources/public/contracts/build/District.json')).abi;
 
   var firstAccountAddress='0x4c3F13898913F15F12F902d6480178484063A6Fb';
-  const districtAddress="0xe7014fa4a390e67e873664cd43e042d2f5a4fbf8";
+  const districtAddress="0x6652ab7df38d53220bd902c0d91378fa437ce858";
   const district = new web3.eth.Contract(abi, districtAddress);
 
   var depositAmount;// = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
 
-  var n = 10;
+  var n = 100;
   var i;
+  var staked=new BN("0");
+
   for (i = 0; i < n; i++) {
     try {
 
+      console.log("Currently staked: " + staked);
       var isStake = Math.random() >= 0.5;
 
+
+
       if (i == 0 || isStake == true) {
+
         depositAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
+
         var extraData = await district.methods.stakeFor(firstAccountAddress, web3.utils.toHex(depositAmount)).encodeABI();
 
         stakeTx = await dnt.approveAndCall(districtAddress, depositAmount, extraData, {from: firstAccountAddress, gas: 10000000});
 
+        staked=staked.add(depositAmount);
         console.log("Stake tx: " + stakeTx);
       } else {
 
+        depositAmount = new BN(web3.utils.toWei(String(BN.min(staked , Math.floor(Math.random() * 20) + 1)), "ether"));
+        console.log("Unstaking " + depositAmount);
+
         unstakeTx = await district.methods.unstake (web3.utils.toHex (depositAmount)).send ({from: firstAccountAddress, gas: 10000000});
 
+        staked=staked.sub(depositAmount);
         console.log("Unstake tx: " + unstakeTx);
       }
 
