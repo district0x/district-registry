@@ -13,12 +13,16 @@
 // confirm:
 // contractInstance.methods.MAX_WEIGHT().call();
 
+const { readSmartContractsFile, getSmartContractAddress } = require("./migrations/utils.js");
+const { smartContractsPath } = require("./truffle.js");
 const fs = require ('fs');
 const BN = require('bn.js');
 
 
 // const StakeBank = artifacts.require("StakeBank");
-const contractAddress = "0x24c51375f85def94f73c65701d4a2a14010ae0c7";
+const smartContracts = readSmartContractsFile(smartContractsPath);
+const contractAddress = getSmartContractAddress(smartContracts, ":stake-bank");
+// const contractAddress = "0x24c51375f85def94f73c65701d4a2a14010ae0c7";
 
 // -- PARAMS-- //
 
