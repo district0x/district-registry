@@ -30,7 +30,7 @@ module.exports = async function(callback) {
   const district = new web3.eth.Contract(abi, districtAddress);
 
 
-  var n = 1;
+  var n = 50;
   var i;
   for (i = 0; i < n; i++) {
 

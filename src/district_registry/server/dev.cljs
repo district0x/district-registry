@@ -77,7 +77,7 @@
                                       :field-resolver (utils/build-default-field-resolver graphql-utils/gql-name->kw)
                                       :path "/graphql"
                                       :graphiql true}
-                            :web3 {:port 8549}
+                            :web3 {:port 8545}
                             :ipfs {:host "http://127.0.0.1:5001"
                                    :endpoint "/api/v0"
                                    :gateway "http://127.0.0.1:8080/ipfs"}
@@ -119,3 +119,21 @@
 (comment (print-db))
 
 (comment (mount/stop))
+
+(defn print-price-evolution [reg-entry-address]
+ (let [stakes (->> (db/all {:select [:h.stake-history/dnt-total-staked :h.stake-history/voting-token-total-supply]
+                            :from [[:stake-history :h]]
+                            :where [:= :reg-entry/address reg-entry-address]})
+                   (partition 2 1)
+                   (map (fn [[p n]]
+                          (let [dnt (- (:stake-history/dnt-total-staked n)
+                                       (:stake-history/dnt-total-staked p))
+                                voting (- (:stake-history/voting-token-total-supply n)
+                                          (:stake-history/voting-token-total-supply p))]
+                            {:dnt dnt
+                             :voting voting
+                             :total-voting-supply (:stake-history/voting-token-total-supply n)
+                             :price (/ dnt voting)}
+                            ))))]
+   (doseq [{:keys [total-voting-supply price]} stakes]
+     (println total-voting-supply price))))
