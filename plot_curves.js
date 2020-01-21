@@ -40,42 +40,77 @@ module.exports = async function(callback) {
 
   stakeBank.methods.construct(connectorWeight).send({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb', gas: 5.2e6}).then( (receipt) => console.log (receipt) );
 
-  var n = 50;
+  var n = 10;
   var tokenSupply = init_tokenSupply;
   var connectorBalance = init_connectorBalance;
 
   var i;
   for (i = 0; i < n; i++) {
+
     try {
 
-      // TODO : unstaking
       var isStake = Math.random() >= 0.5;
+      if (i == 0 || isStake == true) {
 
-      // if isStake {
-      // }
+        var depositAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
 
-      var depositAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
+        // returns the amount of continuous token you get for the depositAmount of connector token
+        var result = await stakeBank.methods.calculatePurchaseReturn(web3.utils.toHex(tokenSupply),
+                                                                     web3.utils.toHex(connectorBalance),
+                                                                     web3.utils.toHex(connectorWeight),
+                                                                     web3.utils.toHex(depositAmount))
+            .call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'});
 
-      // returns the amount of continuous token you get for the depositAmount of connector token
-      var result = await stakeBank.methods.calculatePurchaseReturn(web3.utils.toHex(tokenSupply),
-                                                                   web3.utils.toHex(connectorBalance),
-                                                                   web3.utils.toHex(connectorWeight),
-                                                                   web3.utils.toHex(depositAmount))
-          .call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'});
+        result = new BN(result);
+        //console.log("Got " + result);
 
-      result = new BN(result);
-      //console.log("Got " + result);
+        if (!result.isZero() ) {
 
-      if (!result.isZero() ) {
+          var price = web3.utils.fromWei(depositAmount) / web3.utils.fromWei(result);
 
-        var price = web3.utils.fromWei(depositAmount)/web3.utils.fromWei(result);
+          console.log (tokenSupply + "   " + price);
 
-        console.log (tokenSupply + "   " + price);
+          tokenSupply = tokenSupply.add(result);
+          connectorBalance = connectorBalance.add(depositAmount);
 
-        tokenSupply = tokenSupply.add(result);
-        connectorBalance = connectorBalance.add(depositAmount);
+        } else {
+          // do nothing
+        }
 
       } else {
+
+        // TODO : unstaking
+
+        // var saleAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
+
+        var saleAmount = tokenSupply.mul (tokenSupply).add (new BN ("1"));
+
+        // Math.floor(Math.random() * tokenSupply) + 1;
+
+        console.log ("Unstaking: " + saleAmount);
+
+        saleAmount = new BN(web3.utils.toWei(String (saleAmount), "ether"));
+
+        console.log ("Unstaking: " + saleAmount + "wei");
+
+        // Math.floor(Math.random() * tokenSupply) + 1;
+        // Math.random() * (tokenSupply.sub (1)).add + min;
+
+        // returns the amount of connector token you get for the saleAmount of continuous token
+        var result = await stakeBank.methods.calculateSaleReturn(web3.utils.toHex(tokenSupply),
+                                                                 web3.utils.toHex(connectorBalance),
+                                                                 web3.utils.toHex(connectorWeight),
+                                                                 web3.utils.toHex(saleAmount))
+            .call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'});
+
+
+
+        tokenSupply = tokenSupply.sub(saleAmount);
+        connectorBalance = connectorBalance.sub(result);
+
+        var price = web3.utils.fromWei(result) / web3.utils.fromWei(saleAmount);
+
+        console.log (tokenSupply + "   " + price);
 
       }
 
