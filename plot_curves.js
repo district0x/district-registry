@@ -1,18 +1,3 @@
-// npx truffle console --network ganache
-
-// var contractAddress = "0xc2de159ca5175da01a972c3a7e41ec0579a62948";
-
-// var abi = JSON.parse(fs.readFileSync('./resources/public/contracts/build/StakeBank.json')).abi;
-// const contractInstance = new web3.eth.Contract(abi, contractAddress);
-
-// var connectorWeight = 1000000;
-
-// contructor is never called in the deploy script, call it once before executing the scrip:
-// contractInstance.methods.construct(connectorWeight).send({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb', gas: 5.2e6}).then( (receipt) => console.log (receipt) );
-
-// confirm:
-// contractInstance.methods.MAX_WEIGHT().call();
-
 const { readSmartContractsFile, getSmartContractAddress } = require("./migrations/utils.js");
 const { smartContractsPath } = require("./truffle.js");
 const fs = require ('fs');
@@ -35,24 +20,24 @@ const init_connectorBalance = new BN(web3.utils.toWei("1", "ether"));
 // npx truffle exec ./plot_curves.js --network ganache
 module.exports = async function(callback) {
 
-  var abi = JSON.parse(fs.readFileSync('./resources/public/contracts/build/StakeBank.json')).abi;
-  const stakeBank = new web3.eth.Contract(abi, contractAddress);
+  try {
 
-  // stakeBank.methods.construct(connectorWeight).send({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb', gas: 5.2e6}).then( (receipt) => console.log (receipt) );
+    var abi = JSON.parse(fs.readFileSync('./resources/public/contracts/build/StakeBank.json')).abi;
+    const stakeBank = new web3.eth.Contract(abi, contractAddress);
 
-  var n = 10;
-  var tokenSupply = init_tokenSupply;
-  var connectorBalance = init_connectorBalance;
+    var weight = await stakeBank.methods.MAX_WEIGHT().call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb', gas: 5.2e6});
+    if (weight == 0) { // if not initialized
+      var tx = await stakeBank.methods.construct(connectorWeight).send({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb', gas: 5.2e6});
+    }
 
-  var i;
-  for (i = 0; i < n; i++) {
+    var n = 100;
+    var tokenSupply = init_tokenSupply;
+    var connectorBalance = init_connectorBalance;
 
-    try {
-
+    var i;
+    for (i = 0; i < n; i++) {
       var isStake = Math.random() >= 0.5;
-      if (i == 0
-          || isStake == true
-         ) {
+      if (i == 0 || isStake == true) {
 
         var depositAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
 
@@ -69,7 +54,7 @@ module.exports = async function(callback) {
 
         var price = web3.utils.fromWei(depositAmount) / web3.utils.fromWei(result);
 
-        console.log (tokenSupply + "   " + price);
+        console.log (tokenSupply + ", " + price);
 
         tokenSupply = tokenSupply.add(result);
         connectorBalance = connectorBalance.add(depositAmount);
@@ -81,7 +66,10 @@ module.exports = async function(callback) {
         // unstaking
 
         // TODO : random
-        var saleAmount = new BN(web3.utils.toWei("1"));
+        // var saleAmount = new BN(web3.utils.toWei("1"));
+
+          var rand = new BN (web3.utils.toWei (String(Math.floor(Math.random() * 20) + 1), "ether"));
+          var saleAmount = BN.min(tokenSupply, rand);
 
         // returns the amount of connector token you get for the saleAmount of continuous token
         var result = await stakeBank.methods.calculateSaleReturn(web3.utils.toHex(tokenSupply),
@@ -98,16 +86,16 @@ module.exports = async function(callback) {
 
         var price = web3.utils.fromWei(result) / web3.utils.fromWei(saleAmount);
 
-        console.log (tokenSupply + "   " + price);
+        console.log (tokenSupply + ", " + price);
 
         // console.log ("continuousTokenSupply: " + tokenSupply + " connectorTokenBalance: " + connectorBalance);
 
       }
 
-    } catch (e) {
-      console.log(e);
-    }
 
+    }
+  } catch (e) {
+    console.log(e);
   }
 
   callback ();

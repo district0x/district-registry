@@ -76,17 +76,33 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     power.construct();
   }
 
-
+  /**
+   * @dev given a token supply, connector balance, weight and a deposit amount (in the connector token),
+   * calculates the return for a given conversion (in the main token)
+   *
+   * Formula:
+   * Return = _supply * ((1 + _depositAmount / _connectorBalance) ^ (_connectorWeight / 1000000) - 1)
+   *
+   * @param _supply Token total supply
+   * @param _connectorBalance Total connector balance
+   * @param _connectorWeight Connector weight, represented in ppm, 1-1000000
+   * @param _depositAmount Deposit amount, in connector token
+   *
+   * @return purchase return amount
+   */
   function calculatePurchaseReturn(
                                    uint256 _supply,
                                    uint256 _connectorBalance,
                                    uint32 _connectorWeight,
                                    uint256 _depositAmount
                                    )
-    public constant returns (uint256)
+    public
+    constant
+    returns (uint256)
   {
-
     // validate input
+    /* require(_supply > 0 && _connectorBalance > 0 && _connectorWeight > 0 && _connectorWeight <= MAX_WEIGHT); */
+    require(_supply > 0 , "WRONG supply");
     require(_supply > 0 , "WRONG supply");
     require(_connectorBalance > 0, "WRONG connectorBalance");
     require(_connectorWeight > 0, "WRONG Weight min");
@@ -104,7 +120,6 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     uint8 precision;
     uint256 baseN = _depositAmount.add(_connectorBalance);
     (result, precision) = power.power(baseN, _connectorBalance, _connectorWeight, MAX_WEIGHT);
-
     uint256 temp = _supply.mul(result) >> precision;
     return temp - _supply;
   }
@@ -127,12 +142,13 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
                                uint256 _supply,
                                uint256 _reserveBalance,
                                uint32 _reserveRatio,
-                               uint256 _sellAmount) public constant returns (uint256)
+                               uint256 _sellAmount)
+    public
+    constant
+    returns (uint256)
   {
     // validate input
     /* require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_WEIGHT && _sellAmount <= _supply); */
-
-    // validate input
     require(_supply > 0 , "WRONG supply");
     require(_reserveBalance > 0, "WRONG connectorBalance");
     require(_reserveRatio > 0, "WRONG Weight min");
@@ -178,7 +194,6 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
                                    _amount
                                    );
   }
-
   /**
    * @dev Estimates amount of voting tokens received given amount of staked registry tokens
    * Purpose of this function is to provide number into UI before user submits actual stake transaction
@@ -197,6 +212,35 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
   }
 
   /**
+   * @dev Calculates amount of voting tokens received given amount of staked registry tokens
+   * @param _amount Amount of staked registry tokens
+   * @return The estimated amount
+   */
+  /* function calculateReturnForStake(uint _amount) private view returns (uint) { */
+  /*   return calculatePurchaseReturn( */
+  /*     totalSupply().add(1e19), */
+  /*     totalStaked().add(1e18), */
+  /*     dntWeight, */
+  /*     _amount */
+  /*   ); */
+  /* } */
+
+  /**
+   * @dev Estimates amount of voting tokens received given amount of staked registry tokens
+   * Purpose of this function is to provide number into UI before user submits actual stake transaction
+   * @param _amount Amount of staked registry tokens
+   * @return The estimated amount
+   */
+  /* function estimateReturnForStake(uint _amount) public view returns (uint) { */
+  /*   return calculatePurchaseReturn( */
+  /*     totalSupply().add(1e19), */
+  /*     totalStaked().add(1e18).add(_amount), */
+  /*     dntWeight, */
+  /*     _amount */
+  /*   ); */
+  /* } */
+
+  /**
    * @dev Stakes tokens for a user
    * Can be called only by related registry entry contract
    * Generates voting tokens and transfers them to a user
@@ -205,11 +249,9 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
    * @return Index of a last stake history entry
    */
   function stakeFor(address user, uint256 amount) public onlyOwner returns (uint) {
-    require(generateTokens(user, calculateReturnForStake(amount)));
-
     updateStakeBankCheckpointAtNow(stakesFor[user], amount, false);
     updateStakeBankCheckpointAtNow(stakeHistory, amount, false);
-
+    require(generateTokens(user, calculateReturnForStake(amount)));
     return stakeHistory.length - 1;
   }
 
@@ -223,20 +265,9 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
    */
   function unstake(address user, uint256 amount) public onlyOwner returns (uint) {
     require(amount > 0);
-    /* uint staked = totalStakedFor(user); */
-    /* uint minted = balanceOf(user); */
-
-    /* uint toDestroy = minted.mul(1000000000000000000).div(staked.mul(1000000000000000000).div(amount)); */
-
-    uint256 supply = totalSupply();
-    uint256 totalS = totalStaked();
-    uint256 toDestroy =  calculateSaleReturn(
-                                             supply,
-                                             totalS,
-                                             dntWeight,
-                                             amount
-                                             );
-
+    uint staked = totalStakedFor(user);
+    uint minted = balanceOf(user);
+    uint toDestroy = minted.mul(1000000000000000000).div(staked.mul(1000000000000000000).div(amount));
     require(destroyTokens(user, toDestroy));
     updateStakeBankCheckpointAtNow(stakesFor[user], amount, true);
     updateStakeBankCheckpointAtNow(stakeHistory, amount, true);
