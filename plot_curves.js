@@ -38,9 +38,9 @@ module.exports = async function(callback) {
   var abi = JSON.parse(fs.readFileSync('./resources/public/contracts/build/StakeBank.json')).abi;
   const stakeBank = new web3.eth.Contract(abi, contractAddress);
 
-  stakeBank.methods.construct(connectorWeight).send({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb', gas: 5.2e6}).then( (receipt) => console.log (receipt) );
+  // stakeBank.methods.construct(connectorWeight).send({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb', gas: 5.2e6}).then( (receipt) => console.log (receipt) );
 
-  var n = 10;
+  var n = 2;
   var tokenSupply = init_tokenSupply;
   var connectorBalance = init_connectorBalance;
 
@@ -50,7 +50,9 @@ module.exports = async function(callback) {
     try {
 
       var isStake = Math.random() >= 0.5;
-      if (i == 0 || isStake == true) {
+      if (i == 0
+          // || isStake == true
+         ) {
 
         var depositAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
 
@@ -62,39 +64,29 @@ module.exports = async function(callback) {
             .call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'});
 
         result = new BN(result);
-        //console.log("Got " + result);
 
-        if (!result.isZero() ) {
+        console.log ("Buying: " + result + " wei of continuous token for " + depositAmount + " wei of connector token");
 
-          var price = web3.utils.fromWei(depositAmount) / web3.utils.fromWei(result);
+        var price = web3.utils.fromWei(depositAmount) / web3.utils.fromWei(result);
 
-          console.log (tokenSupply + "   " + price);
+        // console.log (tokenSupply + "   " + price);
 
-          tokenSupply = tokenSupply.add(result);
-          connectorBalance = connectorBalance.add(depositAmount);
+        tokenSupply = tokenSupply.add(result);
+        connectorBalance = connectorBalance.add(depositAmount);
 
-        } else {
-          // do nothing
-        }
+        console.log ("continuousTokenSupply: " + tokenSupply + " connectorTokenBalance: " + connectorBalance);
 
       } else {
 
         // TODO : unstaking
 
-        // var saleAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
+        var saleAmount = new BN(web3.utils.toWei("1"));
 
-        var saleAmount = tokenSupply.mul (tokenSupply).add (new BN ("1"));
+        // new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
 
-        // Math.floor(Math.random() * tokenSupply) + 1;
+        // new BN (Math.random()).mul (tokenSupply).add (new BN ("1"));
 
-        console.log ("Unstaking: " + saleAmount);
-
-        saleAmount = new BN(web3.utils.toWei(String (saleAmount), "ether"));
-
-        console.log ("Unstaking: " + saleAmount + "wei");
-
-        // Math.floor(Math.random() * tokenSupply) + 1;
-        // Math.random() * (tokenSupply.sub (1)).add + min;
+        // saleAmount = new BN(web3.utils.toWei(String (saleAmount), "ether"));
 
         // returns the amount of connector token you get for the saleAmount of continuous token
         var result = await stakeBank.methods.calculateSaleReturn(web3.utils.toHex(tokenSupply),
@@ -103,18 +95,21 @@ module.exports = async function(callback) {
                                                                  web3.utils.toHex(saleAmount))
             .call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb'});
 
-
-
+        result = new BN(result);
         tokenSupply = tokenSupply.sub(saleAmount);
         connectorBalance = connectorBalance.sub(result);
 
+        console.log ("Selling: " + saleAmount + " wei of continuous token for " + result + " of connector token");
+
         var price = web3.utils.fromWei(result) / web3.utils.fromWei(saleAmount);
 
-        console.log (tokenSupply + "   " + price);
+        // console.log (tokenSupply + "   " + price);
+
+        console.log ("continuousTokenSupply: " + tokenSupply + " connectorTokenBalance: " + connectorBalance);
 
       }
 
-    } catch (e){
+    } catch (e) {
       console.log(e);
     }
 

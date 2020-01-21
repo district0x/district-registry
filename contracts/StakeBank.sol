@@ -52,21 +52,21 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
    * @param _dntWeight Coefficient representing voting token issuance curve
    */
   function construct(
-    uint32 _dntWeight
-  )
+                     uint32 _dntWeight
+                     )
     public
   {
     require(MAX_WEIGHT == 0);
     MAX_WEIGHT = 1000000;
     super.construct(
-      address(minimeTokenFactory),
-      0x0,
-      0,
-      "District Voting Token",
-      18,
-      "DVT",
-      false
-    );
+                    address(minimeTokenFactory),
+                    0x0,
+                    0,
+                    "District Voting Token",
+                    18,
+                    "DVT",
+                    false
+                    );
 
     require(_dntWeight >= 1 && _dntWeight <= MAX_WEIGHT);
     owner = msg.sender;
@@ -77,19 +77,21 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
   }
 
 
-    function calculatePurchaseReturn(
-    uint256 _supply,
-    uint256 _connectorBalance,
-    uint32 _connectorWeight,
-    uint256 _depositAmount
-  )
+  function calculatePurchaseReturn(
+                                   uint256 _supply,
+                                   uint256 _connectorBalance,
+                                   uint32 _connectorWeight,
+                                   uint256 _depositAmount
+                                   )
     public constant returns (uint256)
   {
+
     // validate input
-  require(_supply > 0 , "WRONG supply");
+    require(_supply > 0 , "WRONG supply");
     require(_connectorBalance > 0, "WRONG connectorBalance");
     require(_connectorWeight > 0, "WRONG Weight min");
     require(_connectorWeight <= MAX_WEIGHT, "WRONG Weight max");
+
     // special case for 0 deposit amount
     if (_depositAmount == 0) {
       return 0;
@@ -107,6 +109,59 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     return temp - _supply;
   }
 
+  /**
+   * @dev given a continuous token supply, reserve token balance, reserve ratio and a sell amount (in the continuous token),
+   * calculates the return for a given conversion (in the reserve token)
+   *
+   * Formula:
+   * Return = _reserveBalance * (1 - (1 - _sellAmount / _supply) ^ (1 / (_reserveRatio / MAX_RESERVE_RATIO)))
+   *
+   * @param _supply              continuous token total supply
+   * @param _reserveBalance    total reserve token balance
+   * @param _reserveRatio     constant reserve ratio, represented in ppm, 1-1000000
+   * @param _sellAmount          sell amount, in the continuous token itself
+   *
+   * @return sale return amount
+   */
+  function calculateSaleReturn(
+                               uint256 _supply,
+                               uint256 _reserveBalance,
+                               uint32 _reserveRatio,
+                               uint256 _sellAmount) public constant returns (uint256)
+  {
+    // validate input
+    /* require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_WEIGHT && _sellAmount <= _supply); */
+
+    // validate input
+    require(_supply > 0 , "WRONG supply");
+    require(_reserveBalance > 0, "WRONG connectorBalance");
+    require(_reserveRatio > 0, "WRONG Weight min");
+    require(_reserveRatio <= MAX_WEIGHT, "WRONG Weight max");
+    require(_sellAmount <= _supply, "WRONG sell amount");
+
+    // special case for 0 sell amount
+    if (_sellAmount == 0) {
+      return 0;
+    }
+    // special case for selling the entire supply
+    if (_sellAmount == _supply) {
+      return _reserveBalance;
+    }
+    // special case if the ratio = 100%
+    if (_reserveRatio == MAX_WEIGHT) {
+      return _reserveBalance.mul(_sellAmount).div(_supply);
+    }
+
+    uint256 result;
+    uint8 precision;
+    uint256 baseD = _supply - _sellAmount;
+    (result, precision) = power.power(
+                                      _supply, baseD, MAX_WEIGHT, _reserveRatio
+                                      );
+    uint256 oldBalance = _reserveBalance.mul(result);
+    uint256 newBalance = _reserveBalance << precision;
+    return oldBalance.sub(newBalance).div(result);
+  }
 
   /**
    * @dev Calculates amount of voting tokens received given amount of staked registry tokens
@@ -117,11 +172,11 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     uint256 supply = totalSupply();
     uint256 totalS = totalStaked();
     return calculatePurchaseReturn(
-      (supply>0) ? supply : 10e18,
-      (totalS>0) ? totalS : 1e18,
-      dntWeight,
-      _amount
-    );
+                                   (supply>0) ? supply : 10e18,
+                                   (totalS>0) ? totalS : 1e18,
+                                   dntWeight,
+                                   _amount
+                                   );
   }
 
   /**
@@ -134,11 +189,11 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     uint256 supply = totalSupply();
     uint256 totalS = totalStaked();
     return calculatePurchaseReturn(
-      (supply>0) ? supply : 10e18,
-      (totalS>0) ? totalS : 1e18,
-      dntWeight,
-      _amount
-    );
+                                   (supply>0) ? supply : 10e18,
+                                   (totalS>0) ? totalS : 1e18,
+                                   dntWeight,
+                                   _amount
+                                   );
   }
 
   /**
@@ -159,51 +214,6 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
   }
 
   /**
-   * @dev given a continuous token supply, reserve token balance, reserve ratio and a sell amount (in the continuous token),
-   * calculates the return for a given conversion (in the reserve token)
-   *
-   * Formula:
-   * Return = _reserveBalance * (1 - (1 - _sellAmount / _supply) ^ (1 / (_reserveRatio / MAX_RESERVE_RATIO)))
-   *
-   * @param _supply              continuous token total supply
-   * @param _reserveBalance    total reserve token balance
-   * @param _reserveRatio     constant reserve ratio, represented in ppm, 1-1000000
-   * @param _sellAmount          sell amount, in the continuous token itself
-   *
-   * @return sale return amount
-  */
-  function calculateSaleReturn(
-    uint256 _supply,
-    uint256 _reserveBalance,
-    uint32 _reserveRatio,
-    uint256 _sellAmount) public constant returns (uint256)
-  {
-    // validate input
-    require(_supply > 0 && _reserveBalance > 0 && _reserveRatio > 0 && _reserveRatio <= MAX_WEIGHT && _sellAmount <= _supply);
-     // special case for 0 sell amount
-    if (_sellAmount == 0) {
-      return 0;
-    }
-     // special case for selling the entire supply
-    if (_sellAmount == _supply) {
-      return _reserveBalance;
-    }
-     // special case if the ratio = 100%
-    if (_reserveRatio == MAX_WEIGHT) {
-      return _reserveBalance.mul(_sellAmount).div(_supply);
-    }
-     uint256 result;
-    uint8 precision;
-    uint256 baseD = _supply - _sellAmount;
-    (result, precision) = power.power(
-      _supply, baseD, MAX_WEIGHT, _reserveRatio
-    );
-    uint256 oldBalance = _reserveBalance.mul(result);
-    uint256 newBalance = _reserveBalance << precision;
-    return oldBalance.sub(newBalance).div(result);
-  }
-
-  /**
    * @dev Unstakes tokens
    * Can be called only by related registry entry contract
    * Destroys voting tokens generated by staking
@@ -221,11 +231,11 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     uint256 supply = totalSupply();
     uint256 totalS = totalStaked();
     uint256 toDestroy =  calculateSaleReturn(
-                                         supply,
-                                         totalS,
-                                         dntWeight,
-                                         amount
-    );
+                                             supply,
+                                             totalS,
+                                             dntWeight,
+                                             amount
+                                             );
 
     require(destroyTokens(user, toDestroy));
     updateStakeBankCheckpointAtNow(stakesFor[user], amount, true);
