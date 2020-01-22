@@ -27,6 +27,7 @@ module.exports = async function(callback) {
 
     var weight = await stakeBank.methods.MAX_WEIGHT().call({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb', gas: 5.2e6});
     if (weight == 0) { // if not initialized
+      console.log ("init");
       var tx = await stakeBank.methods.construct(connectorWeight).send({from: '0x4c3F13898913F15F12F902d6480178484063A6Fb', gas: 5.2e6});
     }
 
@@ -68,8 +69,8 @@ module.exports = async function(callback) {
         // TODO : random
         // var saleAmount = new BN(web3.utils.toWei("1"));
 
-          var rand = new BN (web3.utils.toWei (String(Math.floor(Math.random() * 20) + 1), "ether"));
-          var saleAmount = BN.min(tokenSupply, rand);
+        var rand = new BN (web3.utils.toWei (String(Math.floor(Math.random() * 20) + 1), "ether"));
+        var saleAmount = BN.min(tokenSupply, rand);
 
         // returns the amount of connector token you get for the saleAmount of continuous token
         var result = await stakeBank.methods.calculateSaleReturn(web3.utils.toHex(tokenSupply),
