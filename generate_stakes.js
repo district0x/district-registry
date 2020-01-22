@@ -49,7 +49,7 @@ module.exports = async function(callback) {
 
     const district = new web3.eth.Contract(JSON.parse(fs.readFileSync('./resources/public/contracts/build/District.json')).abi, districtAddress);
 
-    var n = 0;
+    var n = 10;
     let i;
     let staked = new BN("0");
 
@@ -62,13 +62,13 @@ module.exports = async function(callback) {
 
         var depositAmount = new BN(web3.utils.toWei(String(Math.floor(Math.random() * 20) + 1), "ether"));
 
-        console.log("DEBUG: " + depositAmount);
+        // console.log("DEBUG: " + depositAmount);
 
         var extraData = await district.methods.stakeFor(firstAccountAddress, web3.utils.toHex(depositAmount)).encodeABI();
 
-        console.log("DEBUG: " + JSON.stringify (extraData));
+        console.log("DEBUG: extra data" + JSON.stringify (extraData));
 
-        stakeTx = await dnt.methods.approveAndCall(districtAddress, depositAmount, extraData)
+        stakeTx = await dnt.methods.approveAndCall(districtAddress, web3.utils.toHex (depositAmount), extraData)
           .send ({from: firstAccountAddress, gas: 10000000});
 
         staked = staked.add(depositAmount);
@@ -76,10 +76,14 @@ module.exports = async function(callback) {
 
       } else {
 
-        var unstakeAmount = new BN(web3.utils.toWei(String(BN.min(staked, Math.floor(Math.random() * 20) + 1)), "ether"));
+        var rand = new BN (web3.utils.toWei (String(Math.floor(Math.random() * 20) + 1), "ether"));
+        var unstakeAmount = BN.min(staked.sub (new BN (1)), rand);
+
+        // var unstakeAmount = new BN(web3.utils.toWei(String(BN.min(staked, Math.floor(Math.random() * 20) + 1)), "ether"));
         console.log("Unstaking " + unstakeAmount);
 
-        unstakeTx = await district.methods.unstake (web3.utils.toHex (unstakeAmount)).send ({from: firstAccountAddress, gas: 10000000});
+        unstakeTx = await district.methods.unstake (web3.utils.toHex (unstakeAmount))
+          .send ({from: firstAccountAddress, gas: 10000000});
 
         staked = staked.sub(unstakeAmount);
         console.log("Unstake tx: " + unstakeTx);
