@@ -23,7 +23,7 @@
 (def meta-hash1 "QmZJWGiKnqhmuuUNfcryiumVHCKGvVNZWdy7xtd3XCkQJH")
 (def meta-hash2 "QmdsBbZgkwTJgaxfGgegGxLJW72RjU1bpWzvMe1vXxXEGf")
 
-(deftest approve-and-stake-for-dnt-weight-1000000
+(deftest approve-and-stake-for
   (async done
     (go
       (let [[creator staker1 staker2] (web3-eth/accounts @web3)
@@ -50,7 +50,7 @@
               (is (false? is-unstake))
               (is (= (bn/number voting-token-total-supply)
                      (bn/number staker-voting-token-balance)
-                     9999000099990000999))
+                     1000000000000000000))
               (is (= 0 (bn/number stake-id)))
               (is (= staker staker1)))))
 
@@ -71,8 +71,8 @@
                      (eth->wei-number 3)
                      (bn/number dnt-total-staked)))
               (is (false? is-unstake))
-              (is (= (bn/number voting-token-total-supply) 23331222425905803000))
-              (is (= (bn/number staker-voting-token-balance) 13332222325915804000))
+              (is (= (bn/number voting-token-total-supply) 3000000000000000000))
+              (is (= (bn/number staker-voting-token-balance) 3000000000000000000))
               (is (= 1 (bn/number stake-id)))
               (is (= staker staker2)))))
 
@@ -96,102 +96,10 @@
                      (bn/number dnt-total-staked)))
 
               (is (true? is-unstake))
-              (is (= (bn/number voting-token-total-supply) 15831972350913305000))
-              (is (= (bn/number staker-voting-token-balance) 2499750024997500400))
+              (is (= (bn/number voting-token-total-supply) 2250000000000000000))
+              (is (= (bn/number staker-voting-token-balance) 250000000000000000))
               (is (= 2 (bn/number stake-id)))
               (is (= staker staker1)))))
-
-        (done)))))
-
-
-(deftest approve-and-stake-for-dnt-weight-500000
-  (async done
-    (go
-      (let [[creator staker1 staker2] (web3-eth/accounts @web3)
-            [deposit] (->> (<? (eternal-db/get-uint-values :district-registry-db [:deposit]))
-                        (map bn/number))
-            aragon-id (cljs-utils/rand-str 10)
-            event-args (<! (create-district creator deposit meta-hash1 500000 aragon-id))
-            registry-entry (:registry-entry event-args)]
-
-        (testing "District can be staked to under valid conditions"
-          (let [tx (<? (district/approve-and-stake-for registry-entry
-                                                       {:amount (eth->wei 1)
-                                                        :user staker1}
-                                                       {:from staker1}))]
-            (let [challenge-event-args (:args (registry/district-stake-changed-event-in-tx :district-registry-fwd tx))
-                  {:keys [:voting-token-total-supply :staker-voting-token-balance]} challenge-event-args]
-              (is (= (bn/number voting-token-total-supply)
-                     (bn/number staker-voting-token-balance)
-                     4141782101273517000)))))
-
-        (testing "District can be staked to, multiple times"
-          (let [tx (<? (district/approve-and-stake-for registry-entry
-                                                       {:amount (eth->wei 2)
-                                                        :user staker2}
-                                                       {:from staker2}))]
-            (let [challenge-event-args (:args (registry/district-stake-changed-event-in-tx :district-registry-fwd tx))
-                  {:keys [:voting-token-total-supply :staker-voting-token-balance]} challenge-event-args]
-
-              (is (= (bn/number voting-token-total-supply) 8256840478545516000))
-              (is (= (bn/number staker-voting-token-balance) 4115058377271998500)))))
-
-
-        (testing "District can be unstaked from"
-          (let [tx (<? (district/unstake registry-entry
-                                         {:amount (eth->wei 0.75)}
-                                         {:from staker1}))]
-            (let [challenge-event-args (:args (registry/district-stake-changed-event-in-tx :district-registry-fwd tx))
-                  {:keys [:voting-token-total-supply :staker-voting-token-balance]} challenge-event-args]
-
-              (is (= (bn/number voting-token-total-supply) 5150503902590378000))
-              (is (= (bn/number staker-voting-token-balance) 1035445525318379300)))))
-
-        (done)))))
-
-
-(deftest approve-and-stake-for-dnt-weight-333333
-  (async done
-    (go
-      (let [[creator staker1 staker2] (web3-eth/accounts @web3)
-            [deposit] (->> (<? (eternal-db/get-uint-values :district-registry-db [:deposit]))
-                        (map bn/number))
-            aragon-id (cljs-utils/rand-str 10)
-            event-args (<! (create-district creator deposit meta-hash1 333333 aragon-id))
-            registry-entry (:registry-entry event-args)]
-
-        (testing "District can be staked to under valid conditions"
-          (let [tx (<? (district/approve-and-stake-for registry-entry
-                                                       {:amount (eth->wei 1)
-                                                        :user staker1}
-                                                       {:from staker1}))]
-            (let [challenge-event-args (:args (registry/district-stake-changed-event-in-tx :district-registry-fwd tx))
-                  {:keys [:voting-token-total-supply :staker-voting-token-balance]} challenge-event-args]
-              (is (= (bn/number voting-token-total-supply)
-                     (bn/number staker-voting-token-balance)
-                     2598997618827561000)))))
-
-        (testing "District can be staked to, multiple times"
-          (let [tx (<? (district/approve-and-stake-for registry-entry
-                                                       {:amount (eth->wei 2)
-                                                        :user staker2}
-                                                       {:from staker2}))]
-            (let [challenge-event-args (:args (registry/district-stake-changed-event-in-tx :district-registry-fwd tx))
-                  {:keys [:voting-token-total-supply :staker-voting-token-balance]} challenge-event-args]
-
-              (is (= (bn/number voting-token-total-supply) 4937694492970016000))
-              (is (= (bn/number staker-voting-token-balance) 2338696874142454300)))))
-
-
-        (testing "District can be unstaked from"
-          (let [tx (<? (district/unstake registry-entry
-                                         {:amount (eth->wei 0.75)}
-                                         {:from staker1}))]
-            (let [challenge-event-args (:args (registry/district-stake-changed-event-in-tx :district-registry-fwd tx))
-                  {:keys [:voting-token-total-supply :staker-voting-token-balance]} challenge-event-args]
-
-              (is (= (bn/number voting-token-total-supply) 2988446278849344500))
-              (is (= (bn/number staker-voting-token-balance) 649749404706890200)))))
 
         (done)))))
 

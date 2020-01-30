@@ -42,11 +42,10 @@
 
 (defn create-district
   "Creates a district and returns construct events args"
-  [& [creator deposit meta-hash dnt-weight aragon-id]]
+  [& [creator deposit meta-hash aragon-id]]
   (go
     (try
       (let [tx (<? (district-factory/approve-and-create-district {:meta-hash meta-hash
-                                                                  :dnt-weight dnt-weight
                                                                   :aragon-id aragon-id
                                                                   :amount deposit}
                                                                  {:from creator}))]

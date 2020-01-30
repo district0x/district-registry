@@ -33,7 +33,7 @@
             event-args (<! (create-district creator deposit meta-hash1 1000000 aragon-id))]
 
         (testing "District can be created under valid conditions"
-          (let [{:keys [:registry-entry :dnt-weight :aragon-dao :version :timestamp :meta-hash]} event-args]
+          (let [{:keys [:registry-entry :aragon-dao :version :timestamp :meta-hash]} event-args]
             (is (web3/address? registry-entry))
             (is (web3/address? aragon-dao))
             (is (= meta-hash (web3/to-hex meta-hash1)))
@@ -41,7 +41,6 @@
             (is (= (bn/number version) 1))
             (is (pos? (bn/number timestamp)))
             (is (= aragon-id (:aragon-id event-args)))
-            (is (= (bn/number dnt-weight) 1000000))
 
             (is (true? (<? (registry-entry/is-challengeable? registry-entry))))))
 
