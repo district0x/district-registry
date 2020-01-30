@@ -60,55 +60,14 @@
 
 
 (def default-form-data
-  (merge {:dnt-weight 1000000}
-         (when (= "dev" (get-environment))
-           {:name "Name Bazaar"
-            :url "https://namebazaar.io/"
-            :github-url "https://github.com/district0x/name-bazaar"
-            :facebook-url "https://www.facebook.com/district0x/"
-            :twitter-url "https://twitter.com/NameBazaar0x"
-            :aragon-id "namebazaar"
-            :description "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, masuada non rutrum ut, ornare ac orci. Lorem ipsum dolor sit amet, consectetur adipiscing. Lorem augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non."})))
-
-
-(defn- dnt-weight-changed [form-data weight]
-  #(swap! form-data assoc :dnt-weight weight))
-
-
-(defn- issuance-curve-radio [form-data]
-  [:div.radio-boxes
-   [:div.radio-box
-    [:fieldset
-     (let [dnt-weight 1000000]
-       [:input#r3 {:name "radio-group"
-                   :type "radio"
-                   :checked (= (:dnt-weight @form-data) dnt-weight)
-                   :on-change (dnt-weight-changed form-data dnt-weight)}])
-     [:label {:for "r3"} "Flat"]]
-    [:img.radio-img {:src "/images/curve-graph-1000000-m.svg"}]
-    [:p
-     "Every new DNT staked receives the same amount of voting power back at any time."]]
-   [:div.radio-box
-    [:fieldset
-     (let [dnt-weight 500000]
-       [:input#r2 {:name "radio-group"
-                   :type "radio"
-                   :checked (= (:dnt-weight @form-data) dnt-weight)
-                   :on-change (dnt-weight-changed form-data dnt-weight)}])
-     [:label {:for "r2"} "Linear"]]
-    [:img.radio-img {:src "/images/curve-graph-500000-m.svg"}]
-    [:p
-     "Every new DNT staked receives a smaller portion of voting power back as more DNT in total is staked."]]
-   [:div.radio-box
-    [:fieldset
-     (let [dnt-weight 333333]
-       [:input#r1 {:name "radio-group"
-                   :type "radio"
-                   :checked (= (:dnt-weight @form-data) dnt-weight)
-                   :on-change (dnt-weight-changed form-data dnt-weight)}])
-     [:label {:for "r1"} "Exponential"]]
-    [:img.radio-img {:src "/images/curve-graph-333333-m.svg"}]
-    [:p "Every new DNT staked receives a MUCH smaller portion of voting power back as more DNT in total is staked."]]])
+  (when (= "dev" (get-environment))
+    {:name "Name Bazaar"
+     :url "https://namebazaar.io/"
+     :github-url "https://github.com/district0x/name-bazaar"
+     :facebook-url "https://www.facebook.com/district0x/"
+     :twitter-url "https://twitter.com/NameBazaar0x"
+     :aragon-id "namebazaar"
+     :description "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, masuada non rutrum ut, ornare ac orci. Lorem ipsum dolor sit amet, consectetur adipiscing. Lorem augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non."}))
 
 
 (defn submit-button []
@@ -237,7 +196,8 @@
             [:div.container
              (when-not edit?
                [:p.intro-text
-                "Below you can fill out all the parameters required to submit your district for a place in the District Registry. These items can be altered if a district is not currently challenged or blacklisted. Further down you can find the three different options for token issuance curves, with descriptions for each. These curves determine how many DNT need to be staked to earn votes for successive stakers to the district. Token issuance curve cannot be altered once submitted. You can read more " [:a {:href "https://education.district0x.io/district0x-specific-topics/understanding-distict0x/the-district-registry/" :target :_blank} "here"] "."])
+                "Below you can fill out all the parameters required to submit your district for a place in the District Registry. These items can be altered if a district is not currently challenged or blacklisted. Further down you can see available options for token issuance curves, with descriptions for each. Currently, only the flat issuance curve is supported. These curves determine how many DNT need to be staked to earn votes for successive stakers to the district. Token issuance curve cannot be altered once submitted. You can read more "
+                [:a {:href "https://education.district0x.io/district0x-specific-topics/understanding-distict0x/the-district-registry/" :target :_blank} "here"] "."])
              [:form.image-upload
               [:div.row.spaced
                [:div.col.left
@@ -303,10 +263,7 @@
                  :form-data form-data
                  :errors errors}]
                [:<>
-                [:div.h-line]
-                [:h2 "Voting Token Issuance Curve"]
                 [:form.voting
-                 [issuance-curve-radio form-data]
                  [submit-button
                   {:form-data form-data
                    :deposit deposit

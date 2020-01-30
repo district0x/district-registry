@@ -92,7 +92,6 @@
     :district/aragon-id
     :district/logo-image-hash
     :district/background-image-hash
-    :district/dnt-weight
     :district/stake-bank
     :district/dnt-staked
     :district/total-supply
@@ -257,7 +256,7 @@
           [:p "No one has staked into this district yet"])))))
 
 
-(defn stake-section [{:keys [:reg-entry/address :reg-entry/status :district/dnt-weight]}
+(defn stake-section [{:keys [:reg-entry/address :reg-entry/status]}
                      {:keys [:challenge/winning-vote-option]}]
   [:div
    [:h2 "Stake"]
@@ -267,8 +266,7 @@
    [:h3 "Stake History"]
    [stake-history-chart
     {:reg-entry/address address}]
-   [:h3 "Voting Token Issuance Curve"]
-   [:img.spacer {:src (str "/images/curve-graph-" dnt-weight "-l.svg")}]
+   [:div.h-line]
    [:div.stake
     [:div.row.spaced
      [stake/stake-info address]

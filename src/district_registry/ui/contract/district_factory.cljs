@@ -15,14 +15,13 @@
 (re-frame/reg-event-fx
   ::approve-and-create-district
   interceptors
-  (fn [{:keys [:db]} [{:keys [:name :deposit :dnt-weight :aragon-id :tx-id]} {:keys [Name Hash Size]}]]
+  (fn [{:keys [:db]} [{:keys [:name :deposit :aragon-id :tx-id]} {:keys [Name Hash Size]}]]
     (let [active-account (account-queries/active-account db)
           extra-data (web3-eth/contract-get-data
                        (contract-queries/instance db :district-factory)
                        :create-district
                        active-account
                        Hash
-                       (bn/number dnt-weight)
                        aragon-id)]
       {:dispatch [::tx-events/send-tx
                   {:instance (contract-queries/instance db :DNT)

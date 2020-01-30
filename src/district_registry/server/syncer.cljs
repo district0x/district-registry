@@ -39,7 +39,7 @@
 
 (defn district-constructed-event [_ {:keys [:args]}]
   (try-catch
-    (let [{:keys [:registry-entry :timestamp :creator :meta-hash :version :deposit :challenge-period-end :dnt-weight :stake-bank :aragon-dao :aragon-id]} args]
+    (let [{:keys [:registry-entry :timestamp :creator :meta-hash :version :deposit :challenge-period-end :stake-bank :aragon-dao :aragon-id]} args]
       (let [registry-entry-data {:reg-entry/address registry-entry
                                  :reg-entry/creator creator
                                  :reg-entry/version version
@@ -48,7 +48,6 @@
                                  :reg-entry/challenge-period-end (bn/number challenge-period-end)}
             district {:reg-entry/address registry-entry
                       :district/meta-hash (web3/to-ascii meta-hash)
-                      :district/dnt-weight (bn/number dnt-weight)
                       :district/dnt-staked 0
                       :district/total-supply 0
                       :district/stake-bank stake-bank

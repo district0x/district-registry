@@ -5,8 +5,8 @@
     [district-registry.server.contract.dnt :as dnt]
     [district.server.smart-contracts :refer [contract-call instance contract-address]]))
 
-(defn create-district-data [{:keys [:creator :meta-hash :dnt-weight :aragon-id]}]
-  (web3-eth/contract-get-data (instance :district-factory) :create-district creator (web3/to-hex meta-hash) dnt-weight aragon-id))
+(defn create-district-data [{:keys [:creator :meta-hash :aragon-id]}]
+  (web3-eth/contract-get-data (instance :district-factory) :create-district creator (web3/to-hex meta-hash) aragon-id))
 
 (defn approve-and-create-district [{:keys [:amount] :as args} & [opts]]
   (dnt/approve-and-call {:spender (contract-address :district-factory)

@@ -33,25 +33,23 @@ contract District is RegistryEntry {
    * @param _creator Creator of a district
    * @param _version Version of District contract
    * @param _metaHash IPFS hash of data related to a district
-   * @param _dntWeight Coefficient that determines voting token issuance curve
    * @param _aragonId ENS name registered as <somename>.aragonid.eth
    */
   function construct(
     address _creator,
     uint _version,
     bytes _metaHash,
-    uint32 _dntWeight,
     string _aragonId
   )
   public
   {
     super.construct(_creator, _version);
     stakeBank = StakeBank(new Forwarder2());
-    stakeBank.construct(_dntWeight);
+    stakeBank.construct();
     challengePeriodEnd = ~uint(0);
     metaHash = _metaHash;
     Kernel aragonDao = kitDistrict.createDAO(_aragonId, MiniMeToken(stakeBank), _creator);
-    registry.fireDistrictConstructedEvent(version, creator, metaHash, deposit, challengePeriodEnd, _dntWeight, address(stakeBank), address(aragonDao), _aragonId);
+    registry.fireDistrictConstructedEvent(version, creator, metaHash, deposit, challengePeriodEnd, address(stakeBank), address(aragonDao), _aragonId);
   }
 
   /**

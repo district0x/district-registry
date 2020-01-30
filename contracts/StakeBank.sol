@@ -1,6 +1,5 @@
 pragma solidity ^0.4.24;
 
-import "./Power.sol";
 import "@aragon/os/contracts/lib/math/SafeMath.sol";
 import "./ownership/Ownable.sol";
 import "./minime/MiniMeTokenProxyTarget.sol";
@@ -16,27 +15,12 @@ import "./proxy/Forwarder1.sol";
 contract StakeBank is Ownable, MiniMeTokenProxyTarget {
 
   MiniMeTokenFactory public constant minimeTokenFactory = MiniMeTokenFactory(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
-  uint32 public MAX_WEIGHT;
   using SafeMath for uint256;
-
-  /**
-   * @dev reserve ratio, represented in ppm, 1-1000000
-   * 1/3 corresponds to y= multiple * x^2
-   * 1/2 corresponds to y= multiple * x
-   * 2/3 corresponds to y= multiple * x^1/2
-   * multiple will depends on contract initialization,
-   * specificallytotalAmount and poolBalance parameters
-   * we might want to add an 'initialize' function that will allow
-   * the owner to send ether to the contract and mint a given amount of tokens
-   */
-  uint32 private dntWeight;
 
   uint256[128] private maxExpArray;
 
   StakeBankCheckpoint[] public stakeHistory;
   mapping (address => StakeBankCheckpoint[]) private stakesFor;
-
-  Power private power;
 
   struct StakeBankCheckpoint {
     uint256 at;
@@ -47,17 +31,11 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
    * @dev Constructor for this contract.
    * Native constructor is not used, because users create only forwarders into single instance of this contract,
    * therefore constructor must be called explicitly.
-   * It creates a new forwarder poiting to Power.sol
 
-   * @param _dntWeight Coefficient representing voting token issuance curve
    */
-  function construct(
-    uint32 _dntWeight
-  )
+  function construct()
     public
   {
-    require(MAX_WEIGHT == 0);
-    MAX_WEIGHT = 1000000;
     super.construct(
       address(minimeTokenFactory),
       0x0,
@@ -68,52 +46,8 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
       false
     );
 
-    require(_dntWeight >= 1 && _dntWeight <= MAX_WEIGHT);
     owner = msg.sender;
     changeController(owner);
-    dntWeight = _dntWeight;
-    power = Power(new Forwarder1());
-    power.construct();
-  }
-
-  /**
-   * @dev given a token supply, connector balance, weight and a deposit amount (in the connector token),
-   * calculates the return for a given conversion (in the main token)
-   *
-   * Formula:
-   * Return = _supply * ((1 + _depositAmount / _connectorBalance) ^ (_connectorWeight / 1000000) - 1)
-   *
-   * @param _supply Token total supply
-   * @param _connectorBalance Total connector balance
-   * @param _connectorWeight Connector weight, represented in ppm, 1-1000000
-   * @param _depositAmount Deposit amount, in connector token
-   *
-   * @return purchase return amount
-   */
-  function calculatePurchaseReturn(
-    uint256 _supply,
-    uint256 _connectorBalance,
-    uint32 _connectorWeight,
-    uint256 _depositAmount
-  )
-    private constant returns (uint256)
-  {
-    // validate input
-    require(_supply > 0 && _connectorBalance > 0 && _connectorWeight > 0 && _connectorWeight <= MAX_WEIGHT);
-    // special case for 0 deposit amount
-    if (_depositAmount == 0) {
-      return 0;
-    }
-    // special case if the weight = 100%
-    if (_connectorWeight == MAX_WEIGHT) {
-      return _supply.mul(_depositAmount).div(_connectorBalance);
-    }
-    uint256 result;
-    uint8 precision;
-    uint256 baseN = _depositAmount.add(_connectorBalance);
-    (result, precision) = power.power(baseN, _connectorBalance, _connectorWeight, MAX_WEIGHT);
-    uint256 temp = _supply.mul(result) >> precision;
-    return temp - _supply;
   }
 
   /**
@@ -122,12 +56,7 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
    * @return The estimated amount
    */
   function calculateReturnForStake(uint _amount) private view returns (uint) {
-    return calculatePurchaseReturn(
-      totalSupply().add(1e19),
-      totalStaked().add(1e14),
-      dntWeight,
-      _amount
-    );
+    return _amount;
   }
 
   /**
@@ -137,12 +66,7 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
    * @return The estimated amount
    */
   function estimateReturnForStake(uint _amount) public view returns (uint) {
-    return calculatePurchaseReturn(
-      totalSupply().add(1e19),
-      totalStaked().add(1e14).add(_amount),
-      dntWeight,
-      _amount
-    );
+    return _amount;
   }
 
   /**
@@ -172,8 +96,9 @@ contract StakeBank is Ownable, MiniMeTokenProxyTarget {
     require(amount > 0);
     uint staked = totalStakedFor(user);
     uint minted = balanceOf(user);
-    uint toDestroy = minted.mul(1000000000000000000).div(staked.mul(1000000000000000000).div(amount));
-    require(destroyTokens(user, toDestroy));
+    require(staked >= amount);
+    require(minted >= amount);
+    require(destroyTokens(user, amount));
     updateStakeBankCheckpointAtNow(stakesFor[user], amount, true);
     updateStakeBankCheckpointAtNow(stakeHistory, amount, true);
     return stakeHistory.length - 1;

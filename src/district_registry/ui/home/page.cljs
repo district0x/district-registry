@@ -52,7 +52,6 @@
              :district/github-url
              :district/logo-image-hash
              :district/background-image-hash
-             :district/dnt-weight
              :district/dnt-staked
              :district/total-supply
              [:district/dnt-staked-for {:staker active-account}]

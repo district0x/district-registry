@@ -42,7 +42,6 @@
    [:district/twitter-url :string]
    [:district/logo-image-hash :string]
    [:district/background-image-hash :string]
-   [:district/dnt-weight :unsigned :integer not-nil]
    [:district/dnt-staked :unsigned :BIG :INT not-nil]
    [:district/total-supply :unsigned :BIG :INT not-nil]
    [:district/aragon-dao address not-nil]
