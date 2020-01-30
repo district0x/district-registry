@@ -30,7 +30,7 @@
             [deposit] (->> (<? (eternal-db/get-uint-values :district-registry-db [:deposit]))
                         (map bn/number))
             aragon-id (cljs-utils/rand-str 10)
-            event-args (<! (create-district creator deposit meta-hash1 1000000 aragon-id))
+            event-args (<! (create-district creator deposit meta-hash1 aragon-id))
             registry-entry (:registry-entry event-args)
             stake-bank (<? (district/stake-bank registry-entry))]
 
@@ -72,7 +72,7 @@
                      (bn/number dnt-total-staked)))
               (is (false? is-unstake))
               (is (= (bn/number voting-token-total-supply) 3000000000000000000))
-              (is (= (bn/number staker-voting-token-balance) 3000000000000000000))
+              (is (= (bn/number staker-voting-token-balance) 2000000000000000000))
               (is (= 1 (bn/number stake-id)))
               (is (= staker staker2)))))
 
@@ -111,7 +111,7 @@
             [deposit commit-period-duration reveal-period-duration] (->> (<? (eternal-db/get-uint-values :district-registry-db [:deposit :commit-period-duration :reveal-period-duration]))
                                                                          (map bn/number))
             aragon-id (cljs-utils/rand-str 10)
-            event-args (<! (create-district creator deposit meta-hash1 500000 aragon-id))
+            event-args (<! (create-district creator deposit meta-hash1 aragon-id))
             registry-entry (:registry-entry event-args)
             salt (cljs-utils/rand-str 10)
             _ (<? (district/approve-and-stake-for registry-entry
@@ -161,7 +161,7 @@
             [deposit commit-period-duration reveal-period-duration] (->> (<? (eternal-db/get-uint-values :district-registry-db [:deposit :commit-period-duration :reveal-period-duration]))
                                                                          (map bn/number))
             aragon-id (cljs-utils/rand-str 10)
-            event-args (<! (create-district creator deposit meta-hash1 500000 aragon-id))
+            event-args (<! (create-district creator deposit meta-hash1 aragon-id))
             registry-entry (:registry-entry event-args)
             salt (cljs-utils/rand-str 10)
             _ (<? (registry-entry/approve-and-create-challenge registry-entry
@@ -212,7 +212,7 @@
             [deposit commit-period-duration reveal-period-duration] (->> (<? (eternal-db/get-uint-values :district-registry-db [:deposit :commit-period-duration :reveal-period-duration]))
                                                                          (map bn/number))
             aragon-id (cljs-utils/rand-str 10)
-            event-args (<! (create-district creator deposit meta-hash1 333333 aragon-id))
+            event-args (<! (create-district creator deposit meta-hash1 aragon-id))
             registry-entry (:registry-entry event-args)]
 
 

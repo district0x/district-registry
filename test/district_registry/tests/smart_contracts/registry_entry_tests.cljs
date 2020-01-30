@@ -30,7 +30,7 @@
             [deposit] (->> (<? (eternal-db/get-uint-values :district-registry-db [:deposit]))
                         (map bn/number))
             aragon-id (cljs-utils/rand-str 10)
-            event-args (<! (create-district creator deposit meta-hash1 1000000 aragon-id))]
+            event-args (<! (create-district creator deposit meta-hash1 aragon-id))]
 
         (testing "District can be created under valid conditions"
           (let [{:keys [:registry-entry :aragon-dao :version :timestamp :meta-hash]} event-args]
@@ -45,10 +45,7 @@
             (is (true? (<? (registry-entry/is-challengeable? registry-entry))))))
 
         (testing "Cannot create district with same aragonId"
-          (is (nil? (<! (create-district creator deposit meta-hash1 1000000 aragon-id)))))
-
-        (testing "Cannot create district with higher dnt weight than max weight"
-          (is (nil? (<! (create-district creator deposit meta-hash1 1000001 (cljs-utils/rand-str 10))))))
+          (is (nil? (<! (create-district creator deposit meta-hash1 aragon-id)))))
 
         (done)))))
 
@@ -61,7 +58,7 @@
                                                                       (map bn/number))
             aragon-id (cljs-utils/rand-str 10)
             salt (cljs-utils/rand-str 10)
-            event-args (<! (create-district creator deposit meta-hash1 1000000 aragon-id))
+            event-args (<! (create-district creator deposit meta-hash1 aragon-id))
             registry-entry (:registry-entry event-args)]
 
         (testing "District can be challenged under valid conditions"
@@ -149,7 +146,7 @@
                                                                       (map bn/number))
             aragon-id (cljs-utils/rand-str 10)
             salt (cljs-utils/rand-str 10)
-            event-args (<! (create-district creator deposit meta-hash1 1000000 aragon-id))
+            event-args (<! (create-district creator deposit meta-hash1 aragon-id))
             registry-entry (:registry-entry event-args)
             _ (<? (registry-entry/approve-and-create-challenge registry-entry
                                                                {:challenger challenger
@@ -233,7 +230,7 @@
                                                                       (map bn/number))
             aragon-id (cljs-utils/rand-str 10)
             salt (cljs-utils/rand-str 10)
-            event-args (<! (create-district creator deposit meta-hash1 1000000 aragon-id))
+            event-args (<! (create-district creator deposit meta-hash1 aragon-id))
             registry-entry (:registry-entry event-args)
             _ (<? (registry-entry/approve-and-create-challenge registry-entry
                                                                {:challenger challenger
@@ -282,7 +279,7 @@
                                                                       (map bn/number))
             aragon-id (cljs-utils/rand-str 10)
             salt (cljs-utils/rand-str 10)
-            event-args (<! (create-district creator deposit meta-hash1 1000000 aragon-id))
+            event-args (<! (create-district creator deposit meta-hash1 aragon-id))
             registry-entry (:registry-entry event-args)]
 
 

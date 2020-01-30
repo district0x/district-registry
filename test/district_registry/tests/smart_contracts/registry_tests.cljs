@@ -68,11 +68,11 @@
           (true? (<? (registry/emergency? :district-registry-fwd))))
 
         (testing "Cannot create district during an emergency"
-          (is (nil? (<! (create-district owner deposit meta-hash1 1000000 aragon-id)))))
+          (is (nil? (<! (create-district owner deposit meta-hash1 aragon-id)))))
 
         (testing "Can create district without emergency"
           (is (<? (registry/set-emergency :district-registry-fwd false {:from owner})))
-          (let [event-args (<! (create-district owner deposit meta-hash1 1000000 aragon-id))
+          (let [event-args (<! (create-district owner deposit meta-hash1 aragon-id))
                 registry-entry (:registry-entry event-args)]
 
             (is (<? (registry/set-emergency :district-registry-fwd true {:from owner})))
