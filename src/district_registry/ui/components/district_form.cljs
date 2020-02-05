@@ -233,7 +233,7 @@
                                                 "checking")
                                  :errors {:local {:aragon-id {:hint hint}}}
                                  :on-change (fn [value]
-                                              (if (re-matches #"[a-z0-9]{0,100}" value)
+                                              (if (re-matches #"[a-z0-9A-Z]{0,100}" value)
                                                 (debounced-check-availability value)
                                                 (swap! form-data assoc-by-path :aragon-id aragon-id)))}]))
                 [:div.submit-errors
