@@ -1,23 +1,22 @@
 (ns district-registry.server.syncer
-  (:require
-    [bignumber.core :as bn]
-    [camel-snake-kebab.core :as cs :include-macros true]
-    [cljs-solidity-sha3.core :refer [solidity-sha3]]
-    [cljs-web3.core :as web3]
-    [cljs-web3.eth :as web3-eth]
-    [district-registry.server.db :as db]
-    [district-registry.server.emailer :as emailer]
-    [district-registry.server.ipfs :as ipfs]
-    [district-registry.server.utils :as server-utils]
-    [district-registry.shared.utils :refer [vote-option->num]]
-    [district.server.config :refer [config]]
-    [district.server.smart-contracts :refer [replay-past-events]]
-    [district.server.web3 :refer [web3]]
-    [district.server.web3-events :refer [register-callback! unregister-callbacks! register-after-past-events-dispatched-callback!]]
-    [district.shared.error-handling :refer [try-catch]]
-    [mount.core :as mount :refer [defstate]]
-    [print.foo :refer [look] :include-macros true]
-    [taoensso.timbre :as log]))
+  (:require [bignumber.core :as bn]
+            [camel-snake-kebab.core :as camel-snake-kebab]
+            [cljs-web3-next.core :as web3-core]
+            [cljs-web3-next.eth :as web3-eth]
+            [cljs-web3-next.utils :as web3-utils]
+            [cljs.core.async :as async]
+            [district-registry.server.db :as db]
+            [district-registry.server.ipfs :as ipfs]
+            [district-registry.server.utils :as server-utils]
+            [district-registry.shared.utils :refer [vote-option->num]]
+            [district.server.config :refer [config]]
+            [district.server.smart-contracts :as smart-contracts]
+            [district.server.web3 :refer [web3 ping-start ping-stop]]
+            [district.server.web3-events :as web3-events]
+            [district.shared.async-helpers :refer [safe-go <?]]
+            [district.shared.error-handling :refer [try-catch]]
+            [mount.core :as mount :refer [defstate]]
+            [taoensso.timbre :as log]))
 
 (declare start)
 (declare stop)
@@ -39,7 +38,8 @@
 
 (defn district-constructed-event [_ {:keys [:args]}]
   (try-catch
-    (let [{:keys [:registry-entry :timestamp :creator :meta-hash :version :deposit :challenge-period-end :stake-bank :aragon-dao :aragon-id]} args]
+    (let [{:keys [:registry-entry :timestamp :creator :meta-hash :version :deposit :challenge-period-end :stake-bank :aragon-dao :aragon-id] :as arguments} args]
+      (log/info "district-constructed-event" arguments)
       (let [registry-entry-data {:reg-entry/address registry-entry
                                  :reg-entry/creator creator
                                  :reg-entry/version version
@@ -47,7 +47,7 @@
                                  :reg-entry/deposit (bn/number deposit)
                                  :reg-entry/challenge-period-end (bn/number challenge-period-end)}
             district {:reg-entry/address registry-entry
-                      :district/meta-hash (web3/to-ascii meta-hash)
+                      :district/meta-hash (web3-utils/to-ascii @web3 meta-hash)
                       :district/dnt-staked 0
                       :district/total-supply 0
                       :district/stake-bank stake-bank
@@ -68,7 +68,7 @@
 (defn district-meta-hash-changed-event [_ {:keys [:args]}]
   (try-catch
     (let [{:keys [:registry-entry :meta-hash]} args]
-      (.then (server-utils/get-ipfs-meta @ipfs/ipfs (web3/to-ascii meta-hash))
+      (.then (server-utils/get-ipfs-meta @ipfs/ipfs (web3-utils/to-ascii @web3 meta-hash))
              (fn [district-meta]
                (try-catch
                  (->> district-meta
@@ -112,11 +112,11 @@
                             :challenge/commit-period-end (bn/number commit-period-end)
                             :challenge/reveal-period-end (bn/number reveal-period-end)
                             :challenge/reward-pool (bn/number reward-pool)
-                            :challenge/meta-hash (web3/to-ascii meta-hash)}]
+                            :challenge/meta-hash (web3-utils/to-ascii @web3 meta-hash)}]
       (db/insert-challenge! challenged-entry)
       (db/update-registry-entry! {:reg-entry/address registry-entry
                                   :reg-entry/current-challenge-index index})
-      (.then (server-utils/get-ipfs-meta @ipfs/ipfs (web3/to-ascii meta-hash))
+      (.then (server-utils/get-ipfs-meta @ipfs/ipfs (web3-utils/to-ascii @web3 meta-hash))
              (fn [{:keys [comment]}]
                (let [challenge-extra-info {:reg-entry/address registry-entry
                                            :challenge/index index
@@ -246,7 +246,7 @@
           records->values (zipmap records values)
           keys->values (->> #{"challengePeriodDuration" "commitPeriodDuration" "revealPeriodDuration" "deposit"
                               "challengeDispensation" "voteQuorum" "maxTotalSupply" "maxAuctionDuration"}
-                         (map (fn [k] (when-let [v (records->values (solidity-sha3 k))] [k v])))
+                         (map (fn [k] (when-let [v (records->values (web3-utils/sha3 @web3 k))] [k v])))
                          (into {}))]
       (doseq [[k v] keys->values]
         (db/insert-initial-param! {:initial-param/key k
@@ -254,45 +254,100 @@
                                    :initial-param/value (bn/number v)
                                    :initial-param/set-on timestamp})))))
 
+(defn- block-timestamp* [block-number]
+  (let [out-ch (async/promise-chan)]
+    (smart-contracts/wait-for-block block-number (fn [error result]
+                                                   (if error
+                                                     (async/put! out-ch error)
+                                                     (let [{:keys [:timestamp]} (js->clj result :keywordize-keys true)]
+                                                       (log/debug "cache miss for block-timestamp" {:block-number block-number
+                                                                                                    :timestamp timestamp})
+                                                       (async/put! out-ch timestamp)))))
+    out-ch))
+
+(def block-timestamp
+  (memoize block-timestamp*))
+
+(defn- get-event [{:keys [:event :log-index :block-number]
+                   {:keys [:contract-key :forwards-to]} :contract}]
+  {:event/contract-key (name (or forwards-to contract-key))
+   :event/event-name (name event)
+   :event/log-index log-index
+   :event/block-number block-number})
 
 (defn- dispatcher [callback]
-  (fn [err event]
-    (-> event
-      (update-in [:args :timestamp] bn/number)
-      (update-in [:args :version] bn/number)
-      (->> (callback err)))))
+  (fn [err {:keys [:block-number] :as event}]
+    (safe-go
+     (try
+       (let [block-timestamp (<? (block-timestamp block-number))
+             event (-> event
+                       (update :event camel-snake-kebab/->kebab-case)
+                       (update-in [:args :version] bn/number)
+                       (update-in [:args :timestamp] (fn [timestamp]
+                                                       (if timestamp
+                                                         (bn/number timestamp)
+                                                         block-timestamp))))
+             {:keys [:event/contract-key :event/event-name :event/block-number :event/log-index]} (get-event event)
+             {:keys [:event/last-block-number :event/last-log-index :event/count]
+              :or {last-block-number -1
+                   last-log-index -1
+                   count 0}} (db/get-last-event {:event/contract-key contract-key :event/event-name event-name} [:event/last-log-index :event/last-block-number :event/count])
+             evt {:event/contract-key contract-key
+                  :event/event-name event-name
+                  :event/count count
+                  :last-block-number last-block-number
+                  :last-log-index last-log-index
+                  :block-number block-number
+                  :log-index log-index}]
+         (if (or (> block-number last-block-number)
+                 (and (= block-number last-block-number) (> log-index last-log-index)))
+           (let [result (callback err event)]
+             (log/info "Handling new event" evt)
+             ;; block if we need
+             (when (satisfies? cljs.core.async.impl.protocols/ReadPort result)
+               (<! result))
+             (db/upsert-event! {:event/last-log-index log-index
+                                :event/last-block-number block-number
+                                :event/count (inc count)
+                                :event/event-name event-name
+                                :event/contract-key contract-key}))
 
+           (log/info "Skipping handling of a persisted event" evt)))
+       (catch js/Error error
+         (log/error "Exception when handling event" {:error error
+                                                     :event event})
+         ;; So we crash as fast as we can and don't drag errors that are harder to debug
+         (js/process.exit 1))))))
 
 (defn start [opts]
-  (when-not (:disabled? opts)
+  (when-not (web3-eth/is-listening? @web3)
+    (throw (js/Error. "Can't connect to Ethereum node")))
 
-    (when-not (web3/connected? @web3)
-      (throw (js/Error. "Can't connect to Ethereum node")))
+  (when-not (= ::db/started @db/district-registry-db)
+    (throw (js/Error. "Database module has not started")))
 
-    (when-not (= ::db/started @db/district-registry-db)
-      (throw (js/Error. "Database module has not started")))
-
-    (let [event-callbacks
-          {:param-change-db/eternal-db-event eternal-db-event
-           :param-change-registry/param-change-constructed-event param-change-constructed-event
-           :param-change-registry/param-change-applied-event param-change-applied-event
-           :district-registry-db/eternal-db-event eternal-db-event
-           :district-registry/district-constructed-event district-constructed-event
-           :district-registry/district-meta-hash-changed-event district-meta-hash-changed-event
-           :district-registry/challenge-created-event challenge-created-event
-           :district-registry/vote-committed-event vote-committed-event
-           :district-registry/vote-revealed-event vote-revealed-event
-           :district-registry/vote-reward-claimed-event vote-reward-claimed-event
-           :district-registry/votes-reclaimed-event votes-reclaimed-event
-           :district-registry/challenger-reward-claimed-event challenger-reward-claimed-event
-           :district-registry/creator-reward-claimed-event creator-reward-claimed-event
-           :district-registry/stake-changed-event stake-changed-event}
-
-          callback-ids (doseq [[event-key callback] event-callbacks]
-                         (register-callback! event-key (dispatcher callback)))]
-
-      (assoc opts :callback-ids callback-ids))))
+  (let [event-callbacks
+        {:param-change-db/eternal-db-event eternal-db-event
+         :param-change-registry/param-change-constructed-event param-change-constructed-event
+         :param-change-registry/param-change-applied-event param-change-applied-event
+         :district-registry-db/eternal-db-event eternal-db-event
+         :district-registry/district-constructed-event district-constructed-event
+         :district-registry/district-meta-hash-changed-event district-meta-hash-changed-event
+         :district-registry/challenge-created-event challenge-created-event
+         :district-registry/vote-committed-event vote-committed-event
+         :district-registry/vote-revealed-event vote-revealed-event
+         :district-registry/vote-reward-claimed-event vote-reward-claimed-event
+         :district-registry/votes-reclaimed-event votes-reclaimed-event
+         :district-registry/challenger-reward-claimed-event challenger-reward-claimed-event
+         :district-registry/creator-reward-claimed-event creator-reward-claimed-event
+         :district-registry/stake-changed-event stake-changed-event}
+        callback-ids (doseq [[event-key callback] event-callbacks]
+                       (web3-events/register-callback! event-key (dispatcher callback)))]
+    (web3-events/register-after-past-events-dispatched-callback! (fn []
+                                                                   (log/warn "Syncing past events finished")
+                                                                   (ping-start {:ping-interval 10000})))
+    (assoc opts :callback-ids callback-ids)))
 
 (defn stop [syncer]
-  (when-not (:disabled? @syncer)
-    (unregister-callbacks! (:callback-ids @syncer))))
+  (ping-stop)
+  (web3-events/unregister-callbacks! (:callback-ids @syncer)))
