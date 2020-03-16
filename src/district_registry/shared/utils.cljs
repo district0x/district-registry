@@ -1,6 +1,5 @@
 (ns district-registry.shared.utils
-  (:require
-    [clojure.set :as set])
+  (:require [clojure.set :as set])
   (:import [goog.async Debouncer]))
 
 (def vote-option->kw

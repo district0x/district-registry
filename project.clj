@@ -5,6 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[camel-snake-kebab "0.4.0"]
                  [cljs-web3 "0.19.0-0-10"]
+                 [cljs-web3-next "0.1.3"]
                  [cljsjs/bignumber "4.1.0-0"]
                  [cljsjs/buffer "5.1.0-1"]
                  [cljsjs/filesaverjs "1.3.3-0"]
@@ -15,7 +16,7 @@
                  [com.taoensso/encore "2.92.0"]
                  [com.taoensso/timbre "4.10.0"]
                  [day8.re-frame/async-flow-fx "0.1.0"]
-                 [district0x/async-helpers "0.1.1"]
+                 [district0x/async-helpers "0.1.3"]
                  [district0x/bignumber "1.0.3"]
                  [district0x/cljs-ipfs-native "1.0.1"]
                  [district0x/cljs-solidity-sha3 "1.0.0"]
@@ -30,10 +31,9 @@
                  [district0x/district-server-graphql "1.0.15"]
                  [district0x/district-server-logging "1.0.6"]
                  [district0x/district-server-middleware-logging "1.0.0"]
-                 [district0x/district-server-smart-contracts "1.0.16"]
-                 [district0x/district-server-web3 "1.0.1"]
-                 [district0x/district-server-web3-events "1.0.5"]
-                 [district0x/district-server-web3-watcher "1.0.3"]
+                 [district0x/district-server-smart-contracts "1.2.4"]
+                 [district0x/district-server-web3 "1.2.4"]
+                 [district0x/district-server-web3-events "1.1.9"]
                  [district0x/district-ui-component-active-account "1.0.0"]
                  [district0x/district-ui-component-active-account-balance "1.0.1"]
                  [district0x/district-ui-component-form "0.2.13"]
@@ -65,13 +65,15 @@
                  [medley "1.0.0"]
                  [mount "0.1.12"]
                  [org.clojure/clojurescript "1.10.439"]
-                 [org.clojure/core.async "0.4.474"]
+                 [org.clojure/core.async "0.4.490"]
                  [print-foo-cljs "2.0.3"]
                  [re-frame "0.10.5"]
                  [reagent "0.8.1"]]
 
   :exclusions [express-graphql
-               cljsjs/react-with-addons]
+               cljsjs/react-with-addons
+               org.clojure/core.async
+               district0x/async-helpers]
 
   :plugins [[deraen/lein-less4clj "0.7.0-SNAPSHOT"]
             [lein-auto "0.1.2"]
@@ -81,6 +83,8 @@
             [lein-doo "0.1.8"]
             [lein-npm "0.6.2"]
             [lein-pdo "0.1.1"]]
+
+  :doo {:paths {:karma "./node_modules/karma/bin/karma"}}
 
   :less4clj {:target-path "resources/public/css-compiled"
              :source-paths ["resources/public/css"]}
@@ -108,6 +112,8 @@
                        [openzeppelin-solidity "2.3.0"]
                        ["@truffle/hdwallet-provider" "1.0.25"]
                        [dotenv "8.0.0"]
+                       ;; before its in cljsjs
+                       [web3 "1.2.0"]
 
                        ;; Aragon dependencies:
                        ["@aragon/os" "4.2.0"]
@@ -148,9 +154,12 @@
                                     "target/"]
 
   :profiles {:dev {:dependencies [[org.clojure/clojure "1.9.0"]
+                                  [org.clojure/clojurescript "1.10.439"]
+                                  [org.clojure/core.async "0.4.490"]
                                   [binaryage/devtools "0.9.10"]
                                   [cider/piggieback "0.4.0"]
-                                  [figwheel-sidecar "0.5.18" :exclusions [org.clojure/core.async]]
+                                  [figwheel-sidecar "0.5.18"]
+                                  [lein-doo "0.1.8"]
                                   [org.clojure/clojure "1.9.0"]
                                   [org.clojure/tools.reader "1.3.0"]]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
@@ -198,11 +207,10 @@
                                    :pseudo-names false}}
                        {:id "server-tests"
                         :source-paths ["src/district_registry/server" "src/district_registry/shared" "test/district_registry"]
-                        :figwheel {:on-jsload "district-registry.tests.runner/on-jsload"}
                         :compiler {:main "district-registry.tests.runner"
-                                   :output-to "server-tests/server-tests.js",
-                                   :output-dir "server-tests",
-                                   :target :nodejs,
-                                   :optimizations :none,
+                                   :output-to "server-tests/server-tests.js"
+                                   :output-dir "server-tests"
+                                   :target :nodejs
+                                   :optimizations :none
                                    :verbose false
                                    :source-map true}}]})

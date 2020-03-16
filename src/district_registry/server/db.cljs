@@ -1,22 +1,22 @@
 (ns district-registry.server.db
-  (:require
-    [district.server.config :refer [config]]
-    [district.server.db :as db]
-    [district.server.db.column-types :refer [address not-nil default-nil default-zero default-false sha3-hash primary-key]]
-    [district.server.db.honeysql-extensions]
-    [honeysql-postgres.helpers :as psqlh]
-    [honeysql.core :as sql]
-    [honeysql.helpers :as sqlh :refer [merge-where merge-order-by merge-left-join defhelper]]
-    [medley.core :as medley]
-    [mount.core :as mount :refer [defstate]]
-    [taoensso.timbre :as log :refer-macros [info warn error]]))
+  (:require [district.server.config :refer [config]]
+            [district.server.db :as db]
+            [district.server.db.column-types :refer [address not-nil default-nil default-zero default-false sha3-hash primary-key]]
+            [district.server.db.honeysql-extensions]
+            [honeysql-postgres.helpers :as psqlh]
+            [honeysql.core :as sql]
+            [honeysql.helpers :as sqlh :refer [merge-where merge-order-by merge-left-join defhelper]]
+            [medley.core :as medley]
+            [mount.core :as mount :refer [defstate]]
+            [taoensso.timbre :as log :refer-macros [info warn error]]))
 
 (declare start)
 (declare stop)
+
 (defstate ^{:on-reload :noop} district-registry-db
   :start (start (merge
-                  (:db @config)
-                  (:db (mount/args))))
+                  (:registry/db @config)
+                  (:registry/db (mount/args))))
   :stop (stop))
 
 (def ipfs-hash (sql/call :char (sql/inline 46)))
@@ -120,6 +120,13 @@
    [(sql/call :primary-key :reg-entry/address :stake-history/stake-id)]
    [(sql/call :foreign-key :reg-entry/address) (sql/call :references :districts :reg-entry/address)]])
 
+(def events-columns
+  [[:event/contract-key :varchar not-nil]
+   [:event/event-name :varchar not-nil]
+   [:event/last-log-index :integer not-nil]
+   [:event/last-block-number :integer not-nil]
+   [:event/count :integer not-nil]
+   [(sql/call :primary-key :event/contract-key :event/event-name)]])
 
 (def registry-entry-column-names (map first registry-entries-columns))
 (def districts-column-names (map first districts-columns))
@@ -129,6 +136,7 @@
 (def challenges-column-names (map first challenges-columns))
 (def stake-balances-column-names (map first stake-balances-columns))
 (def stake-history-column-names (map first stake-history-columns))
+(def events-column-names (filter keyword? (map first events-columns)))
 
 (defn- index-name [col-name]
   (keyword (namespace col-name) (str (name col-name) "-index")))
@@ -141,7 +149,8 @@
                 :param-changes
                 :votes
                 :stake-balances
-                :stake-history]
+                :stake-history
+                :events]
         drop-table-if-exists (fn [t]
                                (psqlh/drop-table :if-exists t))]
     (doall
@@ -196,6 +205,9 @@
 
   (db/run! (-> (psqlh/create-table [:stake-history] :if-not-exists)
              (psqlh/with-columns stake-history-columns)))
+
+  (db/run! (-> (psqlh/create-table :events :if-not-exists)
+               (psqlh/with-columns events-columns)))
 
   (when resync?
     (create-indexes))
@@ -330,3 +342,11 @@
        (< votes-exclude (+ votes-include (or dnt-total-staked 0)))
        (< challenge-period-end now)) :reg-entry.status/whitelisted
       :else :reg-entry.status/blacklisted)))
+
+(def get-last-event (create-get-fn :events [:event/contract-key :event/event-name]))
+
+(defn upsert-event! [args]
+  (db/run! {:insert-into :events
+            :values [(select-keys args events-column-names)]
+            :upsert {:on-conflict [:event/event-name :event/contract-key]
+                     :do-update-set [:event/last-log-index :event/last-block-number :event/count]}}))

@@ -1,25 +1,23 @@
 (ns district-registry.server.emailer
-  (:require
-    [bignumber.core :as bn]
-    [cljs-time.coerce :as time-coerce]
-    [cljs-time.core :as t]
-    [district-registry.server.contract.district0x-emails :as district0x-emails]
-    [district-registry.server.db :as db]
-    [district-registry.server.emailer.templates :as templates]
-    [district.encryption :as encryption]
-    [district.format :as format]
-    [district.sendgrid :refer [send-email]]
-    [district.server.config :as config]
-    [district.server.config :refer [config]]
-    [district.server.logging]
-    [district-registry.server.utils :as server-utils]
-    [district.server.web3-events :refer [register-callback! unregister-callbacks!]]
-    [district.shared.async-helpers :refer [promise->]]
-    [district.shared.error-handling :refer [try-catch try-catch-throw]]
-    [district.time :as time]
-    [goog.format.EmailAddress :as email-address]
-    [mount.core :as mount :refer [defstate]]
-    [taoensso.timbre :as log]))
+  (:require [bignumber.core :as bn]
+            [cljs-time.coerce :as time-coerce]
+            [cljs-time.core :as t]
+            [district-registry.server.contract.district0x-emails :as district0x-emails]
+            [district-registry.server.db :as db]
+            [district-registry.server.emailer.templates :as templates]
+            [district.encryption :as encryption]
+            [district.format :as format]
+            [district.sendgrid :refer [send-email]]
+            [district.server.config :as config :refer [config]]
+            [district.server.logging]
+            [district-registry.server.utils :as server-utils]
+            [district.server.web3-events :refer [register-callback! unregister-callbacks!]]
+            [district.shared.async-helpers :refer [promise->]]
+            [district.shared.error-handling :refer [try-catch try-catch-throw]]
+            [district.time :as time]
+            [goog.format.EmailAddress :as email-address]
+            [mount.core :as mount :refer [defstate]]
+            [taoensso.timbre :as log]))
 
 (defn validate-email [base64-encrypted-email]
   (if (get-in @config/config [:emailer :private-key])
@@ -126,7 +124,7 @@
   (let [now (server-utils/now-in-seconds)
         schedule-seconds-ahead (inc (- reveal-period-end now))]
     (log/debug "Scheduling on-challenge-resolved" {:reg-entry/address (:reg-entry/address reg-entry)
-                                                  :seconds-ahead schedule-seconds-ahead})
+                                                   :seconds-ahead schedule-seconds-ahead})
     (js/setTimeout (fn []
                      (let [reg-entry-status (db/reg-entry-status (server-utils/now-in-seconds)
                                                                  reg-entry)]
@@ -146,20 +144,20 @@
            api-key
            print-mode?]}]
   (send-email
-    {:from from
-     :to to
-     :subject (str name " was challenged!")
-     :content (templates/challenge-created-email-body {:district/name name
-                                                       :district-url district-url
-                                                       :time-remaining time-remaining})
-     :substitutions {:header (str name " was challenged")
-                     :button-title "Vote Now"
-                     :button-href button-url}
-     :on-success on-success
-     :on-error on-error
-     :template-id template-id
-     :api-key api-key
-     :print-mode? print-mode?}))
+   {:from from
+    :to to
+    :subject (str name " was challenged!")
+    :content (templates/challenge-created-email-body {:district/name name
+                                                      :district-url district-url
+                                                      :time-remaining time-remaining})
+    :substitutions {:header (str name " was challenged")
+                    :button-title "Vote Now"
+                    :button-href button-url}
+    :on-success on-success
+    :on-error on-error
+    :template-id template-id
+    :api-key api-key
+    :print-mode? print-mode?}))
 
 
 (defn send-challenge-created-email [{:keys [:registry-entry :challenger :commit-period-end :reveal-period-end :reward-pool :metahash :timestamp :version] :as ev}]
@@ -181,21 +179,21 @@
                           (do
                             (log/info "Sending district challenged email" ev ::send-challenge-created-email)
                             (send-challenge-created-email-handler
-                              {:from from
-                               :to to
-                               :name name
-                               :district-url district-url
-                               :button-url district-url
-                               :time-remaining time-remaining
-                               :on-success #(log/info "Success sending district challenged email"
-                                                      {:to to :reg-entry/address registry-entry :district/name name}
-                                                      ::send-challenge-created-email)
-                               :on-error #(log/error "Error when sending district challenged email"
-                                                     {:error % :event ev :district/name name :to to}
+                             {:from from
+                              :to to
+                              :name name
+                              :district-url district-url
+                              :button-url district-url
+                              :time-remaining time-remaining
+                              :on-success #(log/info "Success sending district challenged email"
+                                                     {:to to :reg-entry/address registry-entry :district/name name}
                                                      ::send-challenge-created-email)
-                               :template-id template-id
-                               :api-key api-key
-                               :print-mode? print-mode?}))
+                              :on-error #(log/error "Error when sending district challenged email"
+                                                    {:error % :event ev :district/name name :to to}
+                                                    ::send-challenge-created-email)
+                              :template-id template-id
+                              :api-key api-key
+                              :print-mode? print-mode?}))
                           (log/info "No email found for challenged district creator"
                                     {:event ev :district/name name :reg-entry/address registry-entry}
                                     ::send-challenge-created-email))))))
@@ -246,22 +244,22 @@
                    (do
                      (log/info "Sending vote reward received email" ev ::send-vote-reward-claimed-email)
                      (send-vote-reward-claimed-email-handler
-                       {:to to
-                        :from from
-                        :name name
-                        :option option
-                        :amount amount
-                        :district-url district-url
-                        :button-url district-url
-                        :on-success #(log/info "Success sending vote reward email"
-                                               {:to to :reg-entry/address registry-entry :district/name name}
-                                               ::send-vote-reward-claimed-email)
-                        :on-error #(log/error "Error when sending vote reward email"
-                                              {:error % :event ev :reg-entry/address registry-entry :to to}
+                      {:to to
+                       :from from
+                       :name name
+                       :option option
+                       :amount amount
+                       :district-url district-url
+                       :button-url district-url
+                       :on-success #(log/info "Success sending vote reward email"
+                                              {:to to :reg-entry/address registry-entry :district/name name}
                                               ::send-vote-reward-claimed-email)
-                        :template-id template-id
-                        :api-key api-key
-                        :print-mode? print-mode?}))
+                       :on-error #(log/error "Error when sending vote reward email"
+                                             {:error % :event ev :reg-entry/address registry-entry :to to}
+                                             ::send-vote-reward-claimed-email)
+                       :template-id template-id
+                       :api-key api-key
+                       :print-mode? print-mode?}))
                    (log/info "No email found for voter" {:event ev :reg-entry/address registry-entry} ::send-vote-reward-claimed-email))))))
 
 
@@ -304,21 +302,21 @@
                    (do
                      (log/info "Sending challenger chalenge reward received email" ev ::send-challenger-reward-claimed-email)
                      (send-challenger-reward-claimed-email-handler
-                       {:from from
-                        :to to
-                        :name name
-                        :amount amount
-                        :district-url district-url
-                        :button-url district-url
-                        :on-success #(log/info "Success sending challenge reward claimed email"
-                                               {:to to :reg-entry/address registry-entry :district/name name}
-                                               ::send-challenger-reward-claimed-email)
-                        :on-error #(log/error "Error when sending challenge reward claimed email"
-                                              {:error % :event ev :reg-entry/address registry-entry :to to}
+                      {:from from
+                       :to to
+                       :name name
+                       :amount amount
+                       :district-url district-url
+                       :button-url district-url
+                       :on-success #(log/info "Success sending challenge reward claimed email"
+                                              {:to to :reg-entry/address registry-entry :district/name name}
                                               ::send-challenger-reward-claimed-email)
-                        :template-id template-id
-                        :api-key api-key
-                        :print-mode? print-mode?}))
+                       :on-error #(log/error "Error when sending challenge reward claimed email"
+                                             {:error % :event ev :reg-entry/address registry-entry :to to}
+                                             ::send-challenger-reward-claimed-email)
+                       :template-id template-id
+                       :api-key api-key
+                       :print-mode? print-mode?}))
                    (log/info "No email found for challenger" {:event ev :reg-entry/address registry-entry} ::send-challenger-reward-claimed-email))))))
 
 
@@ -361,21 +359,21 @@
                    (do
                      (log/info "Sending creator chalenge reward received email" ev ::send-creator-reward-claimed-email)
                      (send-creator-reward-claimed-email-handler
-                       {:from from
-                        :to to
-                        :name name
-                        :amount amount
-                        :district-url district-url
-                        :button-url district-url
-                        :on-success #(log/info "Success sending creator challenge reward claimed email"
-                                               {:to to :reg-entry/address registry-entry :district/name name}
-                                               ::send-creator-reward-claimed-email)
-                        :on-error #(log/error "Error when sending creator challenge reward claimed email"
-                                              {:error % :event ev :reg-entry/address registry-entry :to to}
+                      {:from from
+                       :to to
+                       :name name
+                       :amount amount
+                       :district-url district-url
+                       :button-url district-url
+                       :on-success #(log/info "Success sending creator challenge reward claimed email"
+                                              {:to to :reg-entry/address registry-entry :district/name name}
                                               ::send-creator-reward-claimed-email)
-                        :template-id template-id
-                        :api-key api-key
-                        :print-mode? print-mode?}))
+                       :on-error #(log/error "Error when sending creator challenge reward claimed email"
+                                             {:error % :event ev :reg-entry/address registry-entry :to to}
+                                             ::send-creator-reward-claimed-email)
+                       :template-id template-id
+                       :api-key api-key
+                       :print-mode? print-mode?}))
                    (log/info "No email found for creator" {:event ev :reg-entry/address registry-entry} ::send-creator-reward-claimed-email))))))
 
 
@@ -416,20 +414,20 @@
                    (do
                      (log/info "Sending reveal reminder email" ev ::send-reveal-reminder-email)
                      (send-reveal-reminder-email-handler
-                       {:from from
-                        :to to
-                        :name name
-                        :district-url district-url
-                        :button-url district-url
-                        :on-success #(log/info "Success sending reveal reminder email"
-                                               {:to to :reg-entry/address registry-entry :district/name name}
-                                               ::send-reveal-reminder-email)
-                        :on-error #(log/error "Error when sending challenge reward claimed email"
-                                              {:error % :event ev :reg-entry/address registry-entry :to to}
+                      {:from from
+                       :to to
+                       :name name
+                       :district-url district-url
+                       :button-url district-url
+                       :on-success #(log/info "Success sending reveal reminder email"
+                                              {:to to :reg-entry/address registry-entry :district/name name}
                                               ::send-reveal-reminder-email)
-                        :template-id template-id
-                        :api-key api-key
-                        :print-mode? print-mode?}))
+                       :on-error #(log/error "Error when sending challenge reward claimed email"
+                                             {:error % :event ev :reg-entry/address registry-entry :to to}
+                                             ::send-reveal-reminder-email)
+                       :template-id template-id
+                       :api-key api-key
+                       :print-mode? print-mode?}))
                    (log/info "No email found for voter" {:event ev :reg-entry/address registry-entry} ::send-reveal-reminder-email))))))
 
 (defn- dispatcher [callback]

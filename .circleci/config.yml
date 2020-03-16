@@ -4,10 +4,8 @@ jobs:
   test:
     working_directory: ~/district_registry
     docker:
-      # Primary container image where all steps run.
-      - image: district0x/cljs-dev
-      # Secondary container images on common network.
-      - image: trufflesuite/ganache-cli:v6.4.4
+      - image: district0x/cljs-dev:e701583
+      - image: trufflesuite/ganache-cli:v6.7.0
         command: [-d, -m district0x, -p 8545, -l 80000000, --allowUnlimitedContractSize]
       - image: district0x/ipfs-daemon:latest
     steps:
@@ -15,29 +13,32 @@ jobs:
       - restore_cache:
           name: Restore m2 package cache
           keys:
-            - maven-dependencies-{{ checksum "project.clj" }}
+            - -v1-maven-dependencies-{{ checksum "project.clj" }}
             # fallback to using the latest cache if no exact match is found
-            - maven-dependencies-
+            - -v1-maven-dependencies-
       - run: lein deps
       - save_cache:
           name: Save m2 package cache
           paths:
             - ~/.m2
-          key: maven-dependencies-{{ checksum "project.clj" }}
+          key: -v1-maven-dependencies-{{ checksum "project.clj" }}
       - restore_cache:
           name: Restore npm package cache
           keys:
-            - npm-dependencies-{{ checksum "package-lock.json" }}
+            - -v1-npm-dependencies-{{ checksum "package-lock.json" }}
       - run:
           name: Install node modules
           command: lein npm install
       - save_cache:
           name: Save npm package cache
-          key: npm-dependencies-{{ checksum "package-lock.json" }}
+          key: -v1-npm-dependencies-{{ checksum "package-lock.json" }}
           paths:
             - ./node_modules
       - run: npx truffle migrate --network ganache --f 2 --to 3
-      - run: lein doo node "server-tests" once
+      - run:
+         name: test suite
+         command: |
+           lein doo node "server-tests" once
       - persist_to_workspace:
           root: ~/district_registry
           paths:
@@ -53,14 +54,14 @@ jobs:
   check_migrations:
     working_directory: ~/district_registry
     docker:
-      - image: district0x/cljs-dev
+      - image: district0x/cljs-dev:e701583
     steps:
       - attach_workspace:
          at: ~/district_registry
       - restore_cache:
           name: Restore npm package cache
           keys:
-            - npm-dependencies-{{ checksum "package-lock.json" }}
+            - -v1-npm-dependencies-{{ checksum "package-lock.json" }}
       - run:
           name: Install node modules
           command: npm install
@@ -78,7 +79,7 @@ jobs:
 
   build_and_deploy:
     docker:
-     - image: district0x/cljs-dev
+     - image: district0x/cljs-dev:e701583
     steps:
      - setup_remote_docker:
          version: 18.06.0-ce
