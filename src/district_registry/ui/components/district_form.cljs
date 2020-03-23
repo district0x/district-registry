@@ -22,10 +22,9 @@
    [district-registry.shared.macros :refer [get-environment]]))
 
 (defn param-search-query [param]
-  (let [{:keys [address]} (-> config/config-map :smart-contracts :contracts :district-registry-db)
-        db-address (address->checksum address)]
+  (let [{:keys [address]} (-> config/config-map :smart-contracts :contracts :district-registry-db)]
     [:search-param-changes {:key (graphql-utils/kw->gql-name param)
-                            :db db-address
+                            :db (address->checksum address)
                             :group-by :param-changes.group-by/key
                             :order-by :param-changes.order-by/applied-on}
      [[:items [:param-change/value :param-change/key]]]]))
