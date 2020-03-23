@@ -1,34 +1,40 @@
 (ns district-registry.ui.components.district-form
   (:require
-    [cljs-web3.core :as web3]
-    [district-registry.shared.utils :refer [debounce]]
-    [district-registry.ui.components.app-layout :refer [app-layout]]
-    [district-registry.ui.contract.ens :as ens]
-    [district-registry.ui.events :as events]
-    [district-registry.ui.spec :as spec]
-    [district-registry.ui.subs :as subs]
-    [district.format :as format]
-    [district.graphql-utils :as graphql-utils]
-    [district.ui.component.form.input :refer [index-by-type file-drag-input with-label chip-input text-input textarea-input select-input int-input assoc-by-path]]
-    [district.ui.component.page :refer [page]]
-    [district.ui.component.tx-button :refer [tx-button]]
-    [district.ui.graphql.subs :as gql]
-    [district.ui.web3-tx-id.subs :as tx-id-subs]
-    [district.web3-utils :as web3-utils]
-    [print.foo :refer [look] :include-macros true]
-    [re-frame.core :refer [subscribe dispatch]]
-    [reagent.core :as r]
-    [reagent.ratom :refer [reaction]]
-    [clojure.string :as str])
+   [cljs-web3.core :as web3]
+   [district-registry.shared.utils :refer [debounce]]
+   [district-registry.ui.components.app-layout :refer [app-layout]]
+   [district-registry.ui.contract.ens :as ens]
+   [district-registry.ui.config :as config]
+   [district-registry.ui.events :as events]
+   [district-registry.ui.spec :as spec]
+   [district-registry.ui.subs :as subs]
+   [district.format :as format]
+   [district.graphql-utils :as graphql-utils]
+   [district.ui.component.form.input :refer [index-by-type file-drag-input with-label chip-input text-input textarea-input select-input int-input assoc-by-path]]
+   [district.ui.component.page :refer [page]]
+   [district.ui.component.tx-button :refer [tx-button]]
+   [district.ui.graphql.subs :as gql]
+   [district.ui.smart-contracts.queries :as contract-queries]
+   [district.ui.web3-tx-id.subs :as tx-id-subs]
+   [district.web3-utils :as web3-utils]
+   [print.foo :refer [look] :include-macros true]
+   [re-frame.core :refer [subscribe dispatch]]
+   [reagent.core :as r]
+   [eip55.core :refer [address->checksum]]
+   [reagent.ratom :refer [reaction]]
+   [clojure.string :as str]
+   [taoensso.timbre :as log])
   (:require-macros [district-registry.shared.macros :refer [get-environment]]))
 
 
 (defn param-search-query [param]
-  [:search-param-changes {:key (graphql-utils/kw->gql-name param)
-                          :db (graphql-utils/kw->gql-name :district-registry-db)
-                          :group-by :param-changes.group-by/key
-                          :order-by :param-changes.order-by/applied-on}
-   [[:items [:param-change/value :param-change/key]]]])
+  (let [{:keys [address]} (-> config/config-map :smart-contracts :contracts :district-registry-db)
+        db-address (address->checksum address)]
+    [:search-param-changes {:key (graphql-utils/kw->gql-name param)
+                            :db db-address
+                            :group-by :param-changes.group-by/key
+                            :order-by :param-changes.order-by/applied-on}
+     [[:items [:param-change/value :param-change/key]]]]))
 
 
 (defn upload-image-button-label [text]
