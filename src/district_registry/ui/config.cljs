@@ -8,7 +8,7 @@
     [mount.core :refer [defstate]])
   (:require-macros [district-registry.shared.macros :refer [get-environment]]))
 
-(def contracts-to-load [:DNT :district :param-change :district-factory :stake-bank :param-change-factory :ENS :district0x-emails])
+(def contracts-to-load [:DNT :district :param-change :district-factory :stake-bank :param-change-factory :ENS :district0x-emails :district-registry-db :param-change-registry-db])
 
 (def development-config
   {:debug? true
@@ -16,8 +16,9 @@
              :console? true}
    :time-source :js-date
    :smart-contracts {:contracts (select-keys smart-contracts-dev/smart-contracts contracts-to-load)}
+   :web3-accounts {:eip55? true}
    :web3-balances {:contracts (select-keys smart-contracts-dev/smart-contracts [:DNT])}
-   :web3 {:url "http://localhost:8549"}
+   :web3 {:url "http://localhost:8545"}
    :web3-tx {:disable-loading-recommended-gas-prices? true}
    :web3-tx-log {:disable-using-localstorage? true
                  :tx-costs-currencies [:USD]
@@ -39,6 +40,7 @@
                       :environment "QA"}}
    :time-source :js-date
    :smart-contracts {:contracts (select-keys smart-contracts-qa/smart-contracts contracts-to-load)}
+   :web3-accounts {:eip55? true}
    :web3-balances {:contracts (select-keys smart-contracts-qa/smart-contracts [:DNT])}
    :web3 {:url "https://rinkeby.infura.io"}
    :web3-tx {:disable-loading-recommended-gas-prices? true}
@@ -70,6 +72,7 @@
                       :environment "PRODUCTION"}}
    :time-source :js-date
    :smart-contracts {:contracts (select-keys smart-contracts-prod/smart-contracts contracts-to-load)}
+   :web3-accounts {:eip55? true}
    :web3-balances {:contracts (select-keys smart-contracts-prod/smart-contracts [:DNT])}
    :web3 {:url "https://mainnet.infura.io"}
    :web3-tx-log {:disable-using-localstorage? false
