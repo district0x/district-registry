@@ -17,7 +17,7 @@
    :time-source :js-date
    :smart-contracts {:contracts (select-keys smart-contracts-dev/smart-contracts contracts-to-load)}
    :web3-balances {:contracts (select-keys smart-contracts-dev/smart-contracts [:DNT])}
-   :web3 {:url "http://localhost:8549"}
+   :web3 {:url "http://localhost:8545"}
    :web3-tx {:disable-loading-recommended-gas-prices? true}
    :web3-tx-log {:disable-using-localstorage? true
                  :tx-costs-currencies [:USD]
