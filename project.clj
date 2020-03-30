@@ -53,9 +53,13 @@
                  [district0x/district-ui-web3-account-balances "1.0.2"]
                  [district0x/district-ui-web3-accounts "1.0.7"]
                  [district0x/district-ui-web3-balances "1.0.2"]
-                 [district0x/district-ui-web3-tx "1.0.11"]
                  [district0x/district-ui-web3-tx-id "1.0.1"]
+
+                 ;; TODO
                  [district0x/district-ui-web3-tx-log "1.0.13"]
+                 ;; [district0x/district-ui-web3-tx "1.0.11"]
+                 [district0x/district-ui-web3-tx "1.0.12-SNAPSHOT"]
+
                  [district0x/district-ui-window-size "1.0.1"]
                  [district0x/district-web3-utils "1.0.3"]
                  [district0x/eip55 "0.0.1"]
@@ -74,7 +78,13 @@
   :exclusions [express-graphql
                cljsjs/react-with-addons
                org.clojure/core.async
-               district0x/async-helpers]
+               district0x/async-helpers
+
+               ;; TODO
+               ;; district0x/district-ui-web3-tx-log
+               ;; district0x/district-ui-web3-tx-log-core
+               district0x/district-ui-web3-tx
+               ]
 
   :plugins [[deraen/lein-less4clj "0.7.0-SNAPSHOT"]
             [lein-auto "0.1.2"]
@@ -162,7 +172,8 @@
                                   [figwheel-sidecar "0.5.18"]
                                   [lein-doo "0.1.8"]
                                   [org.clojure/clojure "1.9.0"]
-                                  [org.clojure/tools.reader "1.3.0"]]
+                                  [org.clojure/tools.reader "1.3.0"]
+                                  [re-frisk "0.5.3"]]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
                                   :timeout 120000}
                    :source-paths ["dev" "src"]
@@ -181,14 +192,18 @@
                                    :anon-fn-naming-policy :mapped
                                    :source-map true}}
                        {:id "dev"
-                        :source-paths ["src/district_registry/ui" "src/district_registry/shared"]
+                        :source-paths ["src/district_registry/ui" "src/district_registry/shared"
+                                       ;; TODO
+                                       ;; "src/district/ui"
+                                       ]
                         :figwheel {:on-jsload "district.ui.reagent-render/rerender"}
                         :compiler {:main "district-registry.ui.core"
                                    :output-to "resources/public/js/compiled/app.js"
                                    :output-dir "resources/public/js/compiled/out"
                                    :asset-path "/js/compiled/out"
                                    :source-map-timestamp true
-                                   :preloads [print.foo.preloads.devtools]
+                                   :preloads [print.foo.preloads.devtools
+                                              re-frisk.preload]
                                    :external-config {:devtools/config {:features-to-install :all}}}}
                        {:id "server"
                         :source-paths ["src"]
