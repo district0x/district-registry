@@ -54,12 +54,8 @@
                  [district0x/district-ui-web3-accounts "1.0.7"]
                  [district0x/district-ui-web3-balances "1.0.2"]
                  [district0x/district-ui-web3-tx-id "1.0.1"]
-
-                 ;; TODO
                  [district0x/district-ui-web3-tx-log "1.0.13"]
-                 ;; [district0x/district-ui-web3-tx "1.0.11"]
-                 [district0x/district-ui-web3-tx "1.0.12-SNAPSHOT"]
-
+                 [district0x/district-ui-web3-tx "1.0.12"]
                  [district0x/district-ui-window-size "1.0.1"]
                  [district0x/district-web3-utils "1.0.3"]
                  [district0x/eip55 "0.0.1"]
@@ -78,13 +74,7 @@
   :exclusions [express-graphql
                cljsjs/react-with-addons
                org.clojure/core.async
-               district0x/async-helpers
-
-               ;; TODO
-               ;; district0x/district-ui-web3-tx-log
-               ;; district0x/district-ui-web3-tx-log-core
-               district0x/district-ui-web3-tx
-               ]
+               district0x/async-helpers]
 
   :plugins [[deraen/lein-less4clj "0.7.0-SNAPSHOT"]
             [lein-auto "0.1.2"]
