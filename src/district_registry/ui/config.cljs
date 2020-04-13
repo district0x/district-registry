@@ -18,25 +18,17 @@
    :smart-contracts {:contracts (select-keys smart-contracts-dev/smart-contracts contracts-to-load)}
    :web3-accounts {:eip55? true}
    :web3-balances {:contracts (select-keys smart-contracts-dev/smart-contracts [:DNT])}
-   :web3 {
-          ;; :url "http://localhost:8545"
-          :url "https://rinkeby.infura.io"
-          }
+   :web3 {:url "http://localhost:8545"}
    :web3-tx {:disable-loading-recommended-gas-prices? true
              :eip55? true}
    :web3-tx-log {:disable-using-localstorage? true
                  :tx-costs-currencies [:USD]
                  :etherscan-url "https://rinkeby.etherscan.io"}
    :graphql {:schema graphql-schema
-             :url "https://api.registry.qa.district0x.io/graphql"
-             ;; :url "http://localhost:6400/graphql"
-             }
+             :url "http://localhost:6400/graphql"}
    :ipfs {:endpoint "/api/v0"
-          ;; :host "http://127.0.0.1:5001"
-          ;; :gateway "http://127.0.0.1:8080/ipfs"
-          :host "https://ipfs.qa.district0x.io/api"
-          :gateway "https://ipfs.qa.district0x.io/gateway/ipfs"
-          }
+          :host "http://127.0.0.1:5001"
+          :gateway "http://127.0.0.1:8080/ipfs"}
    :router {:html5? false}
    :router-google-analytics {:enabled? false}
    :aragon-url "https://rinkeby.aragon.org/#/"

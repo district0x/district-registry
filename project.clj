@@ -182,10 +182,7 @@
                                    :anon-fn-naming-policy :mapped
                                    :source-map true}}
                        {:id "dev"
-                        :source-paths ["src/district_registry/ui" "src/district_registry/shared"
-                                       ;; TODO
-                                       ;; "src/district/ui"
-                                       ]
+                        :source-paths ["src/district_registry/ui" "src/district_registry/shared"]
                         :figwheel {:on-jsload "district.ui.reagent-render/rerender"}
                         :compiler {:main "district-registry.ui.core"
                                    :output-to "resources/public/js/compiled/app.js"
