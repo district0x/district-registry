@@ -53,7 +53,7 @@
                  [district0x/district-ui-web3-account-balances "1.0.2"]
                  [district0x/district-ui-web3-accounts "1.0.7"]
                  [district0x/district-ui-web3-balances "1.0.2"]
-                 [district0x/district-ui-web3-tx "1.0.11"]
+                 [district0x/district-ui-web3-tx "1.0.12"]
                  [district0x/district-ui-web3-tx-id "1.0.1"]
                  [district0x/district-ui-web3-tx-log "1.0.13"]
                  [district0x/district-ui-window-size "1.0.1"]
@@ -162,7 +162,8 @@
                                   [figwheel-sidecar "0.5.18"]
                                   [lein-doo "0.1.8"]
                                   [org.clojure/clojure "1.9.0"]
-                                  [org.clojure/tools.reader "1.3.0"]]
+                                  [org.clojure/tools.reader "1.3.0"]
+                                  [re-frisk "0.5.3"]]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
                                   :timeout 120000}
                    :source-paths ["dev" "src"]
@@ -188,7 +189,8 @@
                                    :output-dir "resources/public/js/compiled/out"
                                    :asset-path "/js/compiled/out"
                                    :source-map-timestamp true
-                                   :preloads [print.foo.preloads.devtools]
+                                   :preloads [print.foo.preloads.devtools
+                                              re-frisk.preload]
                                    :external-config {:devtools/config {:features-to-install :all}}}}
                        {:id "server"
                         :source-paths ["src"]

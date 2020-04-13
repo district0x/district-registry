@@ -19,14 +19,15 @@
    :web3-accounts {:eip55? true}
    :web3-balances {:contracts (select-keys smart-contracts-dev/smart-contracts [:DNT])}
    :web3 {:url "http://localhost:8545"}
-   :web3-tx {:disable-loading-recommended-gas-prices? true}
+   :web3-tx {:disable-loading-recommended-gas-prices? true
+             :eip55? true}
    :web3-tx-log {:disable-using-localstorage? true
                  :tx-costs-currencies [:USD]
                  :etherscan-url "https://rinkeby.etherscan.io"}
    :graphql {:schema graphql-schema
              :url "http://localhost:6400/graphql"}
-   :ipfs {:host "http://127.0.0.1:5001"
-          :endpoint "/api/v0"
+   :ipfs {:endpoint "/api/v0"
+          :host "http://127.0.0.1:5001"
           :gateway "http://127.0.0.1:8080/ipfs"}
    :router {:html5? false}
    :router-google-analytics {:enabled? false}
@@ -43,14 +44,15 @@
    :web3-accounts {:eip55? true}
    :web3-balances {:contracts (select-keys smart-contracts-qa/smart-contracts [:DNT])}
    :web3 {:url "https://rinkeby.infura.io"}
-   :web3-tx {:disable-loading-recommended-gas-prices? true}
+   :web3-tx {:disable-loading-recommended-gas-prices? true
+             :eip55? true}
    :web3-tx-log {:disable-using-localstorage? false
                  :tx-costs-currencies [:USD]
                  :etherscan-url "https://rinkeby.etherscan.io"}
    :graphql {:schema graphql-schema
              :url "https://api.registry.qa.district0x.io/graphql"}
-   :ipfs {:host "https://ipfs.qa.district0x.io/api"
-          :endpoint "/api/v0"
+   :ipfs {:endpoint "/api/v0"
+          :host "https://ipfs.qa.district0x.io/api"
           :gateway "https://ipfs.qa.district0x.io/gateway/ipfs"}
    :router {:html5? true}
    :router-google-analytics {:enabled? false}
@@ -75,6 +77,7 @@
    :web3-accounts {:eip55? true}
    :web3-balances {:contracts (select-keys smart-contracts-prod/smart-contracts [:DNT])}
    :web3 {:url "https://mainnet.infura.io"}
+   :web3-tx {:eip55? true}
    :web3-tx-log {:disable-using-localstorage? false
                  :open-on-tx-hash? true
                  :tx-costs-currencies [:USD]
