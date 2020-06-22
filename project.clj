@@ -32,7 +32,7 @@
                  [district0x/district-server-logging "1.0.6"]
                  [district0x/district-server-middleware-logging "1.0.0"]
                  [district0x/district-server-smart-contracts "1.2.4"]
-                 [district0x/district-server-web3 "1.2.5"]
+                 [district0x/district-server-web3 "1.2.6"]
                  [district0x/district-server-web3-events "1.1.9"]
                  [district0x/district-ui-component-active-account "1.0.0"]
                  [district0x/district-ui-component-active-account-balance "1.0.1"]
