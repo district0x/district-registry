@@ -60,7 +60,7 @@
                   {:instance (contract-queries/instance db :district address)
                    :fn :unstake
                    :args [amount]
-                   :tx-opts {:from (account-queries/active-account db) :gas 6000000}
+                   :tx-opts {:from (account-queries/active-account db)}
                    :tx-log {:name tx-log-name :related-href {:name :route/detail :params {:address address}}}
                    :tx-id {:unstake {:district address}}
                    :on-tx-success [::unstake-success]
