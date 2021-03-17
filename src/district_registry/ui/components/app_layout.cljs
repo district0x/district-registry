@@ -61,7 +61,7 @@
         [:li [nav/a {:route [:route/privacy-policy]} "Privacy Policy"]]]]]
      [:div.col
       [:a.cta-btn.has-icon
-       {:href "https://discord.gg/rJvBEyV"
+       {:href "https://discord.com/invite/sS2AWYm"
         :target :_blank}
        [:span "Join Us On Discord"]
        [:span.icon-discord]]]
