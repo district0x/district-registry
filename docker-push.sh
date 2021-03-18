@@ -39,11 +39,10 @@ function build {
 
     case $SERVICE in
       "ui")
-        lein less4clj once
-        env DISTRICT_REGISTRY_ENV=$BUILD_ENV lein cljsbuild once "ui"
+        echo "building ui"
         ;;
       "server")
-        env DISTRICT_REGISTRY_ENV=$BUILD_ENV lein cljsbuild once "server"
+      echo "building server"
         ;;
       *)
         echo "ERROR: don't know what to do with SERVICE: "$SERVICE""
@@ -77,18 +76,7 @@ function login {
   echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 }
 
-function before {
-  lein deps
-  lein npm install
-  # sudo npm install -g truffle
-  npx truffle compile --all
-}
-
 #--- EXECUTE
-
-before
-login
-
 images=(
   district0x/registry-server
   district0x/registry-ui
@@ -97,7 +85,7 @@ images=(
 for i in "${images[@]}"; do
   (
     build $i $BUILD_ENV
-    push $i $BUILD_ENV
+    # push $i $BUILD_ENV
   )
 
 done # END: i loop
