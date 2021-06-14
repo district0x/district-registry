@@ -51,9 +51,14 @@
                  :etherscan-url "https://rinkeby.etherscan.io"}
    :graphql {:schema graphql-schema
              :url "https://api.registry.qa.district0x.io/graphql"}
-   :ipfs {:endpoint "/api/v0"
-          :host "https://ipfs.qa.district0x.io/api"
-          :gateway "https://ipfs.qa.district0x.io/gateway/ipfs"}
+  ;;  :ipfs {:endpoint "/api/v0"
+  ;;         :host "https://ipfs.qa.district0x.io/api"
+  ;;         :gateway "https://ipfs.qa.district0x.io/gateway/ipfs"}
+    :ipfs {
+            :endpoint "/api/v0"
+            :host "http://ipfs-server:80"
+            :gateway "http://ipfs-server:80/gateway/ipfs"}
+
    :router {:html5? true}
    :router-google-analytics {:enabled? false}
    :aragon-url "https://rinkeby.aragon.org/#/"
