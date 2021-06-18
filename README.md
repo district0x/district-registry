@@ -5,13 +5,9 @@
 A community-curated registry of marketplaces on the district0x Network.
 
 ## Development
-Compile contracts (assumes you have `solc` installed):
+Compile contracts (assumes you have `truffle` installed):
 ```bash
-lein solc
-```
-Auto compile contracts on changes:
-```bash
-lein solc auto
+truffle migrate --f 2 --to 2;
 ```
 
 Start server:
