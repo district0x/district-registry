@@ -1,5 +1,5 @@
 FROM clojure:openjdk-11-lein-2.9.5 AS builder
-ARG BUILD_ENV=qa
+ARG BUILD_ENV
 ENV BUILD_ENV=${BUILD_ENV}
 ENV DISTRICT_REGISTRY_ENV=${BUILD_ENV}
 
@@ -9,7 +9,7 @@ RUN apt-get install -y --no-install-recommends \
         build-essential \
         nodejs \
         python3.7 \
-        python3-pip
+        python3-pip libc6 sqlite3 libsqlite3-dev
 
 WORKDIR /app
 COPY . /app/
@@ -20,12 +20,13 @@ RUN lein npm install
 RUN npx truffle compile --all
 
 
-FROM node:11-stretch-slim
-MAINTAINER "Filip Bielejec" <filip@district0x.io>
-ARG BUILD_ENV=qa
+# FROM node:11-stretch-slim
+
+FROM node:10-buster
+ARG BUILD_ENV
 ENV BUILD_ENV=${BUILD_ENV}
 ENV DISTRICT_REGISTRY_ENV=${BUILD_ENV}
-
+RUN apt-get update && apt-get install -y --no-install-recommends libc6 sqlite3 libsqlite3-dev && apt-get clean
 
 # ENV variables
 ENV CONFIG /configs/registry.config.edn

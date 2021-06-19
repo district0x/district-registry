@@ -10,9 +10,7 @@ COPY . /app/
 RUN lein less4clj once
 RUN lein cljsbuild once "ui"
 
-
-FROM nginx:stable
-MAINTAINER "Filip Bielejec" <filip@district0x.io>
+FROM nginx:stable-alpine
 
 # replace nginx config
 COPY docker-builds/ui/nginx.conf /etc/nginx/nginx.conf
@@ -21,7 +19,7 @@ COPY docker-builds/ui/nginx.conf /etc/nginx/nginx.conf
 COPY docker-builds/ui/default /etc/nginx/conf.d/default
 
 # nginx config
-COPY docker-builds/ui/registry.io /etc/nginx/sites-enabled/registry.io
+COPY docker-builds/ui/registry_io.conf /etc/nginx/sites-enabled/registry_io.conf
 
 # setup error page
 ADD https://raw.githubusercontent.com/district0x/X0X/master/X0X.html /usr/share/nginx/html/X0X.html

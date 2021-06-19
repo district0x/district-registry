@@ -37,6 +37,15 @@ ganache-cli -p 8549
 lein test-dev
 ```
 
+## Using Makefile
+
+The Dockerfile and Makefiles provide convenient way to automate routine procedures.
+
+For example to build and push images try the following:
+```sh
+make build-push-images  BUILD_ENV={prod|qa|dev} DOCKER_REPO={local|district0x|aws_ecr_url}
+```
+
 ## Smart Contract Architecture
 
 Contract architecture mostly follows that of [Meme Factory](https://github.com/district0x/memefactory) as District Registry was initially forked from Meme Factory. The primary differences are related to minimizing contract sizes. Meme Factory uses a `RegistryEntryLib` library to provide most of the functionality for registry entries. However, District Registry entries may need to accommodate multiple challenges and `District` (the primary registry entry) has substantial additional functionality, so District Registry takes a different approach. The primary differences are as follows:
