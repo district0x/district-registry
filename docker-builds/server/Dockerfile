@@ -26,7 +26,10 @@ FROM node:10-buster
 ARG BUILD_ENV
 ENV BUILD_ENV=${BUILD_ENV}
 ENV DISTRICT_REGISTRY_ENV=${BUILD_ENV}
-RUN apt-get update && apt-get install -y --no-install-recommends libc6 sqlite3 libsqlite3-dev && apt-get clean
+RUN apt-get update \
+        && apt-get upgrade -y \
+        && apt-get install -y --no-install-recommends libc6 sqlite3 libsqlite3-dev \
+        && apt-get clean
 
 # ENV variables
 ENV CONFIG /configs/registry.config.edn
