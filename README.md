@@ -33,14 +33,6 @@ ganache-cli -p 8549
 lein test-dev
 ```
 
-## Using Makefile
-
-The Dockerfile and Makefiles provide convenient way to automate routine procedures.
-
-For example to build and push images try the following:
-```sh
-make build-push-images  BUILD_ENV={prod|qa|dev} DOCKER_REPO={local|district0x|aws_ecr_url}
-```
 
 ## Smart Contract Architecture
 
@@ -49,3 +41,28 @@ Contract architecture mostly follows that of [Meme Factory](https://github.com/d
 * Instead of integrating challenges into registry entries, `Challenge` and `ChallengeFactory` are separate contracts which are used inside of `RegistryEntry`.
 * Functionality to stake district is split into separate `StakeBank` and `StakeBankFactory` contracts which are used inside of `District`.
 * Functionality for bonding curve math (power functions) is split into separate `Power` and `PowerFactory` contracts that are used in `StakeBank`.
+
+## Using Makefile
+
+The Docker-compose file and Makefile provide convenient way to automate routine procedures. Try running `make` to see the list of available commands. For example to build docker images for one the given environments, simply run:
+
+```sh
+make build-images  BUILD_ENV={prod|qa|dev}
+```
+Those images will get tags similar to `registry-ui:${COMMIT_ID}-${BUILD_ENV}`.
+
+
+It is also possible to build and start a dev image that contains all the necessary tools to build, test and run distirct-registry:
+
+```sh
+make init            # --> create docker volumes, networks and build containers
+make build-dev-image # ---> to build base dev image with all the tools included
+make exec            #---> start dev container and enter interactive shell
+```
+
+## Github Actions CI
+
+The CI checks for this repository include:
+- Dockerfile linting with Hadolint
+- Docker images build for ui and server with qa and prod settings
+- Docker images and vulnerability scannings with CodeQL and Trivy
