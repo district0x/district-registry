@@ -4,11 +4,22 @@ ARG BUILD_ENV=qa
 ENV BUILD_ENV=${BUILD_ENV}
 ENV DISTRICT_REGISTRY_ENV=${BUILD_ENV}
 
+RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+RUN curl -fsSL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install -y --no-install-recommends \
+        build-essential \
+        nodejs \
+        python3.7 \
+        python3-pip libc6 sqlite3 libsqlite3-dev
+
 WORKDIR /app
 COPY . /app/
 
 RUN lein less4clj once
 RUN lein cljsbuild once "ui"
+RUN lein deps
+RUN lein npm install
+RUN npx truffle compile --all
 
 FROM nginx:stable-alpine
 

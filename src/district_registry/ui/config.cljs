@@ -84,9 +84,6 @@
                  :etherscan-url "https://etherscan.io"}
    :graphql {:schema graphql-schema
              :url "https://api.registry.district0x.io/graphql"}
-    ;; :ipfs { :endpoint "/api/v0"
-    ;;         :host "http://ipfs-server:80"
-    ;;         :gateway "http://ipfs-server:80/gateway/ipfs"}
    :ipfs {:host "https://ipfs.district0x.io"
           :endpoint "/api/v0"
           :gateway "https://ipfs.district0x.io/gateway/ipfs"}
