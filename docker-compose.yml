@@ -1,5 +1,4 @@
-
-version: '3'
+version: "3"
 services:
   ui:
     image: ${DOCKER_REPO}/registry-ui:${COMMIT_ID:-test}-${BUILD_ENV:-dev}
@@ -8,7 +7,7 @@ services:
       context: .
       dockerfile: "docker-builds/ui/Dockerfile"
       args:
-          BUILD_ENV: "${BUILD_ENV:-dev}"
+        BUILD_ENV: "${BUILD_ENV:-dev}"
     networks:
       - dev_network
     environment:
@@ -20,7 +19,7 @@ services:
       context: .
       dockerfile: "docker-builds/server/Dockerfile"
       args:
-          BUILD_ENV: "${BUILD_ENV:-dev}"
+        BUILD_ENV: "${BUILD_ENV:-dev}"
     volumes:
       - /home/$USER/logs:/logs
       - /home/$USER/configs:/configs
@@ -28,6 +27,30 @@ services:
       - dev_network
     environment:
       - PORT=6200
+
+  ganache:
+    image: 0xorg/ganache-cli:latest
+    networks:
+      - dev_network
+    ports:
+      - 8545:8545
+      - 8549:8549
+    environment:
+      VERSION: 8.0.1
+      CHAIN_ID: 1337
+      NETWORK_ID: 1337
+
+  ipfs:
+    image: ipfs/go-ipfs:latest
+    volumes:
+      - vol_ipfs_data:/data/ipfs
+    networks:
+      - dev_network
+    ports:
+      - 4001:4001/tcp
+      - 4001:4001/udp
+      - 5001:5001
+      - 8080:8080
 
 networks:
   dev_network:
