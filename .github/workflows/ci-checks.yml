@@ -56,7 +56,7 @@ jobs:
       - name: Build ${{ matrix.image }}-${{ matrix.environment }} Docker image
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-          ECR_REPOSITORY: "namebazaar"
+          ECR_REPOSITORY: "registry"
         run: |
           echo "Building on ${GITHUB_REF} branch"
           DOCKER_BUILDKIT=1 docker build --build-arg BUILD_ENV=${{ matrix.environment }} -t ${{ matrix.image }}:${{ github.sha }}-${{ matrix.environment }} -f docker-builds/${{ matrix.image }}/Dockerfile .
@@ -75,7 +75,7 @@ jobs:
       - name: Push docker images
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-          ECR_REPOSITORY: "namebazaar"
+          ECR_REPOSITORY: "registry"
         run: |
           echo "Pushing docker images"
           if [[ ${GITHUB_REF} == "refs/heads/master" ]]; then
