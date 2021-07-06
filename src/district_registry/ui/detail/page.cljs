@@ -89,7 +89,7 @@
     :district/github-url
     :district/facebook-url
     :district/twitter-url
-    :district/aragon-id
+    :district/ens-name
     :district/logo-image-hash
     :district/background-image-hash
     :district/stake-bank
@@ -113,6 +113,30 @@
         (when-let [url (:gateway @ipfs)]
           [:div.background-image {:style {:background-image (str "url('" (format/ensure-trailing-slash url) image-hash "')")}}
            [:img {:src "/images/district-bg-mask.png"}]])))))
+
+
+(defn- setup-snapshot-button [{:keys [:reg-entry/address :reg-entry/creator :reg-entry/status :ens-name :has-snapshot? :name :state-bank]}]
+  (let [active-account (subscribe [::account-subs/active-account])
+        stake-tx-pending? @(subscribe [::tx-id-subs/tx-pending? {:setup-snapshot-for {:district address}}])]
+    (when (and (= has-snapshot? false)
+               address
+               creator
+               status
+               (= @active-account creator)
+               (= (normalize-status status) :in-registry))
+    [:form.edit-district-button
+      [tx-button {:class "cta-btn"
+                          :pending-text "Setting up Snapshot"
+                          :pending? stake-tx-pending?
+                          :on-click (fn [e]
+                                      (js-invoke e "preventDefault")
+                                      (dispatch [::district/setup-snapshot
+                                                 {:reg-entry/address address
+                                                  :ens-name ens-name
+                                                  :name name
+                                                  :state-bank state-bank
+                                                  }]))}
+               "Set up Snapshot"]])))
 
 
 (defn- edit-district-button [{:keys [:reg-entry/address :reg-entry/creator :reg-entry/status]}]
@@ -142,7 +166,7 @@
                             :district/github-url
                             :district/facebook-url
                             :district/twitter-url
-                            :district/aragon-id
+                            :district/ens-name
                             :district/total-supply
                             :district/dnt-staked
                             :district/stake-bank
@@ -150,7 +174,7 @@
                             :reg-entry/created-on
                             :reg-entry/address
                             :reg-entry/creator]}]
-  (let []
+  (let [has-snapshot? @(subscribe [::subs/has-snapshot? ens-name])]
     [:div.box-wrap.overview
      [:div.back-arrow {:on-click #(dispatch [:district.ui.router.events/navigate :route/home])}
       [:span.icon-arrow-right]]
@@ -174,10 +198,11 @@
           [:li (str "Voting tokens issued: " (format-number total-supply))]]
          [:nav.social
           [:ul
-           [:li
-            [:a {:target "_blank"
-                 :href @(subscribe [::subs/aragon-url aragon-id])}
-             [:span.icon-aragon]]]
+          (when (= has-snapshot? true)
+            [:li
+              [:a {:target "_blank"
+                   :href @(subscribe [::subs/snapshot-url ens-name])}
+              [:span.icon-snapshot]]])
            (when github-url
              [:li
               [:a {:target "_blank"
@@ -195,10 +220,19 @@
         [:div.col.img
          [district-background background-image-hash]]]
        [:pre.district-description description]
+       [:div.form-btns
+       [setup-snapshot-button
+        {:reg-entry/address address
+         :reg-entry/creator creator
+         :reg-entry/status status
+         :ens-name ens-name
+         :has-snapshot? has-snapshot?
+         :name name
+         :state-bank stake-bank}]
        [edit-district-button
         {:reg-entry/address address
          :reg-entry/creator creator
-         :reg-entry/status status}]]]]))
+         :reg-entry/status status}]]]]]))
 
 
 (defn- stake-history-line [{:keys [:key :stroke]}]

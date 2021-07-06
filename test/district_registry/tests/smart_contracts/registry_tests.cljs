@@ -8,7 +8,7 @@
             [district-registry.server.contract.mutable-forwarder :as mutable-forwarder]
             [district-registry.server.contract.registry :as registry]
             [district-registry.server.contract.registry-entry :as registry-entry]
-            [district-registry.tests.smart-contracts.utils :refer [create-district tx-error?]]
+            [district-registry.tests.smart-contracts.utils :refer [create-district tx-error? next-ens-name]]
             [district.cljs-utils :as cljs-utils]
             [district.server.smart-contracts :refer [contract-address]]
             [district.server.web3 :refer [web3]]))
@@ -49,7 +49,7 @@
            (let [[owner non-owner] (<! (web3-eth/accounts @web3))
                  [deposit] (->> (<! (eternal-db/get-uint-values :district-registry-db [:deposit]))
                                 (map bn/number))
-                 aragon-id (cljs-utils/rand-str 10)]
+                 ens-name (next-ens-name)]
 
              (testing "Non owner cannot set emergency"
                (is (tx-error? (<! (registry/set-emergency :district-registry-fwd true {:from non-owner})))))
@@ -60,11 +60,11 @@
                  (true? (<! (registry/emergency? :district-registry-fwd)))))
 
              (testing "Cannot create district during an emergency"
-               (is (tx-error? (<! (create-district owner deposit meta-hash1 aragon-id)))))
+               (is (tx-error? (<! (create-district owner deposit meta-hash1 ens-name)))))
 
              (testing "Can create district without emergency"
                (<! (registry/set-emergency :district-registry-fwd false {:from owner}))
-               (let [event-args (<! (create-district owner deposit meta-hash1 aragon-id))
+               (let [event-args (<! (create-district owner deposit meta-hash1 ens-name))
                      registry-entry (:registry-entry event-args)]
 
                  (<! (registry/set-emergency :district-registry-fwd true {:from owner}))

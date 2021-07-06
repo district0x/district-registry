@@ -34,8 +34,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-aragon:before {
-  content: "\e900";
+.icon-snapshot:before {
+  content: "\e6da";
 }
 .icon-arrow-down:before {
   content: "\e907";

@@ -2,7 +2,7 @@ const {copyContract, copy, smartContractsTemplate, encodeContractEDN, linkByteco
 const fs = require("fs");
 const edn = require("jsedn");
 const {env, smartContractsPath, parameters} = require("../truffle.js");
-const {registryPlaceholder, dntPlaceholder, forwarder1TargetPlaceholder, forwarder2TargetPlaceholder, minimeTokenFactoryPlaceholder, kitDistrictPlaceholder, zeroAddress, dsGuardANY, aragonENSNode} = require("./constants.js");
+const {registryPlaceholder, dntPlaceholder, forwarder1TargetPlaceholder, forwarder2TargetPlaceholder, minimeTokenFactoryPlaceholder, ensPlaceholder, zeroAddress, dsGuardANY, aragonENSNode} = require("./constants.js");
 const namehash = require('eth-ens-namehash');
 const web3Utils = require('web3-utils');
 const sha3 = web3Utils.sha3;
@@ -285,13 +285,13 @@ async function deploy_District(deployer, opts) {
   const districtChallenge = await DistrictChallenge.deployed();
   const stakeBank = await StakeBank.deployed();
   const districtRegistryForwarder = await DistrictRegistryForwarder.deployed();
-  const kitDistrict = await KitDistrict.deployed();
+  const ens = await getENS();
 
   linkBytecode(District, dntPlaceholder, dnt.address);
   linkBytecode(District, registryPlaceholder, districtRegistryForwarder.address);
   linkBytecode(District, forwarder1TargetPlaceholder, districtChallenge.address);
   linkBytecode(District, forwarder2TargetPlaceholder, stakeBank.address);
-  linkBytecode(District, kitDistrictPlaceholder, kitDistrict.address);
+  linkBytecode(District, ensPlaceholder, ens.address);
 
   await deployer.deploy(District, Object.assign({}, opts, {gas: 6.2e6}));
   const district = await District.deployed();
@@ -378,6 +378,18 @@ async function deploy_ENS(deployer, opts) {
   assignContract(ens, "ENS", "ENS");
 }
 
+async function reg_ENS(name, ens, publicResolver, opts) {
+  var ensName = name + ".eth";
+  console.log("Setting active account to be owner of " + ensName);
+  await ens.setSubnodeOwner(namehash.hash("eth"), sha3(name), opts.from, Object.assign({}, opts, {gas: 0.2e6}));
+
+  console.log("Setting resolver for " + ensName);
+  await ens.setResolver(namehash.hash(ensName), publicResolver.address, Object.assign({}, opts, {gas: 0.2e6}));
+
+  console.log("Setting resolving address for " + ensName);
+  await publicResolver.setAddr(namehash.hash(ensName), publicResolver.address, Object.assign({}, opts, {gas: 0.3e6}));
+}
+
 async function deploy_PublicResolver(deployer, opts) {
   if (!parameters.ENS) {
     console.log("Deploying ENS PublicResolver");
@@ -386,14 +398,11 @@ async function deploy_PublicResolver(deployer, opts) {
     await deployer.deploy(PublicResolver, ens.address, Object.assign({}, opts, {gas: 1.9e6}));
     const publicResolver = await PublicResolver.deployed();
 
-    console.log("Setting active account to be owner of resolver.eth");
-    await ens.setSubnodeOwner(namehash.hash("eth"), sha3("resolver"), opts.from, Object.assign({}, opts, {gas: 0.2e6}));
-
-    console.log("Setting resolver for resolver.eth");
-    await ens.setResolver(namehash.hash("resolver.eth"), publicResolver.address, Object.assign({}, opts, {gas: 0.2e6}));
-
-    console.log("Setting resolving address for resolver.eth");
-    await publicResolver.setAddr(namehash.hash("resolver.eth"), publicResolver.address, Object.assign({}, opts, {gas: 0.3e6}));
+    reg_ENS("resolver", ens, publicResolver, opts);
+    // register multiple domains for testing
+    for (var i = 0; i< 10;i++) {
+      reg_ENS(i + "resolver", ens, publicResolver, opts);
+    }
 
     assignContract(publicResolver, "PublicResolver", "public-resolver");
   }

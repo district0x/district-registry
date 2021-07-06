@@ -12,7 +12,7 @@
             [district-registry.server.contract.registry-entry :as registry-entry]
             [district-registry.server.contract.stake-bank :as stake-bank]
             [district-registry.shared.utils :refer [reg-entry-status->kw vote-option->kw]]
-            [district-registry.tests.smart-contracts.utils :refer [create-district tx-error?]]
+            [district-registry.tests.smart-contracts.utils :refer [create-district tx-error? next-ens-name]]
             [district.cljs-utils :as cljs-utils]
             [district.server.web3 :refer [web3]]))
 
@@ -25,8 +25,8 @@
            (let [[creator staker1 staker2] (<! (web3-eth/accounts @web3))
                  [deposit] (->> (<! (eternal-db/get-uint-values :district-registry-db [:deposit]))
                                 (map bn/number))
-                 aragon-id (cljs-utils/rand-str 10)
-                 {:keys [registry-entry] :as event-args} (<! (create-district creator deposit meta-hash1 aragon-id))
+                 ens-name (next-ens-name)
+                 {:keys [registry-entry] :as event-args} (<! (create-district creator deposit meta-hash1 ens-name))
                  stake-bank (<! (district/stake-bank registry-entry))]
 
              (testing "District can be staked to under valid conditions"
@@ -114,8 +114,8 @@
            (let [[creator challenger staker1] (<! (web3-eth/accounts @web3))
                  [deposit commit-period-duration reveal-period-duration] (->> (<! (eternal-db/get-uint-values :district-registry-db [:deposit :commit-period-duration :reveal-period-duration]))
                                                                               (map bn/number))
-                 aragon-id (cljs-utils/rand-str 10)
-                 {:keys [registry-entry] :as event-args} (<! (create-district creator deposit meta-hash1 aragon-id))
+                 ens-name (next-ens-name)
+                 {:keys [registry-entry] :as event-args} (<! (create-district creator deposit meta-hash1 ens-name))
 
                  salt (cljs-utils/rand-str 10)
                  _ (<! (district/approve-and-stake-for registry-entry
@@ -165,9 +165,9 @@
            (let [[creator challenger staker1] (<! (web3-eth/accounts @web3))
                  [deposit commit-period-duration reveal-period-duration] (->> (<! (eternal-db/get-uint-values :district-registry-db [:deposit :commit-period-duration :reveal-period-duration]))
                                                                               (map bn/number))
-                 aragon-id (cljs-utils/rand-str 10)
+                 ens-name (next-ens-name)
                  salt (cljs-utils/rand-str 10)
-                 {:keys [registry-entry] :as event-args} (<! (create-district creator deposit meta-hash1 aragon-id))
+                 {:keys [registry-entry] :as event-args} (<! (create-district creator deposit meta-hash1 ens-name))
 
                  _ (<! (registry-entry/approve-and-create-challenge registry-entry
                                                                     {:challenger challenger
@@ -217,8 +217,8 @@
            (let [[creator challenger] (<! (web3-eth/accounts @web3))
                  [deposit commit-period-duration reveal-period-duration] (->> (<! (eternal-db/get-uint-values :district-registry-db [:deposit :commit-period-duration :reveal-period-duration]))
                                                                               (map bn/number))
-                 aragon-id (cljs-utils/rand-str 10)
-                 {:keys [registry-entry] :as event-args} (<! (create-district creator deposit meta-hash1 aragon-id))]
+                 ens-name (next-ens-name)
+                 {:keys [registry-entry] :as event-args} (<! (create-district creator deposit meta-hash1 ens-name))]
 
              (is (= (web3-utils/to-hex @web3 meta-hash1) (<! (district/meta-hash registry-entry))))
 

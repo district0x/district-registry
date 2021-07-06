@@ -25,7 +25,8 @@ contract DistrictFactory is RegistryEntryFactory {
   function createDistrict(
     address _creator,
     bytes _metaHash,
-    string _aragonId
+    bytes32 _ensNameNode,
+    string _ensName
   )
   public
   notEmergency
@@ -35,7 +36,8 @@ contract DistrictFactory is RegistryEntryFactory {
       _creator,
       version,
       _metaHash,
-      _aragonId
+      _ensNameNode,
+      _ensName
     );
   }
 }

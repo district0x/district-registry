@@ -4,7 +4,8 @@ import "./RegistryEntry.sol";
 import "./StakeBank.sol";
 import "./proxy/Forwarder2.sol";
 import "./DistrictChallenge.sol";
-import "./KitDistrict.sol";
+import "@aragon/os/contracts/lib/ens/ENS.sol";
+import "@aragon/os/contracts/lib/ens/PublicResolver.sol";
 
 
 /**
@@ -18,7 +19,7 @@ import "./KitDistrict.sol";
 contract District is RegistryEntry {
 
   StakeBank public stakeBank;
-  KitDistrict public constant kitDistrict = KitDistrict(0xaAaAaAaaAaAaAaaAaAAAAAAAAaaaAaAaAaaAaaAa);
+  ENS public constant ens = ENS(0xaAaAaAaaAaAaAaaAaAAAAAAAAaaaAaAaAaaAaaAa);
 
   /**
    * @dev IPFS hash of file that contains all data from form fields
@@ -33,23 +34,31 @@ contract District is RegistryEntry {
    * @param _creator Creator of a district
    * @param _version Version of District contract
    * @param _metaHash IPFS hash of data related to a district
-   * @param _aragonId ENS name registered as <somename>.aragonid.eth
+   * @param _ensNode Namehash of the ENS name registered by the sender
+   * @param _ensName ENS name registered by the sender
    */
   function construct(
     address _creator,
     uint _version,
     bytes _metaHash,
-    string _aragonId
+    bytes32 _ensNode,
+    string _ensName
   )
   public
   {
     super.construct(_creator, _version);
+    // requires creator is owner of ENS domain and it does not have any linked snapshot
+    require(_creator == ens.owner(_ensNode));
+    address resolverAddr = ens.resolver(_ensNode);
+    if (resolverAddr != address(0x0)) {
+      PublicResolver resolver = PublicResolver(resolverAddr);
+      require(bytes(resolver.text(_ensNode, "snapshot")).length == 0);
+    }
     stakeBank = StakeBank(new Forwarder2());
     stakeBank.construct();
     challengePeriodEnd = ~uint(0);
     metaHash = _metaHash;
-    Kernel aragonDao = kitDistrict.createDAO(_aragonId, MiniMeToken(stakeBank), _creator);
-    registry.fireDistrictConstructedEvent(version, creator, metaHash, deposit, challengePeriodEnd, address(stakeBank), address(aragonDao), _aragonId);
+    registry.fireDistrictConstructedEvent(version, creator, metaHash, deposit, challengePeriodEnd, address(stakeBank), _ensName);
   }
 
   /**
