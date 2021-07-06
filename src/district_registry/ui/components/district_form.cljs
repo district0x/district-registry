@@ -65,7 +65,7 @@
      :github-url "https://github.com/district0x/name-bazaar"
      :facebook-url "https://www.facebook.com/district0x/"
      :twitter-url "https://twitter.com/NameBazaar0x"
-     :aragon-id "namebazaar"
+     :ens-name "namebazaar.eth"
      :description "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a augue quis metus sollicudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non. Aenean augue metus, masuada non rutrum ut, ornare ac orci. Lorem ipsum dolor sit amet, consectetur adipiscing. Lorem augue quis metus sollicitudin mattis. Duis efficitur tellus felis, et tincidunt turpis aliquet non."}))
 
 
@@ -109,13 +109,11 @@
        :type "submit"}
       "Save"]]))
 
-(defn- aragon-full-name [aragon-id]
-  (str aragon-id ".aragonid.eth"))
 
-(def debounced-check-availability
+(def debounced-check-ownership
   (debounce
     (fn [value]
-      (dispatch [::ens/check-availability {:aragon-id value}]))
+      (dispatch [::ens/check-ownership {:ens-name value}]))
     500))
 
 
@@ -146,9 +144,10 @@
         form-data (r/atom (or form-data default-form-data))]
     (when (and (= "dev" (get-environment))                  ;; dirty, but only for dev, so please forgive me
                (not edit?))
-      (js/setTimeout #(dispatch [::ens/check-availability (select-keys @form-data [:aragon-id])]) 1000))
+      (js/setTimeout #(dispatch [::ens/check-ownership (select-keys @form-data [:ens-name])]) 1000))
     (fn [{:keys [:reg-entry/address]}]
-      (let [aragon-id-available? @(subscribe [::subs/aragon-id-available? (:aragon-id @form-data)])
+      (let [owner-of-ens-name? @(subscribe [::subs/owner-of-ens-name? (:ens-name @form-data)])
+            ens-has-snapshot? (and owner-of-ens-name? @(subscribe [::subs/has-snapshot? (:ens-name @form-data)]))
             deposit (when-not edit?
                       (-> @deposit-query
                         :search-param-changes
@@ -161,7 +160,7 @@
                     :github-url
                     :facebook-url
                     :twitter-url
-                    :aragon-id
+                    :ens-name
                     :logo-file-info
                     :background-file-info]} @form-data
             errors (cond-> []
@@ -169,8 +168,9 @@
                      (empty? description) (conj "District description is required")
                      (empty? url) (conj "URL is required")
                      (empty? github-url) (conj "GitHub URL is required")
-                     (and (not edit?) (empty? aragon-id)) (conj "Aragon ID is required")
-                     (and (not edit?) (not (empty? aragon-id)) (false? aragon-id-available?)) (conj "Aragon ID is not available")
+                     (and (not edit?) (empty? ens-name)) (conj "ENS Name is required")
+                     (and (not edit?) (not (empty? ens-name)) (false? owner-of-ens-name?)) (conj "ENS Name does not belong to you")
+                     (and (not edit?) (not (empty? ens-name)) (true? owner-of-ens-name?) (true? ens-has-snapshot?)) (conj "ENS Name is already lined to snapshot")
                      (and (seq url) (not (spec/check ::spec/url url))) (conj "URL is not valid")
                      (and (seq github-url) (not (re-find #"https?://github.com/.+" github-url))) (conj "GitHub URL is not valid")
                      (and (seq facebook-url) (not (re-find #"https?://(www\.)?facebook.com/.+" facebook-url))) (conj "Facebook URL is not valid")
@@ -216,25 +216,31 @@
                              :placeholder "Twitter URL"
                              :id :twitter-url}]
                 (when-not edit?
-                  (let [aragon-id (:aragon-id @form-data)
-                        hint (when-not (str/blank? aragon-id)
-                               (condp = aragon-id-available?
-                                 true (str (aragon-full-name aragon-id) " is available")
-                                 false (str (aragon-full-name aragon-id) " is taken")
-                                 "Checking availability..."))]
+                  (let [ens-name (:ens-name @form-data)
+                        hint (when-not (str/blank? ens-name)
+                               (condp = owner-of-ens-name?
+                                 true (condp = ens-has-snapshot?
+                                   true (str ens-name " is already linked to snapshot")
+                                   false (str ens-name " belongs to you")
+                                   "Checking ownership...")
+                                 false (str ens-name " does not belong to you")
+                                 "Checking ownership..."))]
                     [text-input {:form-data form-data
-                                 :placeholder "Aragon ID"
-                                 :id :aragon-id
-                                 :class "aragon-id"
-                                 :group-class (condp = aragon-id-available?
-                                                true "available"
+                                 :placeholder "ENS Name"
+                                 :id :ens-name
+                                 :class "ens-name"
+                                 :group-class (condp = owner-of-ens-name?
+                                                true (condp = ens-has-snapshot?
+                                                  true "taken"
+                                                  false "available"
+                                                  "checking")
                                                 false "taken"
                                                 "checking")
-                                 :errors {:local {:aragon-id {:hint hint}}}
+                                 :errors {:local {:ens-name {:hint hint}}}
                                  :on-change (fn [value]
-                                              (if (re-matches #"[a-z0-9]{0,100}" value)
-                                                (debounced-check-availability value)
-                                                (swap! form-data assoc-by-path :aragon-id aragon-id)))}]))
+                                              (if (re-matches #"[a-z0-9\.]{0,100}" value)
+                                                (debounced-check-ownership value)
+                                                (swap! form-data assoc-by-path :ens-name ens-name)))}]))
                 [:div.submit-errors
                  (doall
                    (for [e errors]

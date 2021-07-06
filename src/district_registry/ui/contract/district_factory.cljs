@@ -2,6 +2,7 @@
   (:require
     [bignumber.core :as bn]
     [cljs-web3.eth :as web3-eth]
+    [district-registry.ui.contract.ens :as ens]
     [district.ui.logging.events :as logging]
     [district.ui.notification.events :as notification-events]
     [district.ui.smart-contracts.queries :as contract-queries]
@@ -15,14 +16,15 @@
 (re-frame/reg-event-fx
   ::approve-and-create-district
   interceptors
-  (fn [{:keys [:db]} [{:keys [:name :deposit :aragon-id :tx-id]} {:keys [Name Hash Size]}]]
+  (fn [{:keys [:db]} [{:keys [:name :deposit :ens-name :tx-id]} {:keys [Name Hash Size]}]]
     (let [active-account (account-queries/active-account db)
           extra-data (web3-eth/contract-get-data
                        (contract-queries/instance db :district-factory)
                        :create-district
                        active-account
                        Hash
-                       aragon-id)]
+                       (ens/namehash ens-name)
+                       (ens/normalize ens-name))]
       {:dispatch [::tx-events/send-tx
                   {:instance (contract-queries/instance db :DNT)
                    :fn :approve-and-call
