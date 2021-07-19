@@ -33,10 +33,10 @@ COPY docker-builds/ui/default /etc/nginx/conf.d/default
 COPY docker-builds/ui/registry_io.conf /etc/nginx/sites-enabled/registry_io.conf
 
 # setup error page
-ADD https://raw.githubusercontent.com/district0x/X0X/master/X0X.html /usr/share/nginx/html/X0X.html
+ADD --chown=nginx:nginx https://raw.githubusercontent.com/district0x/X0X/master/X0X.html /usr/share/nginx/html/X0X.html
 
 # get compiled JS
-COPY --from=builder /app/resources/public /registry/resources/public/
+COPY --from=builder --chown=nginx:nginx /app/resources/public /registry/resources/public/
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
