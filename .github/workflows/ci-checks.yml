@@ -59,13 +59,13 @@ jobs:
           ECR_REPOSITORY: "registry"
         run: |
           echo "Building on ${GITHUB_REF} branch"
-          DOCKER_BUILDKIT=1 docker build --build-arg BUILD_ENV=${{ matrix.environment }} -t ${{ matrix.image }}:${{ github.sha }}-${{ matrix.environment }} -f docker-builds/${{ matrix.image }}/Dockerfile .
+          DOCKER_BUILDKIT=1 docker build --build-arg BUILD_ENV=${{ matrix.environment }} -t ${ECR_REGISTRY}/${ECR_REPOSITORY}-${{matrix.image}}:latest-${{ matrix.environment }} -t ${ECR_REGISTRY}/${ECR_REPOSITORY}-${{matrix.image}}:${{ github.sha }}-${{ matrix.environment }} -f docker-builds/${{ matrix.image }}/Dockerfile .
           echo "Successfully built docker image"
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ matrix.image }}:${{ github.sha }}-${{ matrix.environment }}'
+          image-ref: '${ECR_REGISTRY}/${ECR_REPOSITORY}-${{matrix.image}}:${{ github.sha }}-${{ matrix.environment }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -78,10 +78,8 @@ jobs:
           ECR_REPOSITORY: "registry"
         run: |
           echo "Pushing docker images"
-          if [[ ${GITHUB_REF} == "refs/heads/master" ]]; then
+          # if [[ ${GITHUB_REF} == "refs/heads/master" ]]; then
             echo "On the default branch will push to the registry with latest-${{ matrix.environment }} and ${{ github.sha }}-${{ matrix.environment }} tags"
-            docker tag ${{ matrix.image }}:${{ github.sha }} ${ECR_REGISTRY}/${ECR_REPOSITORY}-${{matrix.image}}:${{ github.sha }}-${{ matrix.environment }}
-            docker tag ${{ matrix.image }}:${{ github.sha }} ${ECR_REGISTRY}/${ECR_REPOSITORY}-${{matrix.image}}:latest-${{ matrix.environment }}
             docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}-${{matrix.image}}:${{ github.sha }}-${{ matrix.environment }}
             docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}-${{matrix.image}}:latest-${{ matrix.environment }}
-          fi
+          # fi
