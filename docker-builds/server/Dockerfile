@@ -35,9 +35,9 @@ RUN apt-get update \
 ENV CONFIG /configs/registry.config.edn
 
 # get compiled JS
-COPY --from=builder /app/server /registry/server
-COPY --from=builder /app/node_modules /registry/node_modules
-COPY --from=builder /app/resources /registry/resources
+COPY --from=builder --chown=nginx:nginx /app/server /registry/server
+COPY --from=builder --chown=nginx:nginx /app/node_modules /registry/node_modules
+COPY --from=builder --chown=nginx:nginx /app/resources /registry/resources
 
 WORKDIR /registry
 
