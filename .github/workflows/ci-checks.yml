@@ -78,8 +78,8 @@ jobs:
           ECR_REPOSITORY: "registry"
         run: |
           echo "Pushing docker images"
-          # if [[ ${GITHUB_REF} == "refs/heads/master" ]]; then
+          if [[ ${GITHUB_REF} == "refs/heads/master" ]]; then
             echo "On the default branch will push to the registry with latest-${{ matrix.environment }} and ${{ github.sha }}-${{ matrix.environment }} tags"
             docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}-${{matrix.image}}:${{ github.sha }}-${{ matrix.environment }}
             docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}-${{matrix.image}}:latest-${{ matrix.environment }}
-          # fi
+          fi
