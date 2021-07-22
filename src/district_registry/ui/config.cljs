@@ -43,12 +43,12 @@
    :smart-contracts {:contracts (select-keys smart-contracts-qa/smart-contracts contracts-to-load)}
    :web3-accounts {:eip55? true}
    :web3-balances {:contracts (select-keys smart-contracts-qa/smart-contracts [:DNT])}
-   :web3 {:url "https://rinkeby.infura.io"}
+   :web3 {:url "https://ropsten.infura.io"}
    :web3-tx {:disable-loading-recommended-gas-prices? true
              :eip55? true}
    :web3-tx-log {:disable-using-localstorage? false
                  :tx-costs-currencies [:USD]
-                 :etherscan-url "https://rinkeby.etherscan.io"}
+                 :etherscan-url "https://ropsten.etherscan.io"}
    :graphql {:schema graphql-schema
              :url "https://api.registry.qa.district0x.io/graphql"}
    :ipfs {:endpoint "/api/v0"
