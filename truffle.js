@@ -36,15 +36,11 @@ let parameters = {
     }
   },
   "qa" : {
-    DNT: "0xe450dcde6c059339a35eec0facbe62751cca6e8a",
-    ENS: "0x98df287b6c145399aaa709692c8d308357bc085d",
-    DAOFactory: "0x2298d27a9b847c681d2b2c2828ab9d79013f5f1d",
-    FIFSResolvingRegistrar: "0x3665e7bfd4d3254ae7796779800f5b603c43c60d",
-    KitDistrict : {includeApps: ["voting"]},
+    ENS: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
     districtRegistryDb : {
       challengePeriodDuration : 0,
       commitPeriodDuration : 200, // seconds
-      revealPeriodDuration : 200, // seconds
+      revealPeriodDuration : 200, // s econds
       deposit : 1e18, // 1e18 = 1 DNT
       challengeDispensation : 50, // percent
       voteQuorum : 50, // percent
@@ -106,11 +102,11 @@ module.exports = {
       network_id: '*',
       skipDryRun: true
     },
-    "infura-rinkeby": {
-      provider: () => new HDWalletProvider(process.env.MNENOMIC || process.env.RINKEBY_PRIV_KEY, "https://rinkeby.infura.io/v3/" + process.env.INFURA_API_KEY),
-      network_id: 4,
+    "infura-ropsten": {
+      provider: () => new HDWalletProvider(process.env.MNENOMIC || process.env.ROPSTEN_PRIV_KEY, "https://ropsten.infura.io/v3/" + process.env.INFURA_API_KEY),
+      network_id: 3,
       gas: 6e6,
-      gasPrice: 1e9,
+      gasPrice: 5e9,
       skipDryRun: true
     },
     "infura-mainnet": {

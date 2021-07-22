@@ -691,9 +691,9 @@ async function deployAll(deployer, opts) {
   await deploy_ENS(deployer, opts);
   await deploy_PublicResolver(deployer, opts);
 
-  await deploy_Aragon(deployer, opts);
+//  await deploy_Aragon(deployer, opts);
 
-  await deploy_KitDistrict(deployer, opts);
+//  await deploy_KitDistrict(deployer, opts);
 
   await deploy_District(deployer, opts);
   await deploy_ParamChange(deployer, opts);
