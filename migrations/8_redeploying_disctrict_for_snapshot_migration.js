@@ -1,4 +1,4 @@
-const {copy, linkBytecode, readSmartContractsFile, writeSmartContracts, getSmartContractAddress, setSmartContractAddress, copyContract} = require("./utils.js");
+const {linkBytecode, readSmartContractsFile, writeSmartContracts, getSmartContractAddress, setSmartContractAddress, copyContract, Status} = require("./utils.js");
 const fs = require("fs");
 const {env, smartContractsPath, parameters} = require("../truffle.js");
 const {registryPlaceholder, dntPlaceholder, forwarder1TargetPlaceholder, forwarder2TargetPlaceholder, ensPlaceholder} = require("./constants.js");
@@ -6,6 +6,8 @@ const {registryPlaceholder, dntPlaceholder, forwarder1TargetPlaceholder, forward
 function requireContract(contractName, contractCopyName) {
   return artifacts.require(copyContract(contractName, contractCopyName));
 }
+
+let status = new Status("8");
 
 let DistrictRegistry = requireContract("Registry", "DistrictRegistry");
 let DistrictFactory = requireContract("DistrictFactory");
@@ -25,14 +27,13 @@ async function deploy_DistrictRegistry(deployer, districtRegistryFwdAddr, distri
   await deployer.deploy(DistrictRegistry, Object.assign({}, opts, {gas: 3.2e6}));
   const districtRegistry = await DistrictRegistry.deployed();
 
+  return districtRegistry;
+}
+
+async function setRegistryFwdTarget(districtRegistryFwdAddr, districtRegistryAddr, opts) {
   console.log("Pointing DistrictRegistryForwarder to new Registry");
   const districtRegistryForwarder = await DistrictRegistryForwarder.at(districtRegistryFwdAddr);
-  await districtRegistryForwarder.setTarget(districtRegistry.address, Object.assign({}, opts, {gas: 0.5e6}));
-  
-  const districtRegistryForwarderInstance = await DistrictRegistry.at(districtRegistryForwarder.address);
-  districtRegistryForwarderInstance.construct(districtRegistryDbAddr, Object.assign({}, opts, {gas: 0.5e6}));
-
-  return districtRegistry;
+  await districtRegistryForwarder.setTarget(districtRegistryAddr, Object.assign({}, opts, {gas: 0.5e6}));
 }
 
 
@@ -52,23 +53,24 @@ async function deploy_District(deployer, ensAddr, dntAddr, districtChallengeAddr
 }
 
 
-async function deploy_DistrictFactory(deployer, dntAddr, districtRegistryFwdAddr, oldDistrictFactoryAddr, opts) {
+async function deploy_DistrictFactory(deployer, dntAddr, districtRegistryFwdAddr, oldDistrictFactoryAddr, districtAddr, opts) {
   console.log("Deploying DistrictFactory");
 
-  const district = await District.deployed();
-
-  linkBytecode(DistrictFactory, forwarder1TargetPlaceholder, district.address);
+  linkBytecode(DistrictFactory, forwarder1TargetPlaceholder, districtAddr);
 
   await deployer.deploy(DistrictFactory, districtRegistryFwdAddr, dntAddr, Object.assign({}, opts, {gas: 1.5e6}));
   const districtFactory = await DistrictFactory.deployed();
 
+  return districtFactory;
+}
+
+
+async function allowDistrictFactory(districtRegistryFwdAddr, districtFactoryAddr, opts) {
   console.log("Allowing new DistrictFactory in DistrictRegistryForwarder");
   const districtRegistryForwarderInstance = await DistrictRegistry.at(districtRegistryFwdAddr);
-  await districtRegistryForwarderInstance.setFactory(districtFactory.address, true, Object.assign({}, opts, {gas: 0.1e6}));
+  await districtRegistryForwarderInstance.setFactory(districtFactoryAddr, true, Object.assign({}, opts, {gas: 0.1e6}));
 
   // Note: Disabling old DistrictFactory will be done in a separated migration script
-
-  return districtFactory;
 }
 
 
@@ -92,20 +94,46 @@ module.exports = async function(deployer, network, accounts) {
   var districtChallengeAddr = getSmartContractAddress(smartContracts, ":district-challenge");
   var stakeBankAddr = getSmartContractAddress(smartContracts, ":stake-bank");
   var ensAddr = getSmartContractAddress(smartContracts, ":ENS") || parameters.ENS;
-  
-  var districtRegistry = await deploy_DistrictRegistry(deployer, districtRegistryFwdAddr, districtRegistryDbAddr, opts);
-  var district = await deploy_District(deployer, ensAddr, dntAddr, districtChallengeAddr, stakeBankAddr, districtRegistryFwdAddr, opts);
-  var districtFactory = await deploy_DistrictFactory(deployer, dntAddr, districtRegistryFwdAddr, oldDistrictFactoryAddr, opts);
 
-  console.log("New District Registry:", districtRegistry.address);
-  console.log("New District:", district.address);
-  console.log("New DistrictFactory:", districtFactory.address);
+  await status.step(async ()=>{
+    let districtRegistry = await deploy_DistrictRegistry(deployer, districtRegistryFwdAddr, districtRegistryDbAddr, opts);
+    return {districtRegistry: districtRegistry.address};
+  });
 
-  setSmartContractAddress(smartContracts, ":district-registry", districtRegistry.address);
-  setSmartContractAddress(smartContracts, ":district", district.address);
-  setSmartContractAddress(smartContracts, ":district-factory", districtFactory.address);
+  await status.step(async ()=>{
+    let districtRegistryAddr = status.getValue('districtRegistry');
+    await setRegistryFwdTarget(districtRegistryFwdAddr, districtRegistryAddr, opts);
+    return {};
+  });
+
+  await status.step(async ()=>{
+    let district = await deploy_District(deployer, ensAddr, dntAddr, districtChallengeAddr, stakeBankAddr, districtRegistryFwdAddr, opts);
+    return {district: district.address};
+  });
+
+  await status.step(async (status)=>{
+    let districtAddr = status.getValue('district');
+    let districtFactory = await deploy_DistrictFactory(deployer, dntAddr, districtRegistryFwdAddr, oldDistrictFactoryAddr, districtAddr, opts);
+    return {districtFactory: districtFactory.address};
+  });
+
+  await status.step(async (status)=>{
+    let districtFactoryAddr = status.getValue('districtFactory');
+    await allowDistrictFactory(districtRegistryFwdAddr, districtFactoryAddr, opts);
+    return {};
+  });
+
+  console.log("New District Registry:", status.getValue('districtRegistry'));
+  console.log("New District:", status.getValue('district'));
+  console.log("New DistrictFactory:", status.getValue('districtFactory'));
+
+  setSmartContractAddress(smartContracts, ":district-registry", status.getValue('districtRegistry'));
+  setSmartContractAddress(smartContracts, ":district", status.getValue('district'));
+  setSmartContractAddress(smartContracts, ":district-factory", status.getValue('districtFactory'));
 
   writeSmartContracts(smartContractsPath, smartContracts, env);
+
+  status.clean();
 
   console.log("District successfully redeployed!");
 
