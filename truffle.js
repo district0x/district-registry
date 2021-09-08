@@ -113,7 +113,7 @@ module.exports = {
       provider: () => new HDWalletProvider(process.env.MNENOMIC || process.env.MAINNET_PRIV_KEY, "https://mainnet.infura.io/v3/" + process.env.INFURA_API_KEY),
       network_id: 1,
       gas: 6e6,
-      gasPrice: 4e9,
+      gasPrice: 110e9,
       skipDryRun: true
     }
   },
@@ -121,6 +121,11 @@ module.exports = {
   compilers: {
     solc: {
       version: "0.4.24",
+      settings: {
+        optimizer: {
+          enabled: true
+        }
+      }
     }
   }
 }
