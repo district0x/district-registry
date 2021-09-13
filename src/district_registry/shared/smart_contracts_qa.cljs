@@ -20,4 +20,5 @@
    :district-factory {:name "DistrictFactory" :address "0x40b47eb7da61e279f4f82d74b8ad239622343120"}
    :param-change-factory {:name "ParamChangeFactory" :address "0x6dc78010bb5b74db57f360a4a6b009013d6714a1"}
    :district0x-emails {:name "District0xEmails" :address "0xb4996f78c380e19a33703bd788270031849ba92b"}
+   :district-registry-legacy {:name "RegistryLegacy" :address "0x4e0505fe118c4187b07f2e99a5f8624e65afdad5"}
    })

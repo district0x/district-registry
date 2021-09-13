@@ -65,4 +65,7 @@
     :address "0x5065ef0724b76421aeaafa87ba752d6c5d5499b5"}
    :district
    {:name "District"
-    :address "0x98aeac347318b7b63191828a4cb14F224CCDCF89"}})
+    :address "0x98aeac347318b7b63191828a4cb14F224CCDCF89"}
+   :district-registry-legacy
+   {:name "RegistryLegacy"
+    :address "0xf8d2c216aeeddabeb1c80a3560e56a20bda434dd"}})

@@ -76,7 +76,8 @@
         :url
         :github-url
         :facebook-url
-        :twitter-url]
+        :twitter-url
+        :ens-name]
     (select-keys data)
     (medley/remove-vals nil?)
     (medley/map-vals safe-trim)

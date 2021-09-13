@@ -44,7 +44,7 @@
    [:district/background-image-hash :string]
    [:district/dnt-staked :unsigned :BIG :INT not-nil]
    [:district/total-supply :unsigned :BIG :INT not-nil]
-   [:district/ens-name :string not-nil]
+   [:district/ens-name :string]
    [:district/stake-bank :string not-nil]
    [(sql/call :primary-key :reg-entry/address)]
    [(sql/call :foreign-key :reg-entry/address) (sql/call :references :reg-entries :reg-entry/address)]])

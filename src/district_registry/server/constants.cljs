@@ -14,4 +14,6 @@
    :district-registry/vote-reward-claimed-event [:district-registry-fwd :VoteRewardClaimedEvent]
    :district-registry/challenger-reward-claimed-event [:district-registry-fwd :ChallengerRewardClaimedEvent]
    :district-registry/creator-reward-claimed-event [:district-registry-fwd :CreatorRewardClaimedEvent]
-   :district-registry/stake-changed-event [:district-registry-fwd :DistrictStakeChangedEvent]})
+   :district-registry/stake-changed-event [:district-registry-fwd :DistrictStakeChangedEvent]
+   :district-registry/district-legacy-constructed-event [:district-registry-legacy :DistrictConstructedEvent]
+   })

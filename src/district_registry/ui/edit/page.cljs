@@ -24,7 +24,8 @@
                                               :district/facebook-url
                                               :district/twitter-url
                                               :district/logo-image-hash
-                                              :district/background-image-hash]]]}])
+                                              :district/background-image-hash
+                                              :district/ens-name]]]}])
             {:keys [:reg-entry/address
                     :district/name
                     :district/description
@@ -33,7 +34,8 @@
                     :district/logo-image-hash
                     :district/background-image-hash
                     :district/facebook-url
-                    :district/twitter-url]} (:district results)]
+                    :district/twitter-url
+                    :district/ens-name]} (:district results)]
         [app-layout
          (when (seq name)
            [district-form {:edit? true
@@ -45,4 +47,5 @@
                                        :facebook-url facebook-url
                                        :twitter-url twitter-url
                                        :district/logo-image-hash logo-image-hash
-                                       :district/background-image-hash background-image-hash}}])]))))
+                                       :district/background-image-hash background-image-hash
+                                       :ens-name ens-name}}])]))))
