@@ -141,6 +141,7 @@
 (defn district-form [{:keys [:form-data :edit?]}]
   (let [deposit-query (when-not edit?
                         (subscribe [::gql/query {:queries [(param-search-query :deposit)]}]))
+        has-ens-name? (not (str/blank? (:ens-name form-data)))
         form-data (r/atom (or form-data default-form-data))]
     (when (and (= "dev" (get-environment))                  ;; dirty, but only for dev, so please forgive me
                (not edit?))
@@ -169,8 +170,8 @@
                      (empty? url) (conj "URL is required")
                      (empty? github-url) (conj "GitHub URL is required")
                      (and (not edit?) (empty? ens-name)) (conj "ENS Name is required")
-                     (and (not edit?) (not (empty? ens-name)) (false? owner-of-ens-name?)) (conj "ENS Name does not belong to you")
-                     (and (not edit?) (not (empty? ens-name)) (true? owner-of-ens-name?) (true? ens-has-snapshot?)) (conj "ENS Name is already lined to snapshot")
+                     (and (or (not edit?) (not ens-has-snapshot?)) (not (empty? ens-name)) (not (true? owner-of-ens-name?))) (conj "ENS Name does not belong to you")
+                     (and (or (not edit?) (not ens-has-snapshot?)) (not (empty? ens-name)) (true? owner-of-ens-name?) (true? ens-has-snapshot?)) (conj "ENS Name is already linked to snapshot")
                      (and (seq url) (not (spec/check ::spec/url url))) (conj "URL is not valid")
                      (and (seq github-url) (not (re-find #"https?://github.com/.+" github-url))) (conj "GitHub URL is not valid")
                      (and (seq facebook-url) (not (re-find #"https?://(www\.)?facebook.com/.+" facebook-url))) (conj "Facebook URL is not valid")
@@ -215,9 +216,9 @@
                 [text-input {:form-data form-data
                              :placeholder "Twitter URL"
                              :id :twitter-url}]
-                (when-not edit?
-                  (let [ens-name (:ens-name @form-data)
-                        hint (when-not (str/blank? ens-name)
+                (if (and edit? has-ens-name?)
+                  [:input {:value ens-name}]
+                  (let [hint (when-not (str/blank? ens-name)
                                (condp = owner-of-ens-name?
                                  true (condp = ens-has-snapshot?
                                    true (str ens-name " is already linked to snapshot")

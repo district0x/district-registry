@@ -16,7 +16,8 @@
             [district.shared.async-helpers :refer [safe-go <?]]
             [district.shared.error-handling :refer [try-catch]]
             [mount.core :as mount :refer [defstate]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [clojure.string :as str]))
 
 (declare start)
 (declare stop)
@@ -64,6 +65,14 @@
                        (db/update-district!))))))))))
 
 
+(defn- avoid-ens-name-update [registry-entry district-meta]
+  (let [current-ens-name (:district/ens-name (db/get-district {:reg-entry/address registry-entry} [:district/ens-name]))]
+    ;; only allows setting a new ens-name if it is not set yet.
+    (if (str/blank? current-ens-name)
+      district-meta
+      (assoc district-meta :district/ens-name current-ens-name))))
+
+
 (defn district-meta-hash-changed-event [_ {:keys [:args]}]
   (try-catch
     (let [{:keys [:registry-entry :meta-hash]} args]
@@ -73,6 +82,7 @@
                  (->> district-meta
                    (map transform-district-keys)
                    (into {:reg-entry/address registry-entry})
+                   (avoid-ens-name-update registry-entry)
                    (db/update-district!))))))))
 
 

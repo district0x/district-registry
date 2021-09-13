@@ -190,6 +190,8 @@ async function deploy_DistrictRegistryForwarder(deployer, opts) {
   await dsGuard.permit(districtRegistryForwarder.address, districtRegistryDb.address, dsGuardANY, Object.assign({}, opts, {gas: 0.2e6}));
 
   assignContract(districtRegistryForwarder, "MutableForwarder", "district-registry-fwd", {forwardsTo: "district-registry"});
+  // keep this for legacy
+  assignContract(districtRegistryForwarder, "RegistryLegacy", "district-registry-legacy");
 }
 
 

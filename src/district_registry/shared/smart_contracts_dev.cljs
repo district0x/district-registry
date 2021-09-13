@@ -101,4 +101,7 @@
     :address "0x0000000000000000000000000000000000000000"},
    :aragon/fifs-resolving-registrar
    {:name "FIFSResolvingRegistrar",
+    :address "0x0000000000000000000000000000000000000000"}
+   :district-registry-legacy
+   {:name "RegistryLegacy"
     :address "0x0000000000000000000000000000000000000000"}})
