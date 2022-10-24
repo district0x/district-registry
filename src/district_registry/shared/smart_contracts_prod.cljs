@@ -52,7 +52,7 @@
     :address "0x13b1cd8cb253eca8142ebf423e3b86f789763ec7"}
    :ENS
    {:name "ENS"
-    :address "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72"}
+    :address "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"}
    :district-registry-fwd
    {:name "MutableForwarder"
     :address "0xf8d2c216aeeddabeb1c80a3560e56a20bda434dd"
