@@ -1,0 +1,1093 @@
+/* ============================================================================
+   THE BACKROOM - UI STYLES
+   Styles for Council, ARI Activity, and Power Plant pages
+   ============================================================================ */
+
+/* ============================================================================
+   SHARED STYLES
+   ============================================================================ */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Intro Sections */
+#council-intro,
+#ari-intro,
+#power-plant-intro {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 60px 0;
+  text-align: center;
+}
+
+#council-intro h1,
+#ari-intro h1,
+#power-plant-intro h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.council-description,
+.ari-description,
+.power-plant-description {
+  font-size: 1.2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* How It Works Sections */
+.how-it-works {
+  background: #f9f9f9;
+  padding: 60px 0;
+}
+
+.how-it-works h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+}
+
+.mechanism-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 968px) {
+  .mechanism-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mechanism-step {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.step-number {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0 auto 20px;
+}
+
+.mechanism-step h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.mechanism-step p {
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Info Boxes */
+.veto-info,
+.distribution-info {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 30px;
+}
+
+.veto-info h3,
+.distribution-info h3 {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+}
+
+.veto-info p,
+.distribution-info ul {
+  color: #666;
+  line-height: 1.6;
+}
+
+.distribution-info ul {
+  list-style: none;
+  padding: 0;
+}
+
+.distribution-info li {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.distribution-info li:last-child {
+  border-bottom: none;
+}
+
+/* ============================================================================
+   COUNCIL PAGE
+   ============================================================================ */
+
+#page-council {
+  background: #f5f5f5;
+}
+
+.council-page {
+  min-height: 100vh;
+}
+
+/* Council Grid */
+.council-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin: 40px 0;
+}
+
+@media (max-width: 968px) {
+  .council-grid-layout {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .council-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Council Seat Card */
+.council-seat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.council-seat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.council-seat-card.stranger-seat {
+  border: 3px solid #FFD700;
+  background: linear-gradient(135deg, #fff 0%, #fffaf0 100%);
+}
+
+.seat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.seat-index {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.immutable-badge {
+  background: #FFD700;
+  color: #333;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.seat-body {
+  margin-bottom: 20px;
+}
+
+.seat-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.seat-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.stat:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.stat-value {
+  font-weight: 700;
+  color: #333;
+}
+
+.seat-footer {
+  margin-top: 20px;
+}
+
+.stake-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.stake-btn:hover {
+  opacity: 0.9;
+}
+
+/* User Stakes Panel */
+.user-stakes-panel {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  margin: 40px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-stakes-panel h3 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+/* ============================================================================
+   ARI ACTIVITY PAGE
+   ============================================================================ */
+
+#page-ari {
+  background: #f5f5f5;
+}
+
+.ari-page {
+  min-height: 100vh;
+}
+
+/* Proposal Filters */
+.proposal-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.filter-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.filter-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+}
+
+.proposals-count {
+  margin-bottom: 20px;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Proposals Grid */
+.proposals-grid {
+  display: grid;
+  gap: 20px;
+  margin: 30px 0;
+}
+
+.no-proposals {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
+  color: #666;
+}
+
+/* Proposal Card */
+.proposal-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.proposal-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.proposal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.proposal-id .label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.proposal-id .value {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.proposal-status {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-pending {
+  background: #FFF4E6;
+  color: #F57C00;
+}
+
+.status-veto {
+  background: #FFE0E0;
+  color: #D32F2F;
+}
+
+.status-approved {
+  background: #E8F5E9;
+  color: #388E3C;
+}
+
+.status-vetoed {
+  background: #F5F5F5;
+  color: #757575;
+}
+
+.status-executed {
+  background: #E3F2FD;
+  color: #1976D2;
+}
+
+.status-cancelled {
+  background: #F5F5F5;
+  color: #9E9E9E;
+}
+
+.proposal-body {
+  margin-bottom: 20px;
+}
+
+.proposal-type {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.proposal-reasoning,
+.proposal-amount,
+.proposal-recipient,
+.proposal-veto,
+.proposal-weights {
+  margin: 15px 0;
+}
+
+.reasoning-label,
+.weights-label {
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.reasoning-hash a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #667eea;
+  text-decoration: none;
+  padding: 10px 15px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.reasoning-hash a:hover {
+  background: #e8e8e8;
+}
+
+.reasoning-hash code {
+  background: #e0e0e0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.proposal-amount .label,
+.proposal-recipient .label {
+  color: #666;
+}
+
+.proposal-amount .value,
+.proposal-recipient .value {
+  font-weight: 700;
+  color: #333;
+}
+
+.proposal-recipient code {
+  background: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* Veto Progress */
+.veto-progress {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.veto-progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.veto-current {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #D32F2F;
+}
+
+.veto-threshold {
+  color: #666;
+  font-size: 1rem;
+}
+
+.veto-progress-bar {
+  height: 30px;
+  background: #e0e0e0;
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+}
+
+.veto-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FF9800 0%, #F57C00 100%);
+  transition: width 0.5s ease;
+  border-radius: 15px;
+}
+
+.veto-progress-fill.vetoed {
+  background: linear-gradient(90deg, #EF5350 0%, #D32F2F 100%);
+}
+
+.veto-status {
+  margin-top: 10px;
+  color: #D32F2F;
+  font-weight: 700;
+  text-align: center;
+}
+
+.time-remaining {
+  margin-top: 10px;
+}
+
+.time-remaining .label {
+  color: #666;
+}
+
+.time-remaining .value {
+  font-weight: 700;
+  color: #333;
+}
+
+/* Council Weights Display */
+.weights-display {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+@media (max-width: 640px) {
+  .weights-display {
+    grid-template-columns: 1fr;
+  }
+}
+
+.weight-item {
+  background: #f5f5f5;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.weight-item .seat {
+  color: #666;
+}
+
+.weight-item .percentage {
+  font-weight: 700;
+  color: #333;
+}
+
+.proposal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.proposal-dates {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.proposal-dates .label {
+  color: #999;
+}
+
+.proposal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-veto {
+  padding: 10px 20px;
+  background: #D32F2F;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-veto:hover {
+  background: #C62828;
+}
+
+/* ============================================================================
+   POWER PLANT PAGE
+   ============================================================================ */
+
+#page-power-plant {
+  background: #f5f5f5;
+}
+
+.power-plant-page {
+  min-height: 100vh;
+}
+
+/* Treasury Overview */
+.treasury-overview {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  margin: 40px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.treasury-overview h2 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.treasury-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 640px) {
+  .treasury-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.treasury-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.treasury-token {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  opacity: 0.9;
+}
+
+.treasury-balance .balance-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.treasury-note {
+  text-align: center;
+  color: #666;
+  margin-top: 20px;
+  font-style: italic;
+}
+
+/* Bounties List */
+.bounties-list,
+.grants-list {
+  margin: 40px 0;
+}
+
+.bounties-list h2,
+.grants-list h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.bounty-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.bounties-count,
+.grants-count {
+  margin-bottom: 20px;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.bounties-grid,
+.grants-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.no-bounties,
+.no-grants {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
+  color: #666;
+}
+
+/* Bounty Card */
+.bounty-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.bounty-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.bounty-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.bounty-id .label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.bounty-id .value {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.bounty-status {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.status-open {
+  background: #E8F5E9;
+  color: #388E3C;
+}
+
+.status-assigned {
+  background: #FFF4E6;
+  color: #F57C00;
+}
+
+.status-completed {
+  background: #E3F2FD;
+  color: #1976D2;
+}
+
+.status-claimed {
+  background: #F5F5F5;
+  color: #757575;
+}
+
+.bounty-body {
+  margin-bottom: 20px;
+}
+
+.bounty-metadata,
+.bounty-reward,
+.bounty-deadline,
+.bounty-assignee {
+  margin: 15px 0;
+}
+
+.metadata-label {
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.metadata-link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #667eea;
+  text-decoration: none;
+  padding: 10px 15px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.metadata-link code {
+  background: #e0e0e0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.bounty-reward .label,
+.bounty-deadline .label,
+.bounty-assignee .label {
+  color: #666;
+}
+
+.bounty-reward .value,
+.bounty-deadline .value,
+.bounty-assignee .value {
+  font-weight: 700;
+  color: #333;
+}
+
+.time-left {
+  color: #F57C00;
+  font-size: 0.9rem;
+}
+
+.bounty-assignee code {
+  background: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.bounty-footer {
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.bounty-dates {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.bounty-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-assign,
+.btn-complete,
+.btn-claim,
+.btn-disburse {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.btn-assign {
+  background: #4CAF50;
+  color: white;
+}
+
+.btn-assign:hover {
+  opacity: 0.9;
+}
+
+.btn-complete {
+  background: #2196F3;
+  color: white;
+}
+
+.btn-complete:hover {
+  opacity: 0.9;
+}
+
+.btn-claim,
+.btn-disburse {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-claim:hover,
+.btn-disburse:hover {
+  opacity: 0.9;
+}
+
+/* Grant Card */
+.grant-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.grant-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.grant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.grant-id .label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.grant-id .value {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.grant-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.grant-body {
+  margin-bottom: 20px;
+}
+
+.grant-recipient,
+.grant-metadata,
+.grant-timeline {
+  margin: 15px 0;
+}
+
+.grant-recipient .label {
+  color: #666;
+}
+
+.grant-recipient code {
+  background: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.grant-metadata a {
+  color: #667eea;
+  text-decoration: none;
+}
+
+/* Vesting Progress */
+.grant-vesting {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.vesting-label {
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.vesting-bar {
+  height: 30px;
+  background: #e0e0e0;
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.vesting-fill-disbursed {
+  position: absolute;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50 0%, #388E3C 100%);
+  transition: width 0.5s ease;
+}
+
+.vesting-fill-vested {
+  position: absolute;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #81C784 0%, #66BB6A 100%);
+  transition: width 0.5s ease, left 0.5s ease;
+}
+
+.vesting-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+@media (max-width: 640px) {
+  .vesting-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vesting-stats .stat .label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.vesting-stats .stat .value {
+  font-weight: 700;
+  color: #333;
+  display: block;
+  margin-top: 5px;
+}
+
+.grant-timeline .label {
+  color: #666;
+}
+
+.grant-timeline .value {
+  font-weight: 700;
+  color: #333;
+}
+
+.grant-footer {
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.grant-dates {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.grant-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ============================================================================
+   RESPONSIVE UTILITIES
+   ============================================================================ */
+
+@media (max-width: 968px) {
+  #council-intro h1,
+  #ari-intro h1,
+  #power-plant-intro h1 {
+    font-size: 2.5rem;
+  }
+
+  .council-description,
+  .ari-description,
+  .power-plant-description {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  #council-intro h1,
+  #ari-intro h1,
+  #power-plant-intro h1 {
+    font-size: 2rem;
+  }
+
+  .how-it-works h2 {
+    font-size: 2rem;
+  }
+
+  .treasury-balance .balance-value {
+    font-size: 2rem;
+  }
+}

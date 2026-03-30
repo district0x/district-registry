@@ -401,11 +401,242 @@
    :vote/amount vote->amount-resolver
    :vote/amount-from-staking vote->amount-from-staking-resolver})
 
+;; ========================================
+;; The Backroom Resolvers
+;; ========================================
+
+;; Council Seat Queries
+
+(defn council-seat-query-resolver [_ {:keys [:index]}]
+  (db/get {:select [:*]
+           :from [:council-seats]
+           :where [:= :council-seat/index index]}))
+
+(defn search-council-seats-query-resolver [_ {:keys [:only-active :order-by :order-dir :first :after]
+                                               :or {order-dir :asc}
+                                               :as args}]
+  (log/debug "search-council-seats-query-resolver" args)
+  (try-catch-throw
+    (let [page-start-idx (when after (parsers/parse-int after))
+          page-size first
+          query (cond-> {:select [:*]
+                         :from [:council-seats]}
+                  only-active (sqlh/merge-where [:= :council-seat/is-active true])
+                  order-by (sqlh/merge-order-by [[(get {:council-seats.order-by/index :council-seat/index
+                                                        :council-seats.order-by/total-staked :council-seat/total-staked
+                                                        :council-seats.order-by/created-on :council-seat/created-on}
+                                                       (graphql-utils/gql-name->kw order-by))
+                                                  order-dir]]))]
+      (paged-query query page-size page-start-idx))))
+
+;; ARI Proposal Queries
+
+(defn ari-proposal-query-resolver [_ {:keys [:id]}]
+  (db/get {:select [:*]
+           :from [:ari-proposals]
+           :where [:= :ari-proposal/id id]}))
+
+(defn search-ari-proposals-query-resolver [_ {:keys [:statuses :proposal-types :order-by :order-dir :first :after]
+                                               :or {order-dir :desc}
+                                               :as args}]
+  (log/debug "search-ari-proposals-query-resolver" args)
+  (try-catch-throw
+    (let [page-start-idx (when after (parsers/parse-int after))
+          page-size first
+          query (cond-> {:select [:*]
+                         :from [:ari-proposals]}
+                  order-by (sqlh/merge-order-by [[(get {:ari-proposals.order-by/created-on :ari-proposal/created-on
+                                                        :ari-proposals.order-by/veto-deadline :ari-proposal/veto-deadline
+                                                        :ari-proposals.order-by/veto-stake-against :ari-proposal/veto-stake-against}
+                                                       (graphql-utils/gql-name->kw order-by))
+                                                  order-dir]]))]
+      (paged-query query page-size page-start-idx))))
+
+;; Bounty Queries
+
+(defn bounty-query-resolver [_ {:keys [:id]}]
+  (db/get {:select [:*]
+           :from [:bounties]
+           :where [:= :bounty/id id]}))
+
+(defn search-bounties-query-resolver [_ {:keys [:statuses :order-by :order-dir :first :after]
+                                          :or {order-dir :desc}
+                                          :as args}]
+  (log/debug "search-bounties-query-resolver" args)
+  (try-catch-throw
+    (let [page-start-idx (when after (parsers/parse-int after))
+          page-size first
+          query (cond-> {:select [:*]
+                         :from [:bounties]}
+                  order-by (sqlh/merge-order-by [[(get {:bounties.order-by/created-on :bounty/created-on
+                                                        :bounties.order-by/deadline :bounty/deadline
+                                                        :bounties.order-by/reward :bounty/reward}
+                                                       (graphql-utils/gql-name->kw order-by))
+                                                  order-dir]]))]
+      (paged-query query page-size page-start-idx))))
+
+;; Grant Queries
+
+(defn grant-query-resolver [_ {:keys [:id]}]
+  (db/get {:select [:*]
+           :from [:grants]
+           :where [:= :grant/id id]}))
+
+(defn search-grants-query-resolver [_ {:keys [:recipient :order-by :order-dir :first :after]
+                                        :or {order-dir :desc}
+                                        :as args}]
+  (log/debug "search-grants-query-resolver" args)
+  (try-catch-throw
+    (let [page-start-idx (when after (parsers/parse-int after))
+          page-size first
+          query (cond-> {:select [:*]
+                         :from [:grants]}
+                  recipient (sqlh/merge-where [:= :grant/recipient recipient])
+                  order-by (sqlh/merge-order-by [[(get {:grants.order-by/created-on :grant/created-on
+                                                        :grants.order-by/total-amount :grant/total-amount}
+                                                       (graphql-utils/gql-name->kw order-by))
+                                                  order-dir]]))]
+      (paged-query query page-size page-start-idx))))
+
+;; Council Stake History
+
+(defn council-stake-history-resolver [_ {:keys [:seat-index :staker :from] :as args}]
+  (log/debug "council-stake-history-resolver" args)
+  (try-catch-throw
+    (db/all (cond-> {:select [:*]
+                     :from [:council-stakes]
+                     :order-by [[:council-stake/staked-on :desc]]}
+              seat-index (sqlh/merge-where [:= :council-seat/index seat-index])
+              staker (sqlh/merge-where [:= :council-stake/staker staker])
+              from (sqlh/merge-where [:>= :council-stake/staked-on from])))))
+
+(defn council-stake-balance-resolver [_ {:keys [:seat-index :staker]}]
+  (db/get {:select [:*]
+           :from [:council-stake-balances]
+           :where [:and
+                   [:= :council-seat/index seat-index]
+                   [:= :council-stake-balance/staker staker]]}))
+
+;; Field Resolvers
+
+(defn council-seat->stake-percentage [{:keys [:council-seat/total-staked]}]
+  (try-catch-throw
+    (let [total-council-stake (or (:sum (db/get {:select [[(sql/call :sum :council-seat/total-staked) :sum]]
+                                                  :from [:council-seats]
+                                                  :where [:= :council-seat/is-active true]}))
+                                  0)]
+      (if (zero? total-council-stake)
+        0
+        (* 100.0 (/ total-staked total-council-stake))))))
+
+(defn council-seat->staked-by [{:keys [:council-seat/index]} {:keys [:staker]}]
+  (let [{:keys [:council-stake-balance/balance]}
+        (db/get {:select [:*]
+                 :from [:council-stake-balances]
+                 :where [:and
+                         [:= :council-seat/index index]
+                         [:= :council-stake-balance/staker staker]]})]
+    (or balance 0)))
+
+(defn ari-proposal->veto-percentage [{:keys [:ari-proposal/veto-stake-against]}]
+  (try-catch-throw
+    (let [total-stake (or (:sum (db/get {:select [[(sql/call :sum :council-seat/total-staked) :sum]]
+                                          :from [:council-seats]
+                                          :where [:= :council-seat/is-active true]}))
+                          0)]
+      (if (zero? total-stake)
+        0
+        (* 100.0 (/ veto-stake-against total-stake))))))
+
+(defn ari-proposal->proposal-type [{:keys [:ari-proposal/proposal-type]}]
+  (enum (case proposal-type
+          0 :ari-proposal.type/treasury-transfer
+          1 :ari-proposal.type/bounty-creation
+          2 :ari-proposal.type/grant-approval
+          3 :ari-proposal.type/parameter-change
+          4 :ari-proposal.type/custom-action
+          :ari-proposal.type/custom-action)))
+
+(defn ari-proposal->status [{:keys [:ari-proposal/status]}]
+  (enum (case status
+          0 :ari-proposal.status/pending
+          1 :ari-proposal.status/veto-period
+          2 :ari-proposal.status/approved
+          3 :ari-proposal.status/vetoed
+          5 :ari-proposal.status/executed
+          6 :ari-proposal.status/cancelled
+          :ari-proposal.status/pending)))
+
+(defn bounty->status [{:keys [:bounty/status]}]
+  (enum (case status
+          0 :bounty.status/open
+          1 :bounty.status/assigned
+          2 :bounty.status/completed
+          3 :bounty.status/claimed
+          :bounty.status/open)))
+
+(defn grant->remaining [{:keys [:grant/total-amount :grant/disbursed]}]
+  (- total-amount disbursed))
+
+;; List Item Resolvers
+
+(defn council-seat-list->items-resolver [list]
+  (:items list))
+
+(defn ari-proposal-list->items-resolver [list]
+  (:items list))
+
+(defn bounty-list->items-resolver [list]
+  (:items list))
+
+(defn grant-list->items-resolver [list]
+  (:items list))
+
+;; Extended Query Map
+
+(def Query-backroom
+  (merge Query
+         {:council-seat council-seat-query-resolver
+          :search-council-seats search-council-seats-query-resolver
+          :ari-proposal ari-proposal-query-resolver
+          :search-a-r-i-proposals search-ari-proposals-query-resolver
+          :bounty bounty-query-resolver
+          :search-bounties search-bounties-query-resolver
+          :grant grant-query-resolver
+          :search-grants search-grants-query-resolver
+          :council-stake-history council-stake-history-resolver
+          :council-stake-balance council-stake-balance-resolver}))
+
+;; Type Resolvers
+
+(def CouncilSeat
+  {:council-seat/stake-percentage council-seat->stake-percentage
+   :council-seat/staked-by council-seat->staked-by})
+
+(def ARIProposal
+  {:ari-proposal/proposal-type ari-proposal->proposal-type
+   :ari-proposal/status ari-proposal->status
+   :ari-proposal/veto-percentage ari-proposal->veto-percentage})
+
+(def Bounty
+  {:bounty/status bounty->status})
+
+(def Grant
+  {:grant/remaining grant->remaining})
+
 (def resolvers-map
-  {:Query Query
+  {:Query Query-backroom
    :Vote Vote
    :Challenge Challenge
    :District District
    :DistrictList {:items district-list->items-resolver}
    :ParamChange ParamChange
-   :ParamChangeList {:items param-change-list->items-resolver}})
+   :ParamChangeList {:items param-change-list->items-resolver}
+   :CouncilSeat CouncilSeat
+   :CouncilSeatList {:items council-seat-list->items-resolver}
+   :ARIProposal ARIProposal
+   :ARIProposalList {:items ari-proposal-list->items-resolver}
+   :Bounty Bounty
+   :BountyList {:items bounty-list->items-resolver}
+   :Grant Grant
+   :GrantList {:items grant-list->items-resolver}})

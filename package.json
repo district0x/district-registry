@@ -1,0 +1,22 @@
+{
+  "name": "district-registry",
+  "version": "1.0.0",
+  "description": "The Backroom - District Registry Governance",
+  "private": true,
+  "dependencies": {
+    "bn.js": "^5.2.1",
+    "@truffle/hdwallet-provider": "^2.1.15",
+    "dotenv": "^16.0.3",
+    "truffle": "^5.11.5",
+    "@aragon/os": "^4.4.0",
+    "@aragon/apps-shared-minime": "^1.0.2",
+    "@aragon/kits-base": "^1.0.0",
+    "@aragon/id": "^2.1.0",
+    "@aragon/apps-voting": "^2.1.0",
+    "@aragon/apps-vault": "^4.1.0",
+    "@aragon/apps-finance": "^3.0.0"
+  },
+  "devDependencies": {
+    "@openzeppelin/contracts": "^4.9.3"
+  }
+}

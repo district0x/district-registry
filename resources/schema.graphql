@@ -25,6 +25,70 @@ type Query {
   params(db: String!, keys: [String!]): [Param]
 
   stakeHistory(regEntry_address: ID!, from: Date): [StakeHistory]
+
+  # The Backroom Queries
+  councilSeat(index: Int!): CouncilSeat
+  searchCouncilSeats(
+    onlyActive: Boolean,
+    orderBy: CouncilSeatsOrderBy,
+    orderDir: OrderDir,
+    first: Int,
+    after: String
+  ): CouncilSeatList
+
+  ariProposal(id: Int!): ARIProposal
+  searchARIProposals(
+    statuses: [ARIProposalStatus],
+    proposalTypes: [ARIProposalType],
+    orderBy: ARIProposalsOrderBy,
+    orderDir: OrderDir,
+    first: Int,
+    after: String
+  ): ARIProposalList
+
+  bounty(id: Int!): Bounty
+  searchBounties(
+    statuses: [BountyStatus],
+    orderBy: BountiesOrderBy,
+    orderDir: OrderDir,
+    first: Int,
+    after: String
+  ): BountyList
+
+  grant(id: Int!): Grant
+  searchGrants(
+    recipient: String,
+    orderBy: GrantsOrderBy,
+    orderDir: OrderDir,
+    first: Int,
+    after: String
+  ): GrantList
+
+  councilStakeHistory(seatIndex: Int, staker: String, from: Date): [CouncilStake]
+  councilStakeBalance(seatIndex: Int!, staker: String!): CouncilStakeBalance
+}
+
+enum CouncilSeatsOrderBy {
+  councilSeats_orderBy_index
+  councilSeats_orderBy_totalStaked
+  councilSeats_orderBy_createdOn
+}
+
+enum ARIProposalsOrderBy {
+  ariProposals_orderBy_createdOn
+  ariProposals_orderBy_vetoDeadline
+  ariProposals_orderBy_vetoStakeAgainst
+}
+
+enum BountiesOrderBy {
+  bounties_orderBy_createdOn
+  bounties_orderBy_deadline
+  bounties_orderBy_reward
+}
+
+enum GrantsOrderBy {
+  grants_orderBy_createdOn
+  grants_orderBy_totalAmount
 }
 
 enum ParamChangesOrderBy {
@@ -181,4 +245,129 @@ type StakeHistory {
   stakeHistory_stakerVotingTokenBalance: Float
   stakeHistory_stakedAmount: Float
   stakeHistory_unstake_: Boolean
+}
+
+# The Backroom Types
+
+type CouncilSeat {
+  councilSeat_index: ID
+  councilSeat_mindId: String
+  councilSeat_name: String
+  councilSeat_philosophyHash: String
+  councilSeat_isImmutable: Boolean
+  councilSeat_isActive: Boolean
+  councilSeat_createdOn: Date
+  councilSeat_totalStaked: Float
+  councilSeat_stakePercentage: Float
+  councilSeat_stakedBy(staker: ID): Float
+}
+
+type CouncilSeatList {
+  items: [CouncilSeat]
+  totalCount: Int
+  endCursor: ID
+  hasNextPage: Boolean
+}
+
+type CouncilStake {
+  councilSeat_index: ID
+  councilStake_staker: String
+  councilStake_amount: Float
+  councilStake_stakedOn: Date
+  councilStake_blockNumber: Int
+  councilStake_unstake_: Boolean
+}
+
+type CouncilStakeBalance {
+  councilSeat_index: ID
+  councilStakeBalance_staker: String
+  councilStakeBalance_balance: Float
+}
+
+enum ARIProposalType {
+  ariProposal_type_treasuryTransfer
+  ariProposal_type_bountyCreation
+  ariProposal_type_grantApproval
+  ariProposal_type_parameterChange
+  ariProposal_type_customAction
+}
+
+enum ARIProposalStatus {
+  ariProposal_status_pending
+  ariProposal_status_vetoPeriod
+  ariProposal_status_approved
+  ariProposal_status_vetoed
+  ariProposal_status_executed
+  ariProposal_status_cancelled
+}
+
+type ARIProposal {
+  ariProposal_id: ID
+  ariProposal_proposalType: ARIProposalType
+  ariProposal_reasoningHash: String
+  ariProposal_councilWeightsHash: String
+  ariProposal_snapshotBlock: Int
+  ariProposal_vetoDeadline: Date
+  ariProposal_amount: Float
+  ariProposal_recipient: String
+  ariProposal_status: ARIProposalStatus
+  ariProposal_vetoStakeAgainst: Float
+  ariProposal_vetoPercentage: Float
+  ariProposal_proposer: String
+  ariProposal_createdOn: Date
+  ariProposal_executedOn: Date
+}
+
+type ARIProposalList {
+  items: [ARIProposal]
+  totalCount: Int
+  endCursor: ID
+  hasNextPage: Boolean
+}
+
+enum BountyStatus {
+  bounty_status_open
+  bounty_status_assigned
+  bounty_status_completed
+  bounty_status_claimed
+}
+
+type Bounty {
+  bounty_id: ID
+  bounty_metadataHash: String
+  bounty_reward: Float
+  bounty_token: String
+  bounty_deadline: Date
+  bounty_assignee: String
+  bounty_status: BountyStatus
+  bounty_createdOn: Date
+  bounty_completedOn: Date
+  bounty_claimedOn: Date
+}
+
+type BountyList {
+  items: [Bounty]
+  totalCount: Int
+  endCursor: ID
+  hasNextPage: Boolean
+}
+
+type Grant {
+  grant_id: ID
+  grant_recipient: String
+  grant_totalAmount: Float
+  grant_disbursed: Float
+  grant_remaining: Float
+  grant_vestingStart: Date
+  grant_vestingDuration: Int
+  grant_purposeHash: String
+  grant_token: String
+  grant_createdOn: Date
+}
+
+type GrantList {
+  items: [Grant]
+  totalCount: Int
+  endCursor: ID
+  hasNextPage: Boolean
 }
